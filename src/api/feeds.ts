@@ -6,14 +6,13 @@ import errorHandler from "@/error/supabaseErrorHandler";
  * @description 채널 구분하지 않는 피드 전체 데이터를 받아옵니다. 테스트용으로 사용해보세요.
  * @returns {Promise<Tables<"feeds">[] | null>} feedData
  */
-export async function getAllFeeds(): Promise<Tables<"feeds">[] | null> {
+export async function getFeeds(): Promise<Tables<"feeds">[] | null> {
   const { data, error } = await supabase.from("feeds").select();
 
   if (error) {
     errorHandler(error, "getAllFeeds");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 }
@@ -23,7 +22,7 @@ export async function getAllFeeds(): Promise<Tables<"feeds">[] | null> {
  * @param {string} uid
  * @returns {Promise<Tables<"feeds">[] | null>} feedData
  */
-export const getUserFeeds = async (
+export const getFeedsByUserId = async (
   uid: string
 ): Promise<Tables<"feeds">[] | null> => {
   const { data, error } = await supabase
@@ -35,7 +34,6 @@ export const getUserFeeds = async (
     errorHandler(error, "getUserFeeds");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 };
@@ -46,7 +44,7 @@ export const getUserFeeds = async (
  * @param {string} channel_id
  * @returns
  */
-export const getUserChannelFeeds = async (uid: string, channel_id: string) => {
+export const getFeedsByUserInChannel = async (uid: string, channel_id: string) => {
   const { data, error } = await supabase
     .from("feeds")
     .select()
@@ -65,6 +63,7 @@ export const getUserChannelFeeds = async (uid: string, channel_id: string) => {
 // TODO : 2차로 검색하는 방식에서 Supabase의 View 생성이나 컨텍스트 생성
 // 너무 기워넣었다... 구조 점검 할 것
 // 그냥 안 되네. View 생성해야겠는데.
+// NOTE : 아직 작동 안함.
 export const getByKeywordFeeds = async (keyword: string) => {
   // injection 방지
   const safeKeyword = keyword.replace(/[%_]/g, "\\$&"); // 와일드카드 escape
@@ -105,3 +104,8 @@ export const getByKeywordFeeds = async (keyword: string) => {
     return unique;
   }
 };
+
+
+/**
+ * @description 대댓글과 댓글 모두 불러오기
+ */

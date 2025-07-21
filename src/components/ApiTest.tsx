@@ -1,5 +1,5 @@
 import type { Tables } from "@/@types/database.types";
-import { getByKeywordFeeds } from "@/api/feed";
+import { getByKeywordFeeds } from "@/api/feeds";
 import { useEffect, useState } from "react";
 
 type FeedTypes = Tables<"feeds">[] | null;
