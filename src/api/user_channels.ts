@@ -19,14 +19,34 @@ export const getUserChannels = async (): Promise<UserChannelsType[] | null> => {
   }
 };
 
-//TODO: 유저 닉네임 기반한 채널 조회
-// Channel 이름 데이터 등도 가져와야 할 것 같아서 view 생성
+/**
+ *
+ * @description 유저 id 기반한 가입한 채널을 조회합니다.
+ * @returns
+ */
+export const getUserChannelsByUserId = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("view_user_channels")
+    .select("*")
+    .eq("user_id", user_id);
 
-export const addUserChannels = async () => {
-  const { data: error } = await supabase
-    .from("user_channels")
-    .insert({ channel_id: "8646681a-383e-47e1-8b87-a9fffe7aa6ed" });
-    
-  if (error) console.log(error);
-  else console.log("성공");
+  if (error) {
+    errorHandler(error, "getUserChannelsByUserId");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+/**
+ * @description 파라미터에 주어진 channel_id에 가입합니다. 로그인한 userId로 자동 바인딩됩니다.
+ */
+export const addUserChannels = async (channel_id: string) => {
+  const { error } = await supabase.from("user_channels").insert({ channel_id });
+
+  if (error) {
+    errorHandler(error, "addUserChannels");
+  } else {
+    console.log("성공");
+  }
 };

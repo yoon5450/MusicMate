@@ -1,15 +1,15 @@
-import { addChannels } from "@/api/channels";
-import { getUserSession, login } from "@/api/login";
+import { getUserSession, login, getUserChannelsByUserId } from "@/api";
 import { useEffect, useState } from "react";
 
 function ApiInsertTest() {
-  const [count, setCount] = useState(5);
+  // const [count, setCount] = useState(6);
   const [userId, setUserId] = useState<string>('');
 
-  function onClick() {
-    const name = `test` + count;
-    addChannels({ name, owner_id: userId });
-    setCount(count + 1);
+  async function onClick() {
+    // const name = `test` + count;
+    const data = await getUserChannelsByUserId('7c01635f-948e-4b4f-bd2b-131c69f2e732')
+    console.log(data) ;
+    console.log(userId)
   }
 
   useEffect(() => {
