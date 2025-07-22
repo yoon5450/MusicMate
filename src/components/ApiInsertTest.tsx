@@ -3,7 +3,7 @@ import { getUserSession, login } from "@/api/login";
 import { useEffect, useState } from "react";
 
 function ApiInsertTest() {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(5);
   const [userId, setUserId] = useState<string>('');
 
   function onClick() {

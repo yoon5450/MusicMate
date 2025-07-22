@@ -4,8 +4,8 @@ import errorHandler from "@/error/supabaseErrorHandler";
 
 export type ChannelsType = Tables<"channels">
 type InsertType = {
-    description?: string | null;
-    genre_code?: number | null;
+    description?: string | undefined;
+    genre_code?: number | undefined;
     name: string;
     owner_id: string;
 }
@@ -21,10 +21,13 @@ export const getChannels = async ():Promise<ChannelsType[] | null> => {
   }
 };
 
-export const addChannels = async ({name, owner_id, description, genre_code}:InsertType) =>{
+// RPC ( Remote Prociger Call )
+// addChannels -> 채널도 생성하고, 채널을 생성한 인원이 이 채널에 포함되어야 함.
+// channels, user_channels <- addChannels, addUserChannels
+// undefined로 처리
+export const addChannels = async ({name, description, genre_code}:InsertType) =>{
   const {data, error} = await supabase
-  .from("channels")
-  .insert({name, owner_id, description, genre_code})
+  .rpc("create_channel_and_link_user", {name, description, genre_code})
 
   if (error) {
     errorHandler(error, "addChannels");
