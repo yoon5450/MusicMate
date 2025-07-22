@@ -1,0 +1,29 @@
+:root {
+  --primary_active: #E4A00DFF;
+  --primary_hover: #FFD950FF;
+  --primary_default: #F9BB04FF;
+  --primary_disabled: #FBE38BFF;
+  --white: #FFFFFFFF;
+  --black: #000000FF;
+  --background: #1E1E1EFF;
+  --gray_01: #181818FF;
+  --gray_02: #232323FF;
+  --gray_03: #333333FF;
+  --gray_04: #4B4B4BFF;
+  --gray_05: #6B6B6BFF;
+  --gray_06: #8C8C8CFF;
+  --gray_07: #B0B0B0FF;
+  --gray_08: #D1D1D1FF;
+  --gray_09: #E5E5E5FF;
+  --gray_10: #F6F6F6FF;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+}
