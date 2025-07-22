@@ -34,7 +34,7 @@ export const getUserProfileByUserId = async (
     .eq("id", uid);
 
   if (error) {
-    errorHandler(error, "getUserProfile");
+    errorHandler(error, "getUserProfileByUserId");
     return null;
   } else {
     return data;
