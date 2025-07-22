@@ -1,16 +1,21 @@
 // import { useState } from 'react'
 // import reactLogo from '@/assets/react.svg'
 // import viteLogo from '/vite.svg'
-import '@/App.css'
-import ApiTestPage from './Page/ApiTestPage'
+import { RouterProvider } from "./router/RouterProvider";
+import SideNavigation from "./components/Layout/SideNavigation";
+import { routes } from "./router/router";
+import Header from "./components/Layout/Header";
 
 function App() {
-
   return (
     <>
-      <ApiTestPage/>
+      <Header />
+
+      <div style={{ display: "flex" }}>
+        <RouterProvider navigation={<SideNavigation />} routes={routes} />
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

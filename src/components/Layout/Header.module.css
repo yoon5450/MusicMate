@@ -1,0 +1,13 @@
+
+
+.topHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--gray_04);
+  height: 50px;
+}
+
+.logo{
+  height: 100%;
+}

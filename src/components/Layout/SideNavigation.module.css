@@ -1,0 +1,60 @@
+.component {
+  overflow: auto;
+  resize: horizontal;
+  min-inline-size: 160px;
+  max-inline-size: 320px;
+  min-block-size: 94vh;
+  margin-block-start: 1vh;
+  padding: 20px;
+  border-inline-end: 1px dashed var(--accent-color, #440fbf);
+
+  h1 {
+    display: inline-block;
+    margin-block: 0 20px;
+    font-size: 24px;
+    font-weight: 400;
+    position: relative;
+  }
+
+  ul {
+    display: flex;
+    flex-flow: column;
+    margin-block-start: -4px;
+  }
+
+  a {
+    opacity: 0.75;
+    display: flex;
+    margin-inline: -4px;
+    padding: 4px;
+    font-size: 16px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.active{
+  color:rgb(12, 62, 213);
+  font-weight: bold;
+}
+
+@keyframes movingHat {
+
+  0%,
+  45% {
+    translate: 0 0;
+    rotate: 25deg;
+  }
+
+  70% {
+    translate: 1px -15px;
+    rotate: 0.7turn;
+  }
+
+  100% {
+    translate: 0 0;
+    rotate: 1.07turn;
+  }
+}
