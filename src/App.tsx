@@ -2,13 +2,17 @@
 // import reactLogo from '@/assets/react.svg'
 // import viteLogo from '/vite.svg'
 import '@/App.css'
-import ApiTestPage from './Page/ApiTestPage'
+import ChannelPage from './Page/ChannelPage'
+import TestLogin from './components/channel/TestLogin'
+// import ApiTestPage from './Page/ApiTestPage'
 
 function App() {
 
   return (
     <>
-      <ApiTestPage/>
+      {/* <ApiTestPage/> */}
+      <TestLogin></TestLogin>
+      <ChannelPage></ChannelPage>
     </>
   )
 }

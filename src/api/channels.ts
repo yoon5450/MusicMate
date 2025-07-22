@@ -6,7 +6,7 @@ export const getChannels = async ():Promise<Tables<"channels">[] | null> => {
   const { data, error } = await supabase.from("channels").select("*");
 
   if (error) {
-    errorHandler(error, "getAllChanels");
+    errorHandler(error, "getChannels");
     return null;
   } else {
     return data;
