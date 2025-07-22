@@ -7,5 +7,14 @@ export const login = async (id: string, pass: string) => {
   });
 
   if (error) console.log(error);
-  else console.log("로그인 성공")
+  else console.log("로그인 성공");
 };
+
+export async function getUserSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error(error);
+    return ''
+  }
+  else return data
+}
