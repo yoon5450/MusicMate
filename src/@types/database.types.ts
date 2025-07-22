@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -236,7 +235,29 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "feeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_channels: {
         Row: {
@@ -389,7 +410,29 @@ export type Database = {
           type: string | null
           user_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "feeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       view_user_channels: {
         Row: {
@@ -429,7 +472,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      create_channel_and_link_user: {
+        Args: { name: string; description?: string; genre_code?: number }
+        Returns: string
+      }
     }
     Enums: {
       message_type: "default" | "clip" | "image"
