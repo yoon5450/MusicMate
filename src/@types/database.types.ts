@@ -76,6 +76,20 @@ export type Database = {
             referencedRelation: "feeds"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "feed_replies_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_replies_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
         ]
       }
       feeds: {
@@ -112,7 +126,22 @@ export type Database = {
           message_type?: Database["public"]["Enums"]["message_type"]
           title?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "feeds_author_id_fkey1"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feeds_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       genres: {
         Row: {
@@ -159,6 +188,20 @@ export type Database = {
             referencedRelation: "feeds"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "likes_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
         ]
       }
       notifications: {
@@ -192,7 +235,29 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "feeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_channels: {
         Row: {
@@ -248,28 +313,169 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          nickname: string
           profile_url: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
           id: string
+          nickname?: string
           profile_url?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
+          nickname?: string
           profile_url?: string | null
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      view_feed_search: {
+        Row: {
+          audio_url: string | null
+          author_id: string | null
+          channel_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          image_url: string | null
+          like_count: number | null
+          message_type: Database["public"]["Enums"]["message_type"] | null
+          nickname: string | null
+          profile_url: string | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feeds_author_id_fkey1"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feeds_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_feed_with_user: {
+        Row: {
+          audio_url: string | null
+          author_id: string | null
+          channel_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          image_url: string | null
+          message_type: Database["public"]["Enums"]["message_type"] | null
+          nickname: string | null
+          profile_url: string | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feeds_author_id_fkey1"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feeds_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_notification_detail: {
+        Row: {
+          created_at: string | null
+          feed_id: string | null
+          id: string | null
+          is_read: boolean | null
+          reply_id: string | null
+          sender_id: string | null
+          sender_nickname: string | null
+          sender_profile_url: string | null
+          type: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "feeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "view_feed_with_user"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_user_channels: {
+        Row: {
+          channel_created_at: string | null
+          channel_description: string | null
+          channel_id: string | null
+          channel_name: string | null
+          owner_id: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_channels_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_user_genres: {
+        Row: {
+          genre_code: number | null
+          genre_created_at: string | null
+          genre_name: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_genres_genre_code_fkey"
+            columns: ["genre_code"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      create_channel_and_link_user: {
+        Args: { name: string; description?: string; genre_code?: number }
+        Returns: string
+      }
     }
     Enums: {
       message_type: "default" | "clip" | "image"
