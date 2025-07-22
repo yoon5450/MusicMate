@@ -9,7 +9,7 @@ export const getNotiByFeed = async (feedId: string) => {
     .eq("feed_id", feedId);
 
   if (error) {
-    errorHandler(error, "getTargetLikes");
+    errorHandler(error, "getNotiByFeed");
     return null;
   } else {
     return data;

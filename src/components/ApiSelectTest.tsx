@@ -1,15 +1,15 @@
 import type { Tables } from "@/@types/database.types";
-import { getByKeywordFeeds } from "@/api/feeds";
+import { getFeedsByKeyword } from "@/api/feeds";
 import { useEffect, useState } from "react";
 
-type FeedTypes = Tables<"feeds">[] | null;
+type FeedTypes = Tables<"view_feed_search">[] | null;
 
 function ApiTest() {
   const [feeds, setFeeds] = useState<FeedTypes | null>(null);
 
   useEffect(() => {
     const getFeeds = async () => {
-      const feeds: FeedTypes = await getByKeywordFeeds("하세요");
+      const feeds:Tables<"view_feed_search">[] | null = await getFeedsByKeyword("하세요");
       setFeeds(feeds);
     };
 
