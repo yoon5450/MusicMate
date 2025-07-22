@@ -1,9 +1,10 @@
-import ApiTest from "@/components/ApiTest";
+import ApiInsertTest from "@/components/ApiInsertTest";
+// import ApiTest from "@/components/ApiTest";
 
 function ApiTestPage() {
   return (
     <>
-      <ApiTest />
+      <ApiInsertTest />
       <div>ApiTestPage</div>
     </>
   );
