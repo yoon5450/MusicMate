@@ -3,7 +3,9 @@
 // import viteLogo from '/vite.svg'
 import '@/App.css'
 import ChannelPage from './Page/ChannelPage'
-import TestLogin from './components/channel/TestLogin'
+// import TestLogin from './components/channel/TestLogin'
+// import ChannelTest from './components/ChannelTest'
+// import GenreTest from './components/GenreTest'
 // import ApiTestPage from './Page/ApiTestPage'
 
 function App() {
@@ -11,8 +13,10 @@ function App() {
   return (
     <>
       {/* <ApiTestPage/> */}
-      <TestLogin></TestLogin>
+      {/* <TestLogin></TestLogin> */}
       <ChannelPage></ChannelPage>
+      {/* <ChannelTest></ChannelTest> */}
+      {/* <GenreTest></GenreTest> */}
     </>
   )
 }

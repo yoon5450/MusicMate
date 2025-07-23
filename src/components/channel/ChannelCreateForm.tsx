@@ -1,60 +1,91 @@
+import { addChannels } from "@/api/channels";
 import supabase from "@/utils/supabase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import S from './Channel.module.css';
+import { getGenres } from "@/api/genres";
 
 
-
+type GenreType = {
+  code:number;
+  name:string;
+}
 
 
 function ChannelCreateForm() {
   const [name,setName] = useState('');
   const [description,setDescription] = useState('');
   const [genre,setGenre] = useState('');
+  const [genres, setGenres] = useState<GenreType[]>([]);
+
+
+  useEffect(()=>{
+    const fetchGenres = async () => {
+      const data = await getGenres();
+      if(data)
+        setGenres(data);
+    }
+    fetchGenres();
+  },[]);
+
 
 
   const handleSubmit = async (e:React.FormEvent) => { 
     e.preventDefault();
 
     const user = await supabase.auth.getUser();
-    const owner_id = user.data.user.id;
+    const owner_id = user.data.user?.id;
 
-    const { data, error } = await supabase.from('channels').insert([
-    {
+    const data = await addChannels({
       name,
       description,
-      genre_code: genre,
-      owner_id,
-      created_at: new Date().toISOString()
-    }
-  ])
+      genre_code: Number(genre),
+      owner_id : owner_id!,
+    })
 
-    if (error) {
-    console.error('채널 생성 실패:', error.message)
+    if (!data) {
+    console.error('채널 생성 실패!')
   } else {
     console.log('채널 생성 성공!', data)
   }
-
-
    }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>채널 생성하기</h2>
-      <h3>채널 이름</h3>
-      <input 
-      value={name}
-      type="text"
-      onChange={e => setName(e.target.value)} />
-      <h3>채널 설명</h3>
-      <textarea
-      value={description}
-      onChange={e => setDescription(e.target.value)} />
-      <h3>장르</h3>
-      <input 
-      value={genre}
-      type="text"
-      onChange={e => setGenre(e.target.value)} />
-      <button type="submit">채널 생성</button>
+    <form onSubmit={handleSubmit} className={S.formContainer}>
+      <label>채널명
+        <input 
+          value={name}
+          type="text" 
+          onChange={e => setName(e.target.value)}
+        />
+      </label>
+
+       <label>채널 설명
+        <textarea
+          className={S.description}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </label>
+      
+       <label>장르 코드
+        <select 
+          className={S.genre_code}
+          value={genre}
+          onChange={e => setGenre(e.target.value)}
+          >
+          <option value="">장르를 선택하세요.</option>
+          {genres.map((genres)=>(
+            <option key={genres.code} value={genres.code}>{genres.name}</option>
+          ))}
+        </select>
+      </label>
+      
+      <button 
+        type="submit"
+        className={S.createButton}
+        >채널 생성</button>
     </form>
   )
 }
 export default ChannelCreateForm
+
