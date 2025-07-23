@@ -1,4 +1,4 @@
-import ApiInsertTest from "@/components/ApiInsertTest";
+import ApiInsertTest from "@/test/ApiInsertTest";
 // import ApiTest from "@/components/ApiTest";
 
 function ApiTestPage() {

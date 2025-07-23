@@ -1,24 +1,17 @@
 // import { useState } from 'react'
 // import reactLogo from '@/assets/react.svg'
 // import viteLogo from '/vite.svg'
-import '@/App.css'
-import ChannelPage from './Page/ChannelPage'
-// import TestLogin from './components/channel/TestLogin'
-// import ChannelTest from './components/ChannelTest'
-// import GenreTest from './components/GenreTest'
-// import ApiTestPage from './Page/ApiTestPage'
+import { RouterProvider } from "./router/RouterProvider";
+import { routes } from "./router/router";
+
+import Layout from "./components/Layout";
 
 function App() {
-
   return (
     <>
-      {/* <ApiTestPage/> */}
-      {/* <TestLogin></TestLogin> */}
-      <ChannelPage></ChannelPage>
-      {/* <ChannelTest></ChannelTest> */}
-      {/* <GenreTest></GenreTest> */}
+        <RouterProvider navigation={(routeElement) => <Layout>{routeElement}</Layout>} routes={routes} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
