@@ -2,18 +2,14 @@
 // import reactLogo from '@/assets/react.svg'
 // import viteLogo from '/vite.svg'
 import { RouterProvider } from "./router/RouterProvider";
-import SideNavigation from "./components/Layout/SideNavigation";
 import { routes } from "./router/router";
-import Header from "./components/Layout/Header";
+
+import Layout from "./components/Layout";
 
 function App() {
   return (
     <>
-      <Header />
-
-      <div style={{ display: "flex" }}>
-        <RouterProvider navigation={<SideNavigation />} routes={routes} />
-      </div>
+        <RouterProvider navigation={(routeElement) => <Layout>{routeElement}</Layout>} routes={routes} />
     </>
   );
 }

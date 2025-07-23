@@ -15,7 +15,7 @@ function SideNavigation() {
 
   return (
     <section className={S.component}>
-      <h1>학습 주제 </h1>
+      <h1>채널 목록 </h1>
       <nav>
         <h2 className="a11y-hidden">메인 메뉴</h2>
         <ul>

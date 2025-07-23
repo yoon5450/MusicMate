@@ -29,7 +29,7 @@ export const RouterContext = createContext<RouterContextType | null>(null);
 
 interface RouterProviderProps {
   routes: RouteItem[];
-  navigation?: ReactNode;
+  navigation?: (routeElement:ReactNode) => ReactNode;
 }
 
 export function RouterProvider({ routes, navigation }: RouterProviderProps) {
@@ -110,8 +110,7 @@ export function RouterProvider({ routes, navigation }: RouterProviderProps) {
   // 네비게이션이 매번 리렌더링되므로 navigation을 밖으로 빼냄
   return (
     <RouterContext.Provider value={value}>
-      {navigation} 
-      <Fragment key={navKey}> {routeElement}</Fragment>
+      {navigation && routeElement ? navigation(routeElement) : <Fragment key={navKey}>{routeElement}</Fragment>}
     </RouterContext.Provider>
   );
 }

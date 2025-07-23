@@ -1,16 +1,22 @@
 
 
 .topHeader{
+  position:absolute;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: var(--gray_03);
   border-bottom: 1px solid var(--primary_default);
   height: 50px;
+  width: 100%;
+  z-index: 999;
 }
 
 .btnGroup{
   display: flex;
+  cursor: pointer;
 }
 
 .content{
@@ -18,5 +24,10 @@
 }
 
 .logo{
-  height: 140%;
+  height: 66px
+}
+
+.headerButton{
+  border: 0;
+  background: transparent;
 }
