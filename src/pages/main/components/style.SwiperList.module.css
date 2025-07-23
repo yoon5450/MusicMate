@@ -1,0 +1,21 @@
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--primary_active);
+}
+
+.content {
+  padding: 1rem;
+  color: var(--white);
+  background-color: var(--black);
+  border-radius: 8px;
+
+  .title {
+    display: block;
+  }
+
+  .swiper {
+    height: 200px;
+    background-color: var(--gray_06);
+  }
+}
