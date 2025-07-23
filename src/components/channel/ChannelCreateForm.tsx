@@ -1,6 +1,6 @@
 import { addChannels } from "@/api/channels";
 import supabase from "@/utils/supabase";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import S from './Channel.module.css';
 import { getGenres } from "@/api/genres";
 
@@ -12,11 +12,15 @@ type GenreType = {
 
 
 function ChannelCreateForm() {
+  //상태 선언
   const [name,setName] = useState('');
   const [description,setDescription] = useState('');
   const [genre,setGenre] = useState('');
   const [genres, setGenres] = useState<GenreType[]>([]);
-
+  //id
+  const nameId = useId();
+  const descriptionId = useId();
+  const genre_codeId = useId();
 
   useEffect(()=>{
     const fetchGenres = async () => {
@@ -51,24 +55,27 @@ function ChannelCreateForm() {
 
   return (
     <form onSubmit={handleSubmit} className={S.formContainer}>
-      <label>채널명
+      <label htmlFor={nameId}>채널명
         <input 
+          id={nameId}
           value={name}
           type="text" 
           onChange={e => setName(e.target.value)}
         />
       </label>
 
-       <label>채널 설명
+       <label htmlFor={descriptionId}>채널 설명
         <textarea
+          id={descriptionId}
           className={S.description}
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
       </label>
       
-       <label>장르 코드
+       <label htmlFor={genre_codeId}>장르 코드
         <select 
+          id={genre_codeId}
           className={S.genre_code}
           value={genre}
           onChange={e => setGenre(e.target.value)}
