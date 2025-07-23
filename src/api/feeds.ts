@@ -1,6 +1,15 @@
-import type { Tables } from "@/@types/database.types";
+import type { Database, Tables } from "@/@types/database.types";
 import supabase from "@/utils/supabase";
 import errorHandler from "@/error/supabaseErrorHandler";
+
+type InsertType = {
+  audio_url: string | null;
+  channel_id: string;
+  content: string | null;
+  image_url: string | null;
+  message_type: Database["public"]["Enums"]["message_type"];
+  title: string | null;
+};
 
 /**
  * @description 채널 구분하지 않는 피드 전체 데이터를 받아옵니다. 테스트용으로 사용해보세요.
@@ -21,8 +30,10 @@ export async function getFeeds(): Promise<Tables<"feeds">[] | null> {
  * @description 모든 데이터가 조인된 상태로 받아옵니다.
  * @returns AllFkJoindData
  */
-export const getFeedsWithAll = async () =>{
-    const { data, error } = await supabase.from("view_feed_with_user").select("*");
+export const getFeedsWithAll = async () => {
+  const { data, error } = await supabase
+    .from("view_feed_with_user")
+    .select("*");
 
   if (error) {
     errorHandler(error, "getFeedsWithLikesCount");
@@ -30,7 +41,7 @@ export const getFeedsWithAll = async () =>{
   } else {
     return data;
   }
-}
+};
 
 /**
  * @description 유저 id에 기반한 모든 피드를 가져옵니다.
@@ -104,3 +115,35 @@ export const getFeedsByKeyword = async (
 /**
  * @description 대댓글과 댓글 모두 불러오기
  */
+
+/**
+ * @description 유저가 피드를 작성한 경우 피드데이터를 추가합니다
+ */
+export const addFeeds = async ({
+  audio_url,
+  channel_id,
+  content,
+  image_url,
+  message_type,
+  title,
+}: InsertType) => {
+  const { data, error } = await supabase
+    .from("feeds")
+    .insert({
+      audio_url,
+      channel_id,
+      content,
+      image_url,
+      message_type,
+      title,
+    })
+    .select();
+
+  if (error) {
+    errorHandler(error, "addChannelMessages");
+    return null;
+  } else {
+    console.log(data);
+    return data;
+  }
+};
