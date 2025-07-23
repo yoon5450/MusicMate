@@ -4,9 +4,10 @@
   min-inline-size: 160px;
   max-inline-size: 320px;
   min-block-size: 94vh;
-  margin-block-start: 1vh;
   padding: 20px;
-  border-inline-end: 1px dashed var(--accent-color, #440fbf);
+  background-color: var(--gray_03);
+  border-inline-end: 1px solid var(--gray_06);
+  color: var(--white);
 
   h1 {
     display: inline-block;

@@ -1,6 +1,10 @@
 .container {
   flex: 1;
   padding: 2rem;
+  background-color: var(--gray_03);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
 
   h1{
     margin-bottom: 1rem;

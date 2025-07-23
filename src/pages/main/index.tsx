@@ -6,11 +6,17 @@ Main
 ㄴ추천 플레이리스트 (Wapper 포함)
 */
 
+import FeedList from './components/FeedList';
+import SwipeList from './components/SwipeList';
 import S from './style.module.css';
 
 function Main() {
   return (
-    <div className={S.container}>Main</div>
+    <div className={S.container}>
+      <SwipeList />
+      <FeedList title='인기 게시글'/>
+      <SwipeList />
+    </div>
   )
 }
 export default Main
