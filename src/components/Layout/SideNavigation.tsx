@@ -2,6 +2,7 @@ import S from "./SideNavigation.module.css";
 import NavLink from "../NavLink";
 import { getChannels, type ChannelsType } from "@/api";
 import { useEffect, useState } from "react";
+
 function SideNavigation() {
   const [channelList, setChannelList] = useState<ChannelsType[] | null>(null);
 

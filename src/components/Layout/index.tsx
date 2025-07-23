@@ -1,22 +1,21 @@
 import Header from "./Header";
 import SideNavigation from "./SideNavigation";
 import S from "./Layout.module.css";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
+import { useRouter } from "@/router/RouterProvider";
 
-function Layout({ children }: { children:ReactNode}) {
+function Layout({ children }: { children: ReactNode }) {
+  const {title, setHistoryRoute} = useRouter()
 
-  console.log(children)
   return (
     <>
       <div className={S.container}>
-        <Header />
+        <Header setHistoryRoute={setHistoryRoute} currentPage={title}/>
         <main className={S.main}>
           <aside>
             <SideNavigation />
           </aside>
-          <section className={S.pageContent}>
-            {children}
-          </section>
+          <section className={S.pageContent}>{children}</section>
         </main>
       </div>
     </>

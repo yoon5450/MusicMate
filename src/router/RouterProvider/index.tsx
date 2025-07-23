@@ -22,6 +22,7 @@ interface RouterContextType {
   currentPath: string;
   setHistoryRoute: (to: string) => void;
   params: Record<string, string>;
+  title: string;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -29,12 +30,13 @@ export const RouterContext = createContext<RouterContextType | null>(null);
 
 interface RouterProviderProps {
   routes: RouteItem[];
-  navigation?: (routeElement:ReactNode) => ReactNode;
+  navigation?: (routeElement: ReactNode) => ReactNode;
 }
 
 export function RouterProvider({ routes, navigation }: RouterProviderProps) {
   const [routeElement, setRouteElement] = useState<ReactNode>(null);
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [title, setTitle] = useState("");
   const [navKey, setNavKey] = useState(0);
   const [params, setParams] = useState<Record<string, string>>({});
 
@@ -71,10 +73,11 @@ export function RouterProvider({ routes, navigation }: RouterProviderProps) {
 
       if (route) {
         document.title = route.title;
-        // console.log( route.element );
-
+        setTitle(route.title);
         setRouteElement(route.element);
       } else {
+        document.title = "404 Not Found";
+        setTitle("페이지를 찾을 수 없음");
         setRouteElement(<NotFound />);
       }
 
@@ -102,15 +105,21 @@ export function RouterProvider({ routes, navigation }: RouterProviderProps) {
     () => ({
       setHistoryRoute,
       currentPath,
-      params, // ✅ 추가됨
+      params,
+      title,
     }),
-    [setHistoryRoute, currentPath, params]
+    [setHistoryRoute, currentPath, params, title]
   );
 
   // 네비게이션이 매번 리렌더링되므로 navigation을 밖으로 빼냄
+
   return (
     <RouterContext.Provider value={value}>
-      {navigation && routeElement ? navigation(routeElement) : <Fragment key={navKey}>{routeElement}</Fragment>}
+      {navigation && routeElement ? (
+        navigation(routeElement)
+      ) : (
+        <Fragment key={navKey}>{routeElement}</Fragment>
+      )}
     </RouterContext.Provider>
   );
 }
