@@ -47,6 +47,13 @@ export type Database = {
             referencedRelation: "genres"
             referencedColumns: ["code"]
           },
+          {
+            foreignKeyName: "channels_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
         ]
       }
       feed_replies: {
@@ -75,6 +82,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "feeds"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_replies_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["feed_id"]
           },
           {
             foreignKeyName: "feed_replies_feed_id_fkey"
@@ -128,11 +142,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "feeds_author_id_fkey1"
+            foreignKeyName: "feeds_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "user_profile"
-            referencedColumns: ["id"]
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
           {
             foreignKeyName: "feeds_channel_id_fkey"
@@ -192,6 +206,13 @@ export type Database = {
             foreignKeyName: "likes_feed_id_fkey"
             columns: ["feed_id"]
             isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["feed_id"]
+          },
+          {
+            foreignKeyName: "likes_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
             referencedRelation: "view_feed_search"
             referencedColumns: ["id"]
           },
@@ -201,6 +222,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_feed_with_user"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
@@ -247,6 +275,13 @@ export type Database = {
             foreignKeyName: "notifications_feed_id_fkey"
             columns: ["feed_id"]
             isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["feed_id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
             referencedRelation: "view_feed_search"
             referencedColumns: ["id"]
           },
@@ -256,6 +291,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_feed_with_user"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
@@ -283,6 +332,13 @@ export type Database = {
             referencedRelation: "channels"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_channels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
         ]
       }
       user_genres: {
@@ -305,6 +361,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "genres"
             referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "user_genres_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
@@ -330,10 +393,43 @@ export type Database = {
           nickname?: string
           profile_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+        ]
       }
     }
     Views: {
+      get_feeds_with_all: {
+        Row: {
+          audio_url: string | null
+          author_id: string | null
+          author_nickname: string | null
+          author_profile_url: string | null
+          channel_id: string | null
+          content: string | null
+          created_at: string | null
+          feed_id: string | null
+          image_url: string | null
+          like_count: number | null
+          message_type: Database["public"]["Enums"]["message_type"] | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feeds_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       view_feed_search: {
         Row: {
           audio_url: string | null
@@ -351,11 +447,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "feeds_author_id_fkey1"
+            foreignKeyName: "feeds_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "user_profile"
-            referencedColumns: ["id"]
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
           {
             foreignKeyName: "feeds_channel_id_fkey"
@@ -382,11 +478,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "feeds_author_id_fkey1"
+            foreignKeyName: "feeds_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "user_profile"
-            referencedColumns: ["id"]
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
           {
             foreignKeyName: "feeds_channel_id_fkey"
@@ -422,6 +518,13 @@ export type Database = {
             foreignKeyName: "notifications_feed_id_fkey"
             columns: ["feed_id"]
             isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["feed_id"]
+          },
+          {
+            foreignKeyName: "notifications_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
             referencedRelation: "view_feed_search"
             referencedColumns: ["id"]
           },
@@ -431,6 +534,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_feed_with_user"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
@@ -445,11 +562,25 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "channels_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+          {
             foreignKeyName: "user_channels_channel_id_fkey"
             columns: ["channel_id"]
             isOneToOne: false
             referencedRelation: "channels"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_channels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
@@ -467,6 +598,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "genres"
             referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "user_genres_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
           },
         ]
       }
