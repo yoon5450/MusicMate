@@ -9,12 +9,20 @@ function LoginModal() {
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
 
+  const handleClose = () => {
+    setId("");
+    setPw("");
+    setError("");
+    closeLogin();
+  };
+
   if (!open) return null;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { data, error } = await signIn(id, pw);
+
     if (error) {
       // 로그인 실패
       console.log(error);
@@ -22,6 +30,9 @@ function LoginModal() {
     } else {
       // 로그인 성공
       console.log(data);
+      setError("");
+      setId("");
+      setPw("");
       closeLogin();
     }
   };
@@ -29,7 +40,7 @@ function LoginModal() {
   return (
     <div className={S.modalBackdrop}>
       <div className={S.modalBox}>
-        <button className={S.closeBtn} onClick={closeLogin}>
+        <button className={S.closeBtn} onClick={handleClose}>
           ✕
         </button>
         <div className={S.logoWrap}>{/* 로고 넣기 */}</div>
@@ -58,7 +69,7 @@ function LoginModal() {
           {/* 로그인 모달 닫고 회원가입 모달 열리기 */}
           아직 회원이 아니신가요?
         </p>
-        {error && <div>{error}</div>}
+        {error && <div className={S.errorMsg}>{error}</div>}
       </div>
     </div>
   );
