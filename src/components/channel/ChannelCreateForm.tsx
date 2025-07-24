@@ -1,7 +1,7 @@
 import { addChannels } from "@/api/channels";
 import supabase from "@/utils/supabase";
 import { useEffect, useId, useState } from "react";
-import S from './Channel.module.css';
+import S from './channel.module.css';
 import { getGenres } from "@/api/genres";
 
 
@@ -10,8 +10,11 @@ type GenreType = {
   name:string;
 }
 
+type CreatedChannelType = {
+  onSuccess ?: () => void;
+}
 
-function ChannelCreateForm() {
+function ChannelCreateForm({onSuccess}:CreatedChannelType) {
   //상태 선언
   const [name,setName] = useState('');
   const [description,setDescription] = useState('');
@@ -49,31 +52,36 @@ function ChannelCreateForm() {
     if (!data) {
     console.error('채널 생성 실패!')
   } else {
-    console.log('채널 생성 성공!', data)
+    console.log('채널 생성 성공!', data);
+    onSuccess?.();
   }
    }
 
   return (
     <form onSubmit={handleSubmit} className={S.formContainer}>
-      <label htmlFor={nameId}>채널명
+      <div className={S.formGroup}>
+        <label htmlFor={nameId}>채널 이름</label>
         <input 
           id={nameId}
+          className={S.input}
           value={name}
           type="text" 
           onChange={e => setName(e.target.value)}
         />
-      </label>
+      </div>
 
-       <label htmlFor={descriptionId}>채널 설명
+      <div className={S.formGroup}>
+        <label htmlFor={descriptionId}>채널 설명</label>
         <textarea
           id={descriptionId}
           className={S.description}
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
-      </label>
+      </div>
       
-       <label htmlFor={genre_codeId}>장르 코드
+      <div className={S.formGroup}>
+        <label htmlFor={genre_codeId}>장르 코드 </label>
         <select 
           id={genre_codeId}
           className={S.genre_code}
@@ -85,7 +93,8 @@ function ChannelCreateForm() {
             <option key={genres.code} value={genres.code}>{genres.name}</option>
           ))}
         </select>
-      </label>
+      </div>
+       
       
       <button 
         type="submit"
