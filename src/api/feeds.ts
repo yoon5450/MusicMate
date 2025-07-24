@@ -10,7 +10,22 @@ export async function getFeeds(): Promise<Tables<"feeds">[] | null> {
   const { data, error } = await supabase.from("feeds").select();
 
   if (error) {
-    errorHandler(error, "getAllFeeds");
+    errorHandler(error, "getFeeds");
+    return null;
+  } else {
+    return data;
+  }
+}
+
+/**
+ * @description 모든 데이터가 조인된 상태로 받아옵니다.
+ * @returns AllFkJoindData
+ */
+export const getFeedsWithAll = async () =>{
+    const { data, error } = await supabase.from("view_feed_with_user").select("*");
+
+  if (error) {
+    errorHandler(error, "getFeedsWithLikesCount");
     return null;
   } else {
     return data;
@@ -31,7 +46,7 @@ export const getFeedsByUserId = async (
     .eq("author_id", uid);
 
   if (error) {
-    errorHandler(error, "getUserFeeds");
+    errorHandler(error, "getFeedsByUserId");
     return null;
   } else {
     return data;
@@ -44,7 +59,10 @@ export const getFeedsByUserId = async (
  * @param {string} channel_id
  * @returns
  */
-export const getFeedsByUserInChannel = async (uid: string, channel_id: string) => {
+export const getFeedsByUserInChannel = async (
+  uid: string,
+  channel_id: string
+) => {
   const { data, error } = await supabase
     .from("feeds")
     .select()
@@ -52,7 +70,7 @@ export const getFeedsByUserInChannel = async (uid: string, channel_id: string) =
     .eq("channel_id", channel_id);
 
   if (error) {
-    errorHandler(error, "getChannelUserFeeds");
+    errorHandler(error, "getFeedsByUserInChannel");
     return null;
   } else {
     console.log(data);
@@ -60,51 +78,28 @@ export const getFeedsByUserInChannel = async (uid: string, channel_id: string) =
   }
 };
 
-// TODO : 2차로 검색하는 방식에서 Supabase의 View 생성이나 컨텍스트 생성
-// 너무 기워넣었다... 구조 점검 할 것
-// 그냥 안 되네. View 생성해야겠는데.
-// NOTE : 아직 작동 안함.
-export const getByKeywordFeeds = async (keyword: string) => {
+// View를 이용해 구현완
+export const getFeedsByKeyword = async (
+  keyword: string
+): Promise<Tables<"view_feed_search">[] | null> => {
   // injection 방지
   const safeKeyword = keyword.replace(/[%_]/g, "\\$&"); // 와일드카드 escape
 
-  const { data: feedMatchData, error } = await supabase
-    .from("feeds")
-    .select(
-      `*,
-      user_profile:author_id(
-        nickname
-      )
-      `
-    )
-    .or(`title.ilike.%${safeKeyword}%, content.ilike.%${safeKeyword}%`);
-
-  const { data: nicknameMatchData, error: nickNameError } = await supabase
-    .from("feeds")
-    .select(
-      `*,
-      user_profile:author_id(
-        nickname
-      )
-      `
-    )
-    .filter("user_profile.nickname", "ilike", `%${safeKeyword}%`);
-
-  if (error && nickNameError) {
-    errorHandler(error, "getByKeywordFeeds");
-    return null;
-  } else {
-    const merged = [...(feedMatchData ?? []), ...(nicknameMatchData ?? [])];
-
-    const unique = Array.from(
-      new Map(merged.map((item) => [item.id, item])).values()
+  const { data, error } = await supabase
+    .from("view_feed_search")
+    .select("*")
+    .or(
+      `title.ilike.%${safeKeyword}, content.ilike.%${safeKeyword}, nickname.ilike.%${safeKeyword}%`
     );
 
-    console.log(unique);
-    return unique;
+  if (error) {
+    errorHandler(error, "getFeedsByKeyword");
+    return null;
+  } else {
+    console.log(data);
+    return data;
   }
 };
-
 
 /**
  * @description 대댓글과 댓글 모두 불러오기

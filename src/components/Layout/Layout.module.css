@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin-top: 51px;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: var(--gray_02);
+  border-right: 1px solid var(--primary_default);
+  overflow-y: auto;
+}
+
+.pageContent {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--gray_03)
+}
