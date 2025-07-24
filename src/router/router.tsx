@@ -1,5 +1,5 @@
 import Channel from "@/pages/Channel";
-import Main from "@/pages/Main";
+import Main from "@/pages/main";
 
 export const routes = [
   {
