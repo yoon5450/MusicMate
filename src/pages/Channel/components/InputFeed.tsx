@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import S from "./InputFeed.module.css";
 import buttonImg from "@/assets/circle_plus_button.svg";
+import RecordButton from "@/components/RecordButton";
 
 function InputFeed() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -13,9 +14,9 @@ function InputFeed() {
     }
   }
 
-  function handleInputFocus() {
+  function handleInputFocus() {}
 
-  }
+
 
   return (
     <div className={S.wrapper}>
@@ -23,6 +24,7 @@ function InputFeed() {
         <button type="button">
           <img width={"32px"} src={buttonImg} alt="추가 버튼" />
         </button>
+
         <textarea
           ref={textareaRef}
           rows={1}
@@ -31,9 +33,8 @@ function InputFeed() {
           onFocus={handleInputFocus}
           placeholder="채널에 메세지 보내기"
         />
-        <div className={S.outerCircle}>
-          <div className={S.innerCircle}></div>
-        </div>
+        
+        <RecordButton/>
       </form>
     </div>
   );
