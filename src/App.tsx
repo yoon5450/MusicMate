@@ -9,12 +9,18 @@ import LoginModal from "./components/LoginModal";
 import { LoginModalProvider } from "./context/LoginModalContext";
 
 import "@/App.css";
+import { AuthProvider } from "./auth/AuthProvider";
 
 function App() {
   return (
     <>
       <LoginModalProvider>
-        <RouterProvider navigation={(routeElement) => <Layout>{routeElement}</Layout>} routes={routes} />
+        <AuthProvider>
+          <RouterProvider
+            navigation={(routeElement) => <Layout>{routeElement}</Layout>}
+            routes={routes}
+          />
+        </AuthProvider>
         <LoginModal />
       </LoginModalProvider>
     </>
