@@ -3,6 +3,17 @@ import { useLoginModal } from "@/context/LoginModalContext";
 import S from "@/styles/_loginModal.module.css";
 import { useState } from "react";
 
+function getKoreanErrorMessage(message: string): string {
+  switch (message) {
+    case "Invalid login credentials":
+      return "이메일 또는 비밀번호가 올바르지 않습니다.";
+    case "missing email or phone":
+      return "이메일 또는 전화번호를 입력해 주세요.";
+    default:
+      return message;
+  }
+}
+
 function LoginModal() {
   const { open, closeLogin } = useLoginModal();
   const [id, setId] = useState("");
@@ -18,6 +29,8 @@ function LoginModal() {
 
   if (!open) return null;
 
+
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -26,7 +39,7 @@ function LoginModal() {
     if (error) {
       // 로그인 실패
       console.log(error);
-      setError(error.message);
+      setError(getKoreanErrorMessage(error.message));
     } else {
       // 로그인 성공
       console.log(data);
@@ -36,6 +49,7 @@ function LoginModal() {
       closeLogin();
     }
   };
+
 
   return (
     <div className={S.modalBackdrop}>
@@ -65,7 +79,13 @@ function LoginModal() {
             로그인
           </button>
         </form>
-        <p className={S.bottomText}>
+        <p
+          className={S.bottomText}
+          onClick={() => {
+            closeLogin();
+            openRegister();
+          }}
+        >
           {/* 로그인 모달 닫고 회원가입 모달 열리기 */}
           아직 회원이 아니신가요?
         </p>
