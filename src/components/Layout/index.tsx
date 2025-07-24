@@ -15,7 +15,7 @@ function Layout({ children }: { children: ReactNode }) {
           <aside>
             <SideNavigation />
           </aside>
-          <section className={S.pageContent}>{children}</section>
+          {children}
         </main>
       </div>
     </>
