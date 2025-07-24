@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 
 import LoginModal from "./components/LoginModal";
 import { LoginModalProvider } from "./context/LoginModalContext";
+import S from "@/components/Layout/Layout.module.css";
 
 import "@/App.css";
 
@@ -14,7 +15,14 @@ function App() {
   return (
     <>
       <LoginModalProvider>
-        <RouterProvider navigation={(routeElement) => <Layout>{routeElement}</Layout>} routes={routes} />
+        <RouterProvider
+          navigation={(routeElement) => (
+            <Layout>
+              <section className={S.pageContent}>{routeElement}</section>
+            </Layout>
+          )}
+          routes={routes}
+        />
         <LoginModal />
       </LoginModalProvider>
     </>

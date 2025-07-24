@@ -1,0 +1,5 @@
+.contentArea{
+  height: calc(100vh - 180);
+  padding: 1rem;
+  overflow-y: scroll;
+}
