@@ -1,5 +1,5 @@
 // context/RouterProvider.tsx
-import NotFound from "@/Page/NotFound";
+import NotFound from "@/pages/NotFound/NotFound";
 import {
   Fragment,
   createContext,

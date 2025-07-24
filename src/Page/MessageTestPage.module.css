@@ -1,7 +1,8 @@
 @import "../styles/_theme.css";
 
 .ChannelMessageForm {
-  position: relative;
+  position: absolute;
+  bottom: 0;
 
   .formControl {
     display: flex;
@@ -16,7 +17,7 @@
   }
   .hiddenButtons {
     position: absolute;
-    top: -50px;
+    top: -30px;
     right: 0;
   }
 
