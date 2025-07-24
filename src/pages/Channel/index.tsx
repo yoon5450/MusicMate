@@ -10,7 +10,7 @@ function Channel() {
     <>
       <div className={S.contentArea}>
         <div>{`${id} 채널입니다.`}</div>
-        <div className={S.test}>`${id.repeat(300)}`</div>
+        {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
       </div>
       <InputFeed />
     </>
