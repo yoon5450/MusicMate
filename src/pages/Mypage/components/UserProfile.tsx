@@ -2,7 +2,6 @@ import type { Tables } from "@/@types/database.types";
 import S from "../Mypage.module.css";
 import { useEffect, useId, useState } from "react";
 import { updateUserProfileByUserId } from "@/api";
-import logo from "@/assets/logo.svg";
 import { updateUserAvatar } from "@/api/user_avatar";
 
 interface Props {
@@ -73,15 +72,24 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
     return data;
   };
 
+  const handleDeleteAvatar = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setUserAvatar(null);
+    setUserAvatarPreview(null);
+  };
+
   return (
     <form className={S.editUserInfoForm} onSubmit={handleEditUser}>
       <div className={S.editUserAvatar}>
         <img
-          src={userAvatarPreview ? userAvatarPreview : logo}
+          src={
+            userAvatarPreview
+              ? userAvatarPreview
+              : `/music_mate_symbol_fixed.svg`
+          }
           alt="프로필이미지"
           className={S.userAvatar}
         />
-
         <label htmlFor={avatarId}>
           <div className={S.fileSelectButton}>파일선택하기</div>
         </label>
@@ -104,6 +112,18 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
             }
           }}
         />
+
+        <button
+          type="button"
+          className={
+            userAvatar
+              ? `${S.deleteAvatarButton} ${S.activeButton}`
+              : `${S.deleteAvatarButton}`
+          }
+          onClick={handleDeleteAvatar}
+        >
+          이미지삭제
+        </button>
       </div>
       <div className={S.formInput}>
         <div className={S.formControl}>
