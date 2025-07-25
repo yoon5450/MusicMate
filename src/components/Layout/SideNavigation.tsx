@@ -83,13 +83,16 @@ function SideNavigation() {
    };
   return (
     <section className={S.component}>
-      <h1>채널 목록</h1>
       <nav>
         <h2 className="a11y-hidden">메인 메뉴</h2>
         <ul>
           {displayedChannels.map(({ id, name }) => (
             <li key={id}>
-              <NavLink to={`/Channel/${id}`}>{name}</NavLink>
+              <NavLink 
+                to={`/Channel/${id}`} 
+                className={`${S.channelItem}`} 
+                activeClassName={S.active}
+             >{name}</NavLink>
             </li>
           ))}
         </ul>
@@ -98,13 +101,13 @@ function SideNavigation() {
           className={S.createChannelButton}
           onClick={handleAddChannel}
         >
-          채널 추가하기
+          채널 만들기
         </button>
       </nav>
 
       {isModalOpen && (
         <Modal
-          title="채널 생성"
+          title="채널 만들기"
           onClose={() => setIsModalOpen(false)}
         >
           <ChannelCreateForm onSuccess={handleCreatedChannel} />

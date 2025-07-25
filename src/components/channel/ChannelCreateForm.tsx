@@ -1,7 +1,7 @@
 import { addChannels } from "@/api/channels";
 import supabase from "@/utils/supabase";
 import { useEffect, useId, useState } from "react";
-import S from './channel.module.css';
+import S from './ChannelCreateForm.module.css';
 import { getGenres } from "@/api/genres";
 
 
@@ -119,7 +119,7 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
         className={S.createButton}
         disabled={isLoading}
         >
-          {isLoading ? "채널 생성 중..." : "채널 생성"}
+          {isLoading ? "채널 생성 중..." : "채널 만들기"}
         </button>
     </form>
   )
