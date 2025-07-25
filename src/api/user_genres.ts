@@ -11,7 +11,7 @@ import errorHandler from "@/error/supabaseErrorHandler";
 export type UserGenreType = Tables<"user_genres">;
 
 
-export const getUserGenre = async ():Promise<number[] | null> => {
+export const getUserPreferredGenre = async ():Promise<number[] | null> => {
   const {data : {user}} = await supabase.auth.getUser(); //현재 로그인한 사용자 정보 가져오기
 
   if(!user){

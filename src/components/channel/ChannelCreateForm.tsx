@@ -15,12 +15,13 @@ type CreatedChannelType = {
 }
 
 function ChannelCreateForm({onSuccess}:CreatedChannelType) {
-  //상태 선언
+  
   const [name,setName] = useState('');
   const [description,setDescription] = useState('');
   const [genre,setGenre] = useState('');
   const [genres, setGenres] = useState<GenreType[]>([]);
-  //id
+  const [isLoading, setIsLoading] = useState(false);  
+  
   const nameId = useId();
   const descriptionId = useId();
   const genre_codeId = useId();
@@ -39,23 +40,37 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
   const handleSubmit = async (e:React.FormEvent) => { 
     e.preventDefault();
 
+    if(!name.trim()|| !description.trim() || !genre){
+      alert("채널 이름, 설명, 장르를 모두 입력해주세요.");
+      return;
+    }
+    setIsLoading(true);
+
     const user = await supabase.auth.getUser();
     const owner_id = user.data.user?.id;
-
+    
+    try{
     const data = await addChannels({
       name,
       description,
       genre_code: Number(genre),
       owner_id : owner_id!,
     })
-
     if (!data) {
-    console.error('채널 생성 실패!')
-  } else {
-    console.log('채널 생성 성공!', data);
-    onSuccess?.();
-  }
-   }
+      console.error('채널 생성 실패!')
+    } else {
+      console.log('채널 생성 성공!', data);
+      onSuccess?.();
+    }
+    }
+    catch(error){
+      console.error('채널 생성 중 오류 발생 : ',error);
+      alert('채널 생성 중 오류가 발생했습니다.');
+    }
+    finally{
+      setIsLoading(false);
+    }
+   };
 
   return (
     <form onSubmit={handleSubmit} className={S.formContainer}>
@@ -67,6 +82,7 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
           value={name}
           type="text" 
           onChange={e => setName(e.target.value)}
+          required
         />
       </div>
 
@@ -77,6 +93,7 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
           className={S.description}
           value={description}
           onChange={e => setDescription(e.target.value)}
+          required
         />
       </div>
       
@@ -87,8 +104,9 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
           className={S.genre_code}
           value={genre}
           onChange={e => setGenre(e.target.value)}
+          required
           >
-          <option value="">장르를 선택하세요.</option>
+          <option value="" disabled>장르를 선택하세요.</option>
           {genres.map((genres)=>(
             <option key={genres.code} value={genres.code}>{genres.name}</option>
           ))}
@@ -99,7 +117,10 @@ function ChannelCreateForm({onSuccess}:CreatedChannelType) {
       <button 
         type="submit"
         className={S.createButton}
-        >채널 생성</button>
+        disabled={isLoading}
+        >
+          {isLoading ? "채널 생성 중..." : "채널 생성"}
+        </button>
     </form>
   )
 }
