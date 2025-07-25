@@ -1,0 +1,98 @@
+@import "../../styles/_theme.css";
+
+.container {
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--gray_03);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+
+  .editUserInfoForm {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 1rem;
+    align-items: center;
+    gap: var(--spacing-12);
+    border-radius: 8px;
+    background-color: var(--gray_02);
+  }
+
+  .editUserAvatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    width: 150px;
+    height: 200px;
+    gap: 1rem;
+
+    input {
+      display: none;
+    }
+  }
+
+  .fileSelectButton {
+    width: 100px;
+    height: 30px;
+    background-color: var(--primary_default);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: var(--primary_active);
+    }
+  }
+
+  .userAvatar {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border: 1px solid var(--gray_08);
+    padding: 0.5rem;
+  }
+
+  .formInput {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .formControl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  .formControl input,
+  .formControl textarea {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+
+  .formControl textarea {
+    min-height: 120px;
+  }
+
+  button {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--gray_09);
+
+    &:hover {
+      background-color: var(--gray_08);
+    }
+  }
+}

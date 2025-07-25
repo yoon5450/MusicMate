@@ -40,3 +40,38 @@ export const getUserProfileByUserId = async (
     return data;
   }
 };
+
+/**
+ * @description 유저정보를 수정합니다
+ * @param {Object} userInfo - 유저 정보 객체
+ * @param {string|null} userInfo.nickname
+ * @param {string|null} userInfo.profile_url
+ * @param {string|null} userInfo.description
+ * @param {string} userId - 유저 고유 아이디
+ * @returns
+ */
+interface UserInfo {
+  id: string;
+  nickname: string;
+  profile_url: string | null;
+  description: string | null;
+}
+export const updateUserProfileByUserId = async ({
+  id,
+  nickname,
+  profile_url,
+  description,
+}: UserInfo) => {
+  const { data, error } = await supabase
+    .from("user_profile")
+    .update({ nickname, profile_url, description })
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    errorHandler(error, "updateUserProfileByUserId");
+    return null;
+  } else {
+    return data;
+  }
+};
