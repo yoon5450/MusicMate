@@ -11,23 +11,23 @@ import S from "@/components/Layout/Layout.module.css";
 
 import "@/App.css";
 import { AuthProvider } from "./auth/AuthProvider";
+import { UserProfileProvider } from "./context/UserProfileContext";
 
 function App() {
   return (
     <>
       <LoginModalProvider>
         <AuthProvider>
-          <RouterProvider
-           
-          navigation={(routeElement) => (
-            <Layout>
-              <section className={S.pageContent}>{routeElement}</section>
-            </Layout>
-          )}
-         
-            routes={routes}
-         
-        />
+          <UserProfileProvider>
+            <RouterProvider
+              navigation={(routeElement) => (
+                <Layout>
+                  <section className={S.pageContent}>{routeElement}</section>
+                </Layout>
+              )}
+              routes={routes}
+            />
+          </UserProfileProvider>
         </AuthProvider>
         <LoginModal />
       </LoginModalProvider>

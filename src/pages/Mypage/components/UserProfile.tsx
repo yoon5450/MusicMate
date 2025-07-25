@@ -1,61 +1,75 @@
 import type { Tables } from "@/@types/database.types";
 import S from "../Mypage.module.css";
 import { useEffect, useId, useState } from "react";
-import { updateUserAvatar, updateUserProfileByUserId } from "@/api";
+import { updateUserProfileByUserId } from "@/api";
 import logo from "@/assets/logo.svg";
+import { updateUserAvatar } from "@/api/user_avatar";
 
 interface Props {
-  userInfo: Tables<"user_profile"> | null;
+  userInfo:
+    | (Tables<"user_profile"> & {
+        avatarFile: Blob | null;
+        profilePreview: string | null;
+      })
+    | null;
+  setProfileIsChanged: () => void;
 }
 
-function UserProfile({ userInfo }: Props) {
+function UserProfile({ userInfo, setProfileIsChanged }: Props) {
   const descriptionId = useId();
   const emailId = useId();
   const avatarId = useId();
 
   const [nickname, setNickName] = useState<string>("");
   const [description, setDescription] = useState<string | null>(null);
-  const [userAvatar, setUserAvatar] = useState<File | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<File | Blob | null>(null); // 이미지파일
   const [userAvatarPreview, setUserAvatarPreview] = useState<string | null>(
     null
-  );
-
-  const [editUserError, setEditUserError] = useState<string | null>(null);
+  ); // 이미지프리뷰생성url
 
   useEffect(() => {
     if (userInfo) {
       setNickName(userInfo.nickname);
       setDescription(userInfo.description);
-      setUserAvatarPreview(userInfo.profile_url);
+      setUserAvatarPreview(userInfo.profilePreview);
+      setUserAvatar(userInfo.avatarFile);
     }
   }, [userInfo]);
+
   if (!userInfo) return;
 
   const handleEditUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!nickname) setEditUserError("⚠️닉네임은 필수입력값입니다⚠️");
+    const userAvatarUrl = { path: "" }; // supabase스토리지에 저장된 파일명(유저아이디/profile.확장자)
 
     if (userAvatar) {
-      // avatarFile.name 파일이름.확장자
-      const fileExt = userAvatar.name.split(".").pop();
-      setFileName(`${userInfo.id}.${fileExt}`);
-      if (!fileName) return;
-      const filePath = fileName;
-      const data = await updateUserAvatar({ filePath, userAvatar });
-      console.log(data);
+      if (userAvatar instanceof File) {
+        const fileExt = userAvatar.name.split(".").pop();
+        const fileName = `${userInfo.id}/profile.${fileExt}`;
+        const filePath = fileName;
+        const data = await updateUserAvatar({
+          filePath,
+          userAvatar,
+        });
+
+        if (data) userAvatarUrl.path = data.path;
+      } else {
+        if (userInfo.profile_url) userAvatarUrl.path = userInfo.profile_url;
+      }
     }
 
     const data = await updateUserProfileByUserId({
       ...userInfo,
       nickname,
       description,
-      profile_url: userAvatarPreview,
+      profile_url: userAvatarUrl.path,
     });
 
     console.log(data);
 
     if (!data) return;
+    alert("변경되었습니다");
+    setProfileIsChanged();
     return data;
   };
 
@@ -92,7 +106,6 @@ function UserProfile({ userInfo }: Props) {
         />
       </div>
       <div className={S.formInput}>
-        {editUserError ? <p>{editUserError}</p> : null}
         <div className={S.formControl}>
           <label htmlFor={emailId}>닉네임</label>
           <input
@@ -101,6 +114,7 @@ function UserProfile({ userInfo }: Props) {
             name="nickname"
             value={nickname ? nickname : ""}
             onChange={(e) => setNickName(e.target.value)}
+            required
           />
         </div>
         <div className={S.formControl}>
