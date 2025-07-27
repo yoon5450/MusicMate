@@ -7,6 +7,7 @@ import ChannelCreateForm from "../channel/ChannelCreateForm";
 import supabase from "@/utils/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
+import { filterChannels } from "@/utils/filterChannels";
 
 
 function SideNavigation() {
@@ -45,26 +46,10 @@ function SideNavigation() {
 
   // 채널 목록, 선호 장르, 현재 사용자 ID가 변경될 때마다 표시 목록 재계산
   useEffect(() => {
-    if (!channelList) return;
-    
-    if (!currentUserId || preferredGenres.length === 0) {  // 1. 비로그인 상태이거나 로그인했지만 선호 장르가 없는 경우 -> 전체 목록 보여주기
-      setDisplayedChannels(channelList);
-      return;
-    }
+    if(!channelList) return;
 
-    const preferred = channelList.filter((channel) =>     // 2. 로그인했고 선호 장르가 있는 경우
-      preferredGenres.includes(channel.genre_code!)
-    );
-
-    const myChannels = channelList.filter(    // 내가 만든 채널 필터링
-      (channel) => channel.owner_id === currentUserId
-    );
-
-    // 두 목록을 합치고 Map을 이용해 중복을 제거 -> 최종 목록
-    const combineChannels = [...preferred, ...myChannels];
-    const showChannels = Array.from(new Map(combineChannels.map(item => [item.id, item])).values());
-
-    setDisplayedChannels(showChannels);
+    const filterdList = filterChannels(channelList, preferredGenres, currentUserId);
+    setDisplayedChannels(filterdList);
   }, [channelList, preferredGenres, currentUserId]);
 
   // 모달에서 채널 생성 성공 시 실행
