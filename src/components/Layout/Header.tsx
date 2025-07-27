@@ -25,6 +25,15 @@ function Header({ currentPage, setHistoryRoute }: Props) {
     openLogin();
   };
 
+  const handleMyPage = () => {
+    if (isAuth) {
+      history.pushState(null, "", `/mypage`);
+      setHistoryRoute(`/mypage`);
+    } else {
+      handleLoginModal();
+    }
+  };
+
   const handleLogout = () => {
     // 로그아웃 하기
     logout();
@@ -46,14 +55,18 @@ function Header({ currentPage, setHistoryRoute }: Props) {
             LogOut
           </button>
         ) : (
-          <button type="button" className={S.authButton} onClick={handleLoginModal}>
+          <button
+            type="button"
+            className={S.authButton}
+            onClick={handleLoginModal}
+          >
             LogIn
           </button>
         )}
         <button type="button" className={S.headerButton}>
           <img src={bell} width={"44px"} alt="알림" />
         </button>
-        <button type="button" className={S.headerButton}>
+        <button type="button" className={S.headerButton} onClick={handleMyPage}>
           <img src={propile} width={"44px"} alt="유저프로필" />
         </button>
       </div>

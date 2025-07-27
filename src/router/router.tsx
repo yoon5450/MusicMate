@@ -1,5 +1,6 @@
 import Channel from "@/pages/Channel";
-import Main from "@/pages/main";
+import Main from "@/pages/Main";
+import Mypage from "@/pages/Mypage/Mypage";
 
 export const routes = [
   {
@@ -16,5 +17,10 @@ export const routes = [
     title: "채널 상세",
     path: "/Channel/:id", // 동적 라우팅
     element: <Channel />,
+  },
+  {
+    title: "마이페이지",
+    path: "/mypage",
+    element: <Mypage />,
   },
 ];
