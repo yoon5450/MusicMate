@@ -1,0 +1,69 @@
+.wrapper {
+  width: 600px;
+  height: 240px;
+  border-radius: 20px 20px 0 0;
+  position: absolute;
+  border: 1px solid var(--primary_default);
+  right: 60px;
+  bottom: 80px;
+  background-color: var(--gray_01);
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+
+  .imgPreview {
+    width: 170px;
+  }
+
+  .addImgBtn {
+    border: 2px solid var(--gray_04);
+    border-radius: 10px;
+  }
+
+  .playerForm {
+    display: flex;
+    gap: 20px;
+
+    input[type="text"],
+    textarea {
+      display: block;
+      background-color: transparent;
+      border: 0;
+      color: white;
+      font-family: "Pretendard Variable", sans-serif;
+    }
+
+    input[type="text"]:focus {
+      outline: 0;
+    }
+
+    .formDescription {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .title {
+      font-size: 24px;
+    }
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.playerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,24 +1,37 @@
 import { useRef, useState } from "react";
 import S from "./RecordButton.module.css";
 
-function RecordButton() {
+interface Props {
+  setRecordingData: React.Dispatch<
+    React.SetStateAction<RecordingData | undefined>
+  >;
+}
+
+export interface RecordingData {
+  blob: Blob;
+  file: File;
+  url: string;
+}
+
+// NOTE : URL 관리 책임을 플레이어로 넘김
+function RecordButton({ setRecordingData }: Props) {
   // 리로드될때마다 청크 데이터나 청취 객체가 초기화되면 안되므로 Ref로 선언
+  const recordBtnRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunkRef = useRef<Blob[]>([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | undefined>();
 
   async function startRecording() {
     // 새 녹음을 시작하면 비워주기
     audioChunkRef.current = [];
-    if (audioUrl) {
-      URL.revokeObjectURL(audioUrl);
-    }
-    setAudioUrl(undefined);
-    
+
+    // if (audioUrl) {
+    //   URL.revokeObjectURL(audioUrl);
+    // }
+
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    const mediaRecorder = new MediaRecorder(stream);
+    const mediaRecorder = new MediaRecorder(stream, {mimeType: "audio/webm;codecs=opus"});
     mediaRecorderRef.current = mediaRecorder;
 
     mediaRecorder.ondataavailable = (event) => {
@@ -28,7 +41,7 @@ function RecordButton() {
     };
 
     // 멈출때 이벤트 콜백을 설정
-    mediaRecorder.onstop = handleRecordStop;
+    mediaRecorder.onstop = () => handleRecordStop();
 
     mediaRecorder.start();
     setIsRecording(true);
@@ -44,13 +57,25 @@ function RecordButton() {
   };
 
   async function handleRecordStop() {
-    const audioBlob = new Blob(audioChunkRef.current, { type: "audio/webm" });
+    const audioBlob = new Blob(audioChunkRef.current, { type: "audio/webm;codecs=opus" });
     const file = new File([audioBlob], "recording.webm", {
       type: "audio/webm",
     });
 
-    const audioUrl = window.URL.createObjectURL(audioBlob);
-    setAudioUrl(audioUrl);
+    console.log("meme type : ", audioBlob )
+
+    const url = window.URL.createObjectURL(audioBlob);
+
+    const audio = new Audio();
+    audio.src = url;
+
+    await new Promise<void>((resolve) => {
+      audio.onloadedmetadata = () => {
+        resolve();
+      };
+    });
+
+    setRecordingData({ file, url, blob: audioBlob });
 
     const formData = new FormData();
     formData.append("audio", file);
@@ -58,13 +83,12 @@ function RecordButton() {
 
   return (
     <>
-      <audio controls src={audioUrl}></audio>
       <button
         type="button"
         onClick={() => (isRecording ? stopRecording() : startRecording())}
       >
         <div className={S.outerCircle}>
-          <div className={S.innerCircle}></div>
+          <div className={S.innerCircle} ref={recordBtnRef}></div>
         </div>
       </button>
     </>
