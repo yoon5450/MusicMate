@@ -1,19 +1,19 @@
-
-.wrapper{
+.wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  gap: 10px;
 }
 
-.btnGroup{
+.btnGroup {
   display: flex;
   gap: 30px;
 }
 
-input[types="range"]{
-  width: 100%;
+.progress {
+  width: 300px;
 }
 
-textarea{
+textarea {
   resize: none;
 }

@@ -1,6 +1,6 @@
 .wrapper {
-  width: 600px;
-  height: 240px;
+  width: fit-content;
+  height: fit-content;
   border-radius: 20px 20px 0 0;
   position: absolute;
   border: 1px solid var(--primary_default);
@@ -16,12 +16,15 @@
   }
 
   .addImgBtn {
+    height: fit-content;
     border: 2px solid var(--gray_04);
     border-radius: 10px;
   }
 
   .playerForm {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
 
     input[type="text"],
@@ -66,4 +69,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.btnGroup{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  
+
+  button{
+    width: 80px;
+    height: 30px;
+    background-color: var(--primary_default);
+    border-radius: 10px;
+  }
 }

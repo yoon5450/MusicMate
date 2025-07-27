@@ -4,7 +4,6 @@ import S from "./Channel.module.css";
 
 function Channel() {
   const { id } = useParams();
-  console.log(id);
 
   return (
     <>

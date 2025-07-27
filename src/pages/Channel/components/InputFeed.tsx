@@ -18,7 +18,7 @@ function InputFeed() {
 
   return (
     <div className={S.wrapper}>
-      <SubmitClipForm recordingData={recordingData}/>
+      <SubmitClipForm recordingData={recordingData} setRecordingData={setRecordingData}/>
 
       <form className={S.feedSubmittForm} action="">
         <button type="button">

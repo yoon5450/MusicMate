@@ -61,7 +61,7 @@ function CustomAudioPlayer({ recordingData }: Props) {
           }
         };
         audio.addEventListener("timeupdate", handleTimeUpdate);
-        audio.currentTime = 0.1; // duration 로딩을 위해 재생 처리처럼
+        audio.currentTime = 0.02; // duration 로딩을 위해 재생 처리처럼
       } else {
         setDuration(audio.duration);
       }
@@ -139,10 +139,12 @@ function CustomAudioPlayer({ recordingData }: Props) {
         ></audio>
       )}
 
+      {/* TODO: 나중에 커스텀 DIV로 하는 게 낫겠다. 기본 range 속성이 브라우저별로 너무 다름. */}
       <input
+        className={S.progress}
         type="range"
         min={0}
-        max={isFinite(duration) ? duration : 1}
+        max={isFinite(duration) ? duration : 30}
         step={0.02}
         value={currentTime}
         onChange={handleChangeRange}

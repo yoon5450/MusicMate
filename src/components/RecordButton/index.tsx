@@ -8,9 +8,9 @@ interface Props {
 }
 
 export interface RecordingData {
-  blob: Blob;
-  file: File;
-  url: string;
+  blob: Blob | null;
+  file: File | null;
+  url: string | null;
 }
 
 // NOTE : URL 관리 책임을 플레이어로 넘김
@@ -68,12 +68,6 @@ function RecordButton({ setRecordingData }: Props) {
 
     const audio = new Audio();
     audio.src = url;
-
-    await new Promise<void>((resolve) => {
-      audio.onloadedmetadata = () => {
-        resolve();
-      };
-    });
 
     setRecordingData({ file, url, blob: audioBlob });
 
