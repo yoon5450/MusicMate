@@ -11,7 +11,7 @@ function Channel() {
         <div>{`${id} 채널입니다.`}</div>
         {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
       </div>
-      <InputFeed/>
+      <InputFeed curChannelId={id} />
     </>
   );
 }

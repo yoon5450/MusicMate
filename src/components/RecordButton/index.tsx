@@ -5,7 +5,7 @@ interface Props {
   setRecordingData: React.Dispatch<
     React.SetStateAction<RecordingData | undefined>
   >;
-  recordingData?:RecordingData;
+  recordingData?: RecordingData;
 }
 
 export interface RecordingData {
@@ -14,7 +14,6 @@ export interface RecordingData {
   url: string | null;
 }
 
-// NOTE : URL 관리 책임을 플레이어로 넘김
 function RecordButton({ setRecordingData, recordingData }: Props) {
   // 리로드될때마다 청크 데이터나 청취 객체가 초기화되면 안되므로 Ref로 선언
   const recordBtnRef = useRef<HTMLDivElement | null>(null);
@@ -26,13 +25,16 @@ function RecordButton({ setRecordingData, recordingData }: Props) {
     // 새 녹음을 시작하면 비워주기
     audioChunkRef.current = [];
 
+    // 누수 방지
     if (recordingData?.url) {
       URL.revokeObjectURL(recordingData.url);
     }
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    const mediaRecorder = new MediaRecorder(stream, {mimeType: "audio/webm;codecs=opus"});
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "audio/webm;codecs=opus",
+    });
     mediaRecorderRef.current = mediaRecorder;
 
     mediaRecorder.ondataavailable = (event) => {
@@ -58,12 +60,14 @@ function RecordButton({ setRecordingData, recordingData }: Props) {
   };
 
   async function handleRecordStop() {
-    const audioBlob = new Blob(audioChunkRef.current, { type: "audio/webm;codecs=opus" });
+    const audioBlob = new Blob(audioChunkRef.current, {
+      type: "audio/webm;codecs=opus",
+    });
     const file = new File([audioBlob], "recording.webm", {
       type: "audio/webm",
     });
 
-    console.log("meme type : ", audioBlob )
+    console.log("meme type : ", audioBlob);
 
     const url = window.URL.createObjectURL(audioBlob);
 
