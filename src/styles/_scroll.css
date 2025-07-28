@@ -1,11 +1,11 @@
 
 /* 스크롤바 설정*/
-::-webkit-scrollbar{
+.scrollCustom::-webkit-scrollbar{
   width: 20px;
 }
 
 /* 스크롤바 막대 설정*/
-::-webkit-scrollbar-thumb{
+.scrollCustom::-webkit-scrollbar-thumb{
   background-color: rgba(255,255,255,1);
   /* 스크롤바 둥글게 설정    */
   border-radius: 10px; 
@@ -14,16 +14,16 @@
 }
 
 /* 스크롤바 버튼 설정 */
-::-webkit-scrollbar-button{
+.scrollCustom::-webkit-scrollbar-button{
   background: transparent
 }
 
-::-webkit-scrollbar-corner{
+.scrollCustom::-webkit-scrollbar-corner{
   background: transparent
 }
 
 @supports (scrollbar-color: red blue) {
-  .scrollCustom {
+  html, body, * {
     scrollbar-width: thin; /* auto | thin | none */
     scrollbar-color: rgba(255, 255, 255, 1) rgba(0, 0, 0, 0);
   }

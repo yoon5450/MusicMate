@@ -1,5 +1,4 @@
 import S from "./SideNavigation.module.css";
-import '@/styles/_scroll.css';
 import NavLink from "../NavLink";
 import { getChannels, getUserPreferredGenre, type ChannelsType } from "@/api";
 import { useEffect, useState } from "react";
@@ -83,7 +82,7 @@ function SideNavigation() {
     }
    };
   return (
-    <section className={`${S.component} scrollCustom`}>
+    <section className={S.component}>
       <nav>
         <h2 className="a11y-hidden">메인 메뉴</h2>
         <ul>
