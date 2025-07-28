@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   padding: 10px 0;
-  bottom: 0;
+  position: relative;
   width: 100%;
   background-color: var(--gray_03);
   border-top: 1px solid var(--gray_06);
@@ -40,21 +40,5 @@
     outline: none;
   }
 
-  .outerCircle {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--primary_default);
-  }
 
-  .innerCircle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: red;
-  }
 }
