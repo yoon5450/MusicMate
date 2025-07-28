@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import type { RecordingData } from "../RecordButton";
 import S from "./SubmitClipForm.module.css";
 import CustomAudioPlayer from "../CustomAudioPlayer";
