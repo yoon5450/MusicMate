@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { RecordingData } from "../RecordButton";
 import S from "./SubmitClipForm.module.css";
 import CustomAudioPlayer from "../CustomAudioPlayer";
+import imgIcon from "@/assets/add_image_icon.svg";
 
 interface Props {
   recordingData: RecordingData | undefined;
@@ -11,25 +12,48 @@ interface Props {
 }
 
 function SubmitClipForm({ recordingData, setRecordingData }: Props) {
-  const imagePreview = useRef("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null); 
+  const previewId = useId();
+  const [feedImage, setFeedImage] = useState<File | Blob | null>(null);
 
   // 플레이어 초기화, 닫기
   function handleDelete() {
     setRecordingData({ url: null, blob: null, file: null });
   }
 
-  function handleSubmit(e:React.FormEvent<HTMLFormElement>){
-    e.preventDefault()
-    
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
   }
 
+  // 열 때마다 강제 리렌더(초기화)
   return (
     recordingData?.url && (
       <div className={S.wrapper}>
         <form className={S.playerForm} onSubmit={handleSubmit} action="">
-          <button type="button" className={S.addImgBtn}>
-            <img src="/music_mate_symbol_fixed.svg" className={S.imgPreview} />
-          </button>
+          <label htmlFor={previewId} className={S.addImgBtn}>
+            <img src={imagePreview ? imagePreview : imgIcon} />
+          </label>
+          <input
+            id={previewId}
+            name={previewId}
+            aria-label="클립 이미지 업로드"
+            type="file"
+            accept="image/*"
+            style={{display:"none"}}
+            onChange={(e) => {
+              const file = e.target.files?.[0] ?? null;
+              setFeedImage(file);
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setImagePreview(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                setImagePreview(null);
+              }
+            }}
+          />
 
           <div className={S.formDescription}>
             <input type="text" placeholder="녹음 제목" className={S.title} />
@@ -43,7 +67,9 @@ function SubmitClipForm({ recordingData, setRecordingData }: Props) {
             </div>
 
             <div className={S.btnGroup}>
-              <button type="button" onClick={handleDelete}>삭제</button>
+              <button type="button" onClick={handleDelete}>
+                삭제
+              </button>
               <button type="submit">업로드</button>
             </div>
           </div>

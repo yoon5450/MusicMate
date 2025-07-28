@@ -6,6 +6,7 @@ import pauseBtnImg from "@/assets/pause_button.svg";
 import type { RecordingData } from "../RecordButton";
 import { useEffect, useRef, useState } from "react";
 import { throttle } from "@/utils/Throttle";
+import { formatTime } from "@/utils/timeUtils";
 
 interface Props {
   recordingData: RecordingData | undefined;
@@ -87,7 +88,7 @@ function CustomAudioPlayer({ recordingData }: Props) {
       audio.removeEventListener("durationchange", handleDurationChange);
     };
   }, [recordingData?.url]);
-
+  
   // 재생 상태 관리
   useEffect(() => {
     const audio = audioRef.current;
@@ -139,12 +140,16 @@ function CustomAudioPlayer({ recordingData }: Props) {
         ></audio>
       )}
 
+      <div className={S.timeDisplay}>
+        <span>{formatTime(currentTime)}</span> / <span>{formatTime(duration)}</span>
+      </div>
+
       {/* TODO: 나중에 커스텀 DIV로 하는 게 낫겠다. 기본 range 속성이 브라우저별로 너무 다름. */}
       <input
         className={S.progress}
         type="range"
         min={0}
-        max={isFinite(duration) ? duration : 30}
+        max={isFinite(duration) && duration > 0 ? duration : 30}
         step={0.02}
         value={currentTime}
         onChange={handleChangeRange}

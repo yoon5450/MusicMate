@@ -5,6 +5,7 @@ interface Props {
   setRecordingData: React.Dispatch<
     React.SetStateAction<RecordingData | undefined>
   >;
+  recordingData?:RecordingData;
 }
 
 export interface RecordingData {
@@ -14,7 +15,7 @@ export interface RecordingData {
 }
 
 // NOTE : URL 관리 책임을 플레이어로 넘김
-function RecordButton({ setRecordingData }: Props) {
+function RecordButton({ setRecordingData, recordingData }: Props) {
   // 리로드될때마다 청크 데이터나 청취 객체가 초기화되면 안되므로 Ref로 선언
   const recordBtnRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -25,9 +26,9 @@ function RecordButton({ setRecordingData }: Props) {
     // 새 녹음을 시작하면 비워주기
     audioChunkRef.current = [];
 
-    // if (audioUrl) {
-    //   URL.revokeObjectURL(audioUrl);
-    // }
+    if (recordingData?.url) {
+      URL.revokeObjectURL(recordingData.url);
+    }
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 

@@ -18,7 +18,8 @@ function InputFeed() {
 
   return (
     <div className={S.wrapper}>
-      <SubmitClipForm recordingData={recordingData} setRecordingData={setRecordingData}/>
+      {/* key로 열릴 때마다 key 초기화 */}
+      <SubmitClipForm key={Date.now()} recordingData={recordingData} setRecordingData={setRecordingData}/>
 
       <form className={S.feedSubmittForm} action="">
         <button type="button">
@@ -33,7 +34,7 @@ function InputFeed() {
           placeholder="채널에 메세지 보내기"
         />
         
-        <RecordButton setRecordingData={setRecordingData}/>
+        <RecordButton setRecordingData={setRecordingData} recordingData={recordingData}/>
       </form>
     </div>
   );
