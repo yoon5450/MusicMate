@@ -24,7 +24,7 @@ export const getUserPreferredGenre = async ():Promise<number[] | null> => {
   .eq("user_id", user.id);
 
   if(error){
-    errorHandler(error, "getUserGenre");
+    errorHandler(error, "getUserPreferredGenre");
     return null;
   }
 
