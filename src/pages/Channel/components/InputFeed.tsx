@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import S from "./InputFeed.module.css";
-import buttonImg from "@/assets/circle_plus_button.svg";
 import RecordButton, { type RecordingData } from "@/components/RecordButton";
 import SubmitClipForm from "@/components/SubmitClipForm";
+import InputAdditionalButton from "./InputAdditionalButton";
 
 function InputFeed({curChannelId}:{curChannelId:string}) {
   const [recordingData, setRecordingData] = useState<RecordingData>()
@@ -22,9 +22,7 @@ function InputFeed({curChannelId}:{curChannelId:string}) {
       <SubmitClipForm key={Date.now()} recordingData={recordingData} setRecordingData={setRecordingData} curChannelId={curChannelId}/>
 
       <form className={S.feedSubmittForm} action="">
-        <button type="button">
-          <img width={"32px"} src={buttonImg} alt="추가 버튼" />
-        </button>
+        <InputAdditionalButton/>
 
         <textarea
           ref={textareaRef}

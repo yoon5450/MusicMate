@@ -67,8 +67,6 @@ function RecordButton({ setRecordingData, recordingData }: Props) {
       type: "audio/webm",
     });
 
-    console.log("meme type : ", audioBlob);
-
     const url = window.URL.createObjectURL(audioBlob);
 
     const audio = new Audio();
