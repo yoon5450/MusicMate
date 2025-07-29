@@ -7,6 +7,7 @@ import type { RecordingData } from "../RecordButton";
 import { useEffect, useRef, useState } from "react";
 import { throttle } from "@/utils/Throttle";
 import { formatTime } from "@/utils/timeUtils";
+import React from "react";
 
 interface Props {
   recordingData: RecordingData | undefined;
@@ -89,9 +90,6 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
 
     audio.addEventListener("loadedmetadata", handleLoadMetaData);
     audio.addEventListener("durationchange", handleDurationChange);
-
-    // 명시적 메타데이터 로딩을 위한 강제 load
-    audio.load();
 
     return () => {
       audio.removeEventListener("loadedmetadata", handleLoadMetaData);
