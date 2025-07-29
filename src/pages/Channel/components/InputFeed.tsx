@@ -4,16 +4,23 @@ import RecordButton, { type RecordingData } from "@/components/RecordButton";
 import SubmitClipForm from "@/components/SubmitClipForm";
 import buttonImg from "@/assets/circle_plus_button.svg";
 import { setFilePreview } from "@/utils/setImagePreview";
+import { addFeedsWithFiles } from "@/api";
 
 function InputFeed({ curChannelId }: { curChannelId: string }) {
+  // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const [imagePreview, setImagePreview] = useState<string | null>();
+  const [contents, setContents] = useState<string>();
+
+  // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
 
+  // View 상태관리
+  const [open, setOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>();
+
+  // Id
   const audioBtnId = useId();
   const imageBtnId = useId();
 
@@ -23,7 +30,19 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     }
   };
 
-  const handleUploadAudio = () => {};
+  const submitDefaultFeed = () => {
+    addFeedsWithFiles(contents);
+  };
+
+  const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setRecordingData({ url, file });
+    } else {
+      alert("유효하지 않은 파일입니다.");
+    }
+  };
 
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -71,12 +90,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
               setImage(undefined);
               setImagePreview(undefined);
             }}
-          >x</button>
+          >
+            x
+          </button>
         </div>
       )}
 
       {/* 입력 Form 영역 */}
-      <form className={S.feedSubmittForm} action="">
+      <form className={S.feedSubmittForm} onSubmit={submitDefaultFeed}>
         {/* 추가 기능 버튼 */}
         <div ref={wrapperRef} className={S.dropdownWrapper}>
           <button type="button" onClick={() => setOpen(!open)}>
@@ -109,13 +130,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
             </ul>
           )}
         </div>
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          className={S.textInput}
-          onInput={handleInputText}
-          placeholder="채널에 메세지 보내기"
-        />
+
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            className={S.textInput}
+            onInput={handleInputText}
+            placeholder="채널에 메세지 보내기"
+          />
 
         <RecordButton
           setRecordingData={setRecordingData}

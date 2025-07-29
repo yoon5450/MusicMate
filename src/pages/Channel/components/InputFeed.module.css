@@ -68,7 +68,7 @@
     background-color: var(--background);
     border-radius: 50%;
     color: var(--primary_default);
-    border: 1px var(--primary_default) solid;
+    border: 0.5px var(--primary_default) solid;
     font-size: 16px;
     font-weight: 700;
   }
