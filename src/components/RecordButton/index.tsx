@@ -9,8 +9,8 @@ interface Props {
 }
 
 export interface RecordingData {
-  blob: Blob | null;
-  file: File | null;
+  blob?: Blob | null;
+  file?: File | null;
   url: string | null;
 }
 

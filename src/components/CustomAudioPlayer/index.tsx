@@ -27,6 +27,15 @@ function CustomAudioPlayer({ recordingData }: Props) {
     }, 100)
   );
 
+  const handleClickMoveBtn = (offset:number) => {
+    const audio = audioRef.current;
+    if (audio) {
+      const newTime = Math.max(0, Math.min(duration, currentTime + offset)); 
+      audio.currentTime = newTime
+      setCurrentTime(newTime);
+    }
+  };
+
   const handleChangeRange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     const audio = audioRef.current;
@@ -88,7 +97,7 @@ function CustomAudioPlayer({ recordingData }: Props) {
       audio.removeEventListener("durationchange", handleDurationChange);
     };
   }, [recordingData?.url]);
-  
+
   // 재생 상태 관리
   useEffect(() => {
     const audio = audioRef.current;
@@ -120,13 +129,21 @@ function CustomAudioPlayer({ recordingData }: Props) {
     <div className={S.wrapper}>
       <div className={S.btnGroup}>
         <button type="button">
-          <img src={playBackBtnImg} alt="" />
+          <img
+            src={playBackBtnImg}
+            alt=""
+            onClick={() => handleClickMoveBtn(-5)}
+          />
         </button>
         <button type="button" onClick={() => setIsPlaying(!isPlaying)}>
           <img src={isPlaying ? pauseBtnImg : playBtnImg} alt="플레이버튼" />
         </button>
         <button type="button">
-          <img src={playForwardBtnImg} alt="" />
+          <img
+            src={playForwardBtnImg}
+            alt=""
+            onClick={() => handleClickMoveBtn(5)}
+          />
         </button>
       </div>
 
@@ -141,7 +158,8 @@ function CustomAudioPlayer({ recordingData }: Props) {
       )}
 
       <div className={S.timeDisplay}>
-        <span>{formatTime(currentTime)}</span> / <span>{formatTime(duration)}</span>
+        <span>{formatTime(currentTime)}</span> /{" "}
+        <span>{formatTime(duration)}</span>
       </div>
 
       {/* TODO: 나중에 커스텀 DIV로 하는 게 낫겠다. 기본 range 속성이 브라우저별로 너무 다름. */}
