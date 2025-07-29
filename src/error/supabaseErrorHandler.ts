@@ -1,4 +1,5 @@
 import type { PostgrestError } from "@supabase/supabase-js";
+import type { StorageError } from "@supabase/storage-js";
 
 /**
  * @description "supabase 에러 관리하는 핸들러입니다."
@@ -7,7 +8,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
  */
 
 export default async function supErrorHandler(
-  error: PostgrestError,
+  error: PostgrestError | StorageError,
   context?: string
 ) {
   console.error(`[Supabase Error]\n

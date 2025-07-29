@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 30px;
+}
+
+.progress {
+  width: 300px;
+}
+
+textarea {
+  resize: none;
+}
+
+
+.timeDisplay{
+  color:white;
+}
