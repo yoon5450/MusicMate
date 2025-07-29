@@ -13,7 +13,21 @@
   justify-content: space-between;
 }
 
+.contentWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.userListArea {
+  width: 250px;
+  height: calc(100vh - 140px);
+}
+
 .detailContentArea {
   flex: 1;
   display: none;
 }
+
+
+

@@ -7,6 +7,7 @@ import { getFeedsWithAllByChannelId } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrl } from "@/api/user_avatar";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
+import { UserList } from "./components/UserList";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -46,24 +47,29 @@ function Channel() {
   return (
     <>
       <div className={S.contentContainer}>
-        <div className={S.contentArea}>
-          <div>{`${id} 채널입니다.`}</div>
-          {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
-          {feedData
-            ? feedData.map((feed) => {
-                if (
-                  feed.message_type === "default" ||
-                  feed.message_type === "image"
-                )
-                  return (
-                    <ChannelFeedMessage key={feed.feed_id} feedItem={feed} />
-                  );
-                if (feed.message_type === "clip")
-                  return (
-                    <ChannelFeedAudio key={feed.feed_id} feedItem={feed} />
-                  );
-              })
-            : null}
+        <div className={S.contentWrapper}>
+          <div className={S.contentArea}>
+            <div>{`${id} 채널입니다.`}</div>
+            {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
+            {feedData
+              ? feedData.map((feed) => {
+                  if (
+                    feed.message_type === "default" ||
+                    feed.message_type === "image"
+                  )
+                    return (
+                      <ChannelFeedMessage key={feed.feed_id} feedItem={feed} />
+                    );
+                  if (feed.message_type === "clip")
+                    return (
+                      <ChannelFeedAudio key={feed.feed_id} feedItem={feed} />
+                    );
+                })
+              : null}
+          </div>
+          <div className={S.userListArea}>
+            <UserList />
+          </div>
         </div>
         <div className={S.detailContentArea}></div>
       </div>

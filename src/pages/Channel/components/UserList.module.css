@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--gray_03);
+  color: var(--gray_09);
+  border-left: 1px solid var(--gray_04);
+  height: 100%;
+}
+
+.searchBar {
+  flex: 0 0 auto;
+  padding: var(--spacing-8);
+  border-bottom: 1px solid var(--gray_04);
+}
+
+.searchBar input {
+  width: 100%;
+  padding: var(--spacing-8) var(--spacing-8);
+  background-color: var(--gray_02);
+  border: 1px solid var(--gray_04);
+  border-radius: var(--spacing-8);
+  color: var(--gray_09);
+
+  &:focus {
+    outline: 1px solid var(--gray_06);
+  }
+}
+
+.listWrapper {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.listWrapper::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+.listWrapper:hover {
+  scrollbar-width: thin;
+}
+.listWrapper:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+.listWrapper:hover::-webkit-scrollbar-thumb {
+  background-color: #4f545c;
+  border-radius: var(--spacing-4);
+}
+.listWrapper:hover::-webkit-scrollbar-thumb:hover {
+  background-color: #686d75;
+}
+
+.userList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.userItem {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-8) var(--spacing-12);
+  cursor: pointer;
+  border-radius: var(--spacing-12);
+  margin: var(--spacing-4);
+
+  &:hover {
+    background-color: var(--gray_04);
+  }
+}
+
+.userItem .avatar {
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  border-radius: 50%;
+  margin-right: var(--spacing-8);
+  background-color: var(--background);
+}
