@@ -1,5 +1,19 @@
-.contentArea{
+.contentArea {
   height: calc(100vh - 140px);
   padding: 1rem;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  flex: 1;
+}
+
+.contentContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detailContentArea {
+  flex: 1;
+  display: none;
 }
