@@ -10,7 +10,6 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const [contents, setContents] = useState<string>();
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -24,14 +23,33 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const audioBtnId = useId();
   const imageBtnId = useId();
 
+  const initialize = () => {
+    const text = textareaRef.current;
+    if (text) text.value = "";
+    setImage(undefined);
+    setImagePreview(undefined);
+  };
+
   const handleClose = (e: MouseEvent) => {
     if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
       setOpen(false);
     }
   };
 
-  const submitDefaultFeed = () => {
-    addFeedsWithFiles(contents);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const text = textareaRef.current;
+
+    if (text) {
+      addFeedsWithFiles({
+        content:text.value,
+        channel_id: curChannelId,
+        message_type: "default",
+        image_file: image,
+      });
+
+      initialize();
+    }
   };
 
   const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +115,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
       )}
 
       {/* 입력 Form 영역 */}
-      <form className={S.feedSubmittForm} onSubmit={submitDefaultFeed}>
+      <form className={S.feedSubmittForm} onSubmit={handleSubmit}>
         {/* 추가 기능 버튼 */}
         <div ref={wrapperRef} className={S.dropdownWrapper}>
           <button type="button" onClick={() => setOpen(!open)}>
@@ -131,13 +149,15 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
           )}
         </div>
 
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            className={S.textInput}
-            onInput={handleInputText}
-            placeholder="채널에 메세지 보내기"
-          />
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          className={S.textInput}
+          onInput={handleInputText}
+          placeholder="채널에 메세지 보내기"
+        />
+
+        <input type="submit" value="제출" />
 
         <RecordButton
           setRecordingData={setRecordingData}
