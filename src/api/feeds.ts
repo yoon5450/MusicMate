@@ -185,8 +185,10 @@ export const addFeeds = async ({
   }
 };
 
-// 녹음이 없으면 아예 실행되지 않음.
-// 아 이쁘게 짠거같은데.
+/**
+ * @description 파일 객체 피드를 한번에 업로드합니다.
+ * 
+ */
 export const addFeedsWithFiles = async ({
   title,
   content,
@@ -236,6 +238,13 @@ export const addFeedsWithFiles = async ({
   }
 };
 
+/**
+ * @description 파일을 업로드하고 해당 파일의 public url을 리턴합니다.
+ * @param path 
+ * @param file 
+ * @param target 
+ * @returns publicUrl
+ */
 const uploadAndGetUrl = async (path: string, file: File, target: string) => {
   const [uploadResult, urlResult] = await Promise.all([
     supabase.storage.from(target).upload(path, file),

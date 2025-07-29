@@ -4,6 +4,7 @@ import S from "./SubmitClipForm.module.css";
 import CustomAudioPlayer from "../CustomAudioPlayer";
 import imgIcon from "@/assets/add_image_icon.svg";
 import { addFeedsWithFiles } from "@/api";
+import { setFilePreview } from "@/utils/setImagePreview";
 
 interface Props {
   recordingData: RecordingData | undefined;
@@ -18,7 +19,7 @@ function SubmitClipForm({
   setRecordingData,
   curChannelId,
 }: Props) {
-  const [imagePreview, setImagePreview] = useState<string | undefined | null>();
+  const [imagePreview, setImagePreview] = useState<string | undefined | null>("");
   const [feedImage, setFeedImage] = useState<File | undefined | null>();
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
@@ -33,15 +34,7 @@ function SubmitClipForm({
   function handleImageChange(e:React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setFeedImage(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
+    if(file) setFilePreview(file, setImagePreview);
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
