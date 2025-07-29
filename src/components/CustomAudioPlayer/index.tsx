@@ -10,11 +10,12 @@ import { formatTime } from "@/utils/timeUtils";
 
 interface Props {
   recordingData: RecordingData | undefined;
+  playerType?: "default" | "flat" | "mini";
 }
 
 // TODO : 실시간 스트리밍 기능도 수행할 수 있도록 확장, 다양한 형태 ( 소형화 등 구현 )
 // 렌더링 최적화도 생각해볼것
-function CustomAudioPlayer({ recordingData }: Props) {
+function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,11 +28,11 @@ function CustomAudioPlayer({ recordingData }: Props) {
     }, 100)
   );
 
-  const handleClickMoveBtn = (offset:number) => {
+  const handleClickMoveBtn = (offset: number) => {
     const audio = audioRef.current;
     if (audio) {
-      const newTime = Math.max(0, Math.min(duration, currentTime + offset)); 
-      audio.currentTime = newTime
+      const newTime = Math.max(0, Math.min(duration, currentTime + offset));
+      audio.currentTime = newTime;
       setCurrentTime(newTime);
     }
   };
@@ -126,8 +127,24 @@ function CustomAudioPlayer({ recordingData }: Props) {
 
   // TODO : input range 스로틀 이용할것
   return (
-    <div className={S.wrapper}>
-      <div className={S.btnGroup}>
+    <div
+      className={
+        playerType === "flat"
+          ? S.flatWrapper
+          : playerType === "mini"
+            ? S.miniWrapper
+            : S.wrapper
+      }
+    >
+      <div
+        className={
+          playerType === "flat"
+            ? S.flatBtnGroup
+            : playerType === "mini"
+              ? S.miniWrapper
+              : S.btnGroup
+        }
+      >
         <button type="button">
           <img
             src={playBackBtnImg}
@@ -136,7 +153,17 @@ function CustomAudioPlayer({ recordingData }: Props) {
           />
         </button>
         <button type="button" onClick={() => setIsPlaying(!isPlaying)}>
-          <img src={isPlaying ? pauseBtnImg : playBtnImg} alt="플레이버튼" />
+          <img
+            width={
+              playerType === "flat"
+                ? "29px"
+                : playerType === "mini"
+                  ? S.miniWrapper
+                  : undefined
+            }
+            src={isPlaying ? pauseBtnImg : playBtnImg}
+            alt="플레이버튼"
+          />
         </button>
         <button type="button">
           <img
@@ -157,10 +184,12 @@ function CustomAudioPlayer({ recordingData }: Props) {
         ></audio>
       )}
 
-      <div className={S.timeDisplay}>
-        <span>{formatTime(currentTime)}</span> /{" "}
-        <span>{formatTime(duration)}</span>
-      </div>
+      {playerType === "default" && (
+        <div className={S.timeDisplay}>
+          <span>{formatTime(currentTime)}</span> /{" "}
+          <span>{formatTime(duration)}</span>
+        </div>
+      )}
 
       {/* TODO: 나중에 커스텀 DIV로 하는 게 낫겠다. 기본 range 속성이 브라우저별로 너무 다름. */}
       <input
@@ -172,6 +201,14 @@ function CustomAudioPlayer({ recordingData }: Props) {
         value={currentTime}
         onChange={handleChangeRange}
       />
+
+      
+      {playerType === "flat" && (
+        <div className={S.timeDisplay}>
+          <span>{formatTime(currentTime)}</span> /{" "}
+          <span>{formatTime(duration)}</span>
+        </div>
+      )}
     </div>
   );
 }
