@@ -7,7 +7,6 @@ import { getFeedsWithAllByChannelId } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrl } from "@/api/user_avatar";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
-import CustomAudioPlayer from "@/components/CustomAudioPlayer";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -48,10 +47,6 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentArea}>
-          <CustomAudioPlayer 
-          recordingData={{url:"https://xoutqutvimeluhachtsw.supabase.co/storage/v1/object/public/feed-audio/641411a2-703e-4a09-b874-33cbc6fc54e9.feed-1753756886111.webm"}}
-          playerType="flat"/>
-          {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
           {feedData
             ? feedData.map((feed) => {
                 if (
