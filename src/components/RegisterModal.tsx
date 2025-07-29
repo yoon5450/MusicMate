@@ -1,35 +1,13 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { signIn, signOut, signUp } from "@/api/auth";
 import supabase from "@/utils/supabase";
 import S from "@/styles/_modal.module.css";
+import { getGenres, type GenreType } from "@/api/genres";
 
 interface Props {
   onClose: () => void;
 }
 
-//TODO: 장르목록 디비에서 가져오기
-const genresList = [
-  { code: 1, name: "Jazz" },
-  { code: 2, name: "Pop" },
-  { code: 3, name: "Rock" },
-  { code: 4, name: "Hip-Hop" },
-  { code: 5, name: "Classical" },
-  { code: 6, name: "R&B" },
-  { code: 7, name: "Electronic" },
-  { code: 8, name: "Reggae" },
-  { code: 9, name: "Country" },
-  { code: 10, name: "Folk" },
-  { code: 11, name: "Blues" },
-  { code: 12, name: "Metal" },
-  { code: 13, name: "K-Pop" },
-  { code: 14, name: "Indie" },
-  { code: 15, name: "Soul" },
-  { code: 16, name: "Funk" },
-  { code: 17, name: "Techno" },
-  { code: 18, name: "House" },
-  { code: 19, name: "Latin" },
-  { code: 20, name: "Alternative" },
-];
 
 // 에러메세지 
 function getKoreanErrorMessage(message: string): string {
@@ -62,6 +40,19 @@ export default function SignUp({ onClose }: Props) {
   const [password, setPassword] = useState("");
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [genres, setGenres] = useState<GenreType[]>([]);
+
+
+  useEffect(()=>{
+    // 장르 목록 불러오기
+    const fetchGenres = async () => {
+      const data = await getGenres();
+      if(data)
+        setGenres(data);
+    }
+    fetchGenres();
+  },[]);
+
 
   // 장르 토글
   const toggleGenre = (code: number) => {
@@ -144,7 +135,7 @@ export default function SignUp({ onClose }: Props) {
           <div className={S.genresWrap}>
             <div className={S.genresLabel}>선호 장르 선택</div>
             <div className={S.genreGrid}>
-              {genresList.map((genre) => (
+              {genres.map((genre) => (
                 <button
                   key={genre.code}
                   type="button"
