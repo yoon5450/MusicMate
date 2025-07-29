@@ -67,7 +67,7 @@ function Channel() {
         </div>
         <div className={S.detailContentArea}></div>
       </div>
-      <InputFeed />
+      <InputFeed curChannelId={id} />
     </>
   );
 }

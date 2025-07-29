@@ -2,13 +2,24 @@ import type { Database, Tables } from "@/@types/database.types";
 import supabase from "@/utils/supabase";
 import errorHandler from "@/error/supabaseErrorHandler";
 
+type MessageEnum = Database["public"]["Enums"]["message_type"];
+
 type InsertType = {
   audio_url: string | null;
   channel_id: string;
   content: string | null;
   image_url: string | null;
-  message_type: Database["public"]["Enums"]["message_type"];
+  message_type: MessageEnum;
   title: string | null;
+};
+
+type InsertAllType = {
+  title?: string;
+  content?: string;
+  channel_id: string;
+  message_type: MessageEnum;
+  audio_file?: File | null;
+  image_file?: File | null;
 };
 
 /**
@@ -86,7 +97,7 @@ export const getFeedsByUserId = async (
  * @description 유저의 채널에서 보낸 피드 목록을 가져옵니다.
  * @param {string} uid
  * @param {string} channel_id
- * @returns
+ * @returns {Promise<Tables<"feeds">[] | null>} feedData
  */
 export const getFeedsByUserInChannel = async (
   uid: string,
@@ -107,19 +118,27 @@ export const getFeedsByUserInChannel = async (
   }
 };
 
-// View를 이용해 구현완
+/**
+ * @description 키워드에 기반한 피드를 검색해 가져옵니다. [Option] 채널 안에서 조회 가능합니다.
+ * @returns {Promise<Tables<"feeds">[] | null>} feedData
+ */
 export const getFeedsByKeyword = async (
-  keyword: string
+  keyword: string,
+  channel_id?: string
 ): Promise<Tables<"view_feed_search">[] | null> => {
   // injection 방지
   const safeKeyword = keyword.replace(/[%_]/g, "\\$&"); // 와일드카드 escape
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("view_feed_search")
     .select("*")
     .or(
       `title.ilike.%${safeKeyword}, content.ilike.%${safeKeyword}, nickname.ilike.%${safeKeyword}%`
     );
+
+  if (channel_id) query = query.eq("channel_id", channel_id);
+
+  const { data, error } = await query;
 
   if (error) {
     errorHandler(error, "getFeedsByKeyword");
@@ -164,4 +183,66 @@ export const addFeeds = async ({
     console.log(data);
     return data;
   }
+};
+
+// 녹음이 없으면 아예 실행되지 않음.
+// 아 이쁘게 짠거같은데.
+export const addFeedsWithFiles = async ({
+  title,
+  content,
+  channel_id,
+  message_type,
+  audio_file,
+  image_file,
+}: InsertAllType) => {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData) alert("로그인 후에 글을 올릴 수 있습니다.");
+
+  const pathArr = [];
+  const now = Date.now();
+  const path = `${userData.user?.id}.feed-${now}`;
+  let image_url = undefined;
+  let audio_url = undefined;
+
+  if (image_file) {
+    const ext = image_file.name.split(".").pop();
+    const image_path = `${path}.${ext}`;
+    pathArr.push(image_path);
+    image_url = await uploadAndGetUrl(image_path, image_file, "feed-images");
+  }
+
+  if (audio_file) {
+    const ext = audio_file.name.split(".").pop();
+    const audio_path = `${path}.${ext}`;
+    pathArr.push(audio_path);
+    audio_url = await uploadAndGetUrl(audio_path, audio_file, "feed-audio");
+  }
+
+  const { error: dbError } = await supabase.from("feeds").insert({
+    title,
+    content,
+    audio_url,
+    image_url,
+    channel_id,
+    message_type,
+  });
+
+  if (dbError) {
+    // Optional: Rollback storage upload if DB insert fails
+    pathArr.forEach((path) => {
+      supabase.storage.from("feed-audio").remove([path]);
+    });
+    throw dbError;
+  }
+};
+
+const uploadAndGetUrl = async (path: string, file: File, target: string) => {
+  const [uploadResult, urlResult] = await Promise.all([
+    supabase.storage.from(target).upload(path, file),
+    supabase.storage.from(target).getPublicUrl(path),
+  ]);
+
+  if (uploadResult.error) throw uploadResult.error;
+
+  return urlResult.data?.publicUrl;
 };
