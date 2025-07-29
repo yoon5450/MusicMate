@@ -16,21 +16,23 @@
 
 .modalBox {
   background: var(--gray_02);
-  color: #fff;
-  min-width: 400px;
-  padding: 2.5rem 2rem 1.5rem 2rem;
-  border-radius: 1.2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  color: var(--white);
+  min-width: 500px;
+  max-width: 500px;
+  padding: var(--spacing-32);
+  border-radius: var(--spacing-20);
+  box-shadow: 0 var(--spacing-8) var(--spacing-32) rgba(0, 0, 0, 0.4);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--spacing-12);
 }
 
 .closeBtn {
   position: absolute;
-  top: 18px;
-  right: 20px;
+  top: var(--spacing-16);
+  right: var(--spacing-20);
   background: none;
   border: none;
   color: var(--gray_07);
@@ -43,22 +45,10 @@
   }
 }
 
-/* 로고 안 넣으면 삭제하기 */
-/* .logoWrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.2rem;
-}
-
-.logoImg {
-  width: 48px;
-  height: 48px;
-} */
-
 .title {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1.7rem;
+  margin-bottom: var(--spacing-28);
   margin-top: 0;
 }
 
@@ -66,20 +56,18 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--spacing-20);
 }
 
 .input {
   width: 100%;
-  padding: 1.1rem 1.2rem;
-  border-radius: 0.8rem;
+  padding: var(--spacing-20);
+  border-radius: var(--spacing-12);
   border: none;
   background: #a1a1a133;
   color: var(--gray_09);
-  font-size: 1.08rem;
-  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
   outline: none;
-  transition: border 0.15s;
 }
 
 .input::placeholder {
@@ -88,17 +76,17 @@
 }
 
 .submitBtn {
-  margin-top: 0.7rem;
+  margin-top: var(--spacing-12);
   width: 100%;
   padding: 0.95rem 0;
   border: none;
-  border-radius: 0.7rem;
+  border-radius: var(--spacing-12);
   background: var(--primary_default);
   color: var(--gray_01);
   font-weight: bold;
-  font-size: 1.12rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: background 0.18s;
+  transition: background 0.2s;
 
   &:hover {
     background: var(--primary_hover);
@@ -109,7 +97,7 @@
 }
 
 .bottomText {
-  margin-top: 1.6rem;
+  margin-top: var(--spacing-16);
   color: var(--gray_07);
   font-size: 1rem;
   text-align: center;
@@ -121,11 +109,47 @@
 }
 
 .errorMsg {
-  margin-top: 12px;
+  margin-top: var(--spacing-16);
   color: #ff5252;
   background: rgba(255, 82, 82, 0.08);
-  border-radius: 8px;
-  padding: 10px 16px;
+  border-radius: var(--spacing-8);
+  padding: var(--spacing-8) var(--spacing-16);
   font-size: 1rem;
   font-weight: 500;
+}
+
+.genresWrap {
+  margin: var(--spacing-16) 0 var(--spacing-12) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.genresLabel {
+  padding: 0 0 0 var(--spacing-16);
+}
+
+.genreGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+}
+
+.genreBtn {
+  background: var(--gray_02);
+  color: var(--white);
+  border: none;
+  border-radius: var(--spacing-8);
+  padding: var(--spacing-8) var(--spacing-16);
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background 0.1s,
+    color 0.1s;
+
+  &:hover,
+  &.active {
+    background: var(--primary_default);
+    color: var(--gray_02);
+  }
 }
