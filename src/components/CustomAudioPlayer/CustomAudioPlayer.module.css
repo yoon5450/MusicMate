@@ -5,9 +5,20 @@
   gap: 10px;
 }
 
+.flatWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .btnGroup {
   display: flex;
   gap: 30px;
+}
+
+.flatBtnGroup{
+  display: flex;
+  gap: 10px;
 }
 
 .progress {
@@ -18,7 +29,6 @@ textarea {
   resize: none;
 }
 
-
-.timeDisplay{
-  color:white;
+.timeDisplay {
+  color: white;
 }

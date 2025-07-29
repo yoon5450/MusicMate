@@ -47,8 +47,6 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentArea}>
-          <div>{`${id} 채널입니다.`}</div>
-          {/* <div className={S.test}>`${id.repeat(300)}`</div> */}
           {feedData
             ? feedData.map((feed) => {
                 if (
