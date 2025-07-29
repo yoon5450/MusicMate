@@ -54,6 +54,10 @@
       gap: 10px;
     }
 
+    .formDescription:focus{
+      outline: none;
+    }
+
     .title {
       font-size: 24px;
     }
