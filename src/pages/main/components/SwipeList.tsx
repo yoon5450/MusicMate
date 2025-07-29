@@ -2,18 +2,27 @@ import { Swiper,SwiperSlide } from "swiper/react";
 import S from "./style.SwiperList.module.css"
 import 'swiper/css';
 import 'swiper/css/navigation';
-import {playlistData} from '@/data/playlistData';
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigation } from "swiper/modules";
+import { getPlaylists, type PlaylistType } from "@/api/playlists";
+import { getYoutubeThumbnail, getYoutubeUrl} from "@/utils/getYoutube";
 
-
+//플레이리스트 랜덤으로 보여주는 함수 
 function shuffleArray<T>(array:T[]):T[]{
   return [...array].sort(() => Math.random() - 0.5);
 }
 
 function SwipeList() {
+  const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
-  const shuffledPlaylistData = useMemo(()=> shuffleArray(playlistData),[]);
+  const shuffledPlaylists = useMemo(()=> shuffleArray(playlists),[playlists]); 
+
+  useEffect(() => {
+    (async () => {
+      const data = await getPlaylists();
+      if(data) setPlaylists(data);
+    })();
+  },[]);
 
   return (
     <>
@@ -27,20 +36,20 @@ function SwipeList() {
         modules={[Navigation]}
         className={S.swiper}
         >
-        {shuffledPlaylistData.map((item)=>(
-          <SwiperSlide key={item.id} className={S.swiperSlide}>
+        {shuffledPlaylists.map(({ id, youtube_id, title })=>(
+          <SwiperSlide key={id} className={S.swiperSlide}>
             <a 
-              href={item.youtubeUrl}
+              href={getYoutubeUrl(youtube_id)}
               target="_blank"
               rel="noopener noreferrer" 
               className={S.card}
             >
               <img 
-              src={item.thumbnailUrl}
-              alt={item.title}
+              src={getYoutubeThumbnail(youtube_id)}
+              alt={title}
               className={S.image}
              />
-             <p className={S.cardTitle}>{item.title}</p>
+             <p className={S.cardTitle}>{title}</p>
             </a>
           </SwiperSlide>
         ))}
