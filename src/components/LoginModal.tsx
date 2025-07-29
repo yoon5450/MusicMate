@@ -1,38 +1,76 @@
 import { signIn } from "@/api/auth";
 import { useLoginModal } from "@/context/LoginModalContext";
-import S from "@/styles/_loginModal.module.css";
+import S from "@/styles/_modal.module.css";
 import { useState } from "react";
+import RegisterModal from "./RegisterModal";
+
+// 에러메세지
+function getKoreanErrorMessage(message: string): string {
+  switch (message) {
+    case "Invalid login credentials":
+      return "이메일 또는 비밀번호가 올바르지 않습니다.";
+    case "missing email or phone":
+      return "이메일 또는 전화번호를 입력해 주세요.";
+    default:
+      return message;
+  }
+}
 
 function LoginModal() {
   const { open, closeLogin } = useLoginModal();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
+  const [registerOpen, setRegisterOpen] = useState(false);
 
-  if (!open) return null;
+  const handleClose = () => {
+    setId("");
+    setPw("");
+    setError("");
+    closeLogin();
+  };
 
+  if (!open && !registerOpen) return null;
+
+  // api 요청
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { data, error } = await signIn(id, pw);
+    const { error } = await signIn(id, pw);
+
     if (error) {
       // 로그인 실패
-      console.log(error);
-      setError(error.message);
+      setError(getKoreanErrorMessage(error.message));
     } else {
       // 로그인 성공
-      console.log(data);
-      closeLogin();
+      handleClose();
+      alert('로그인에 성공하였습니다!')
     }
   };
 
+  // 회원가입 모달 열기
+  const handleOpenRegister = () => {
+    handleClose();
+    setRegisterOpen(true);
+  };
+
+  // 회원가입 모달 닫기
+  const handleCloseRegister = () => {
+    setRegisterOpen(false);
+  };
+
+  // true 일때 회원가입 모달 return
+  if (registerOpen) {
+    return <RegisterModal onClose={handleCloseRegister} />;
+  }
+
+  // 로그인 모달 return
   return (
     <div className={S.modalBackdrop}>
       <div className={S.modalBox}>
-        <button className={S.closeBtn} onClick={closeLogin}>
+        <button className={S.closeBtn} onClick={handleClose}>
           ✕
         </button>
-        <div className={S.logoWrap}>{/* 로고 넣기 */}</div>
         <h2 className={S.title}>Sign in</h2>
         <form className={S.form} onSubmit={handleLogin}>
           <input
@@ -54,11 +92,15 @@ function LoginModal() {
             로그인
           </button>
         </form>
-        <p className={S.bottomText}>
-          {/* 로그인 모달 닫고 회원가입 모달 열리기 */}
+        <p
+          className={S.bottomText}
+          onClick={() => {
+            handleOpenRegister();
+          }}
+        >
           아직 회원이 아니신가요?
         </p>
-        {error && <div>{error}</div>}
+        {error && <div className={S.errorMsg}>{error}</div>}
       </div>
     </div>
   );
