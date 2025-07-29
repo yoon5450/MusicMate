@@ -147,7 +147,11 @@
     background 0.1s,
     color 0.1s;
 
-  &:hover,
+  &:hover {
+    background: var(--primary_hover);
+    color: var(--gray_02);
+  }
+
   &.active {
     background: var(--primary_default);
     color: var(--gray_02);
