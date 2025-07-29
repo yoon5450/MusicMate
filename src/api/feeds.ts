@@ -55,6 +55,24 @@ export const getFeedsWithAll = async () => {
 };
 
 /**
+ * @description 해당채널에 있는 모든 피드 데이터가 조인된 상태로 받아와집니다.
+ * @returns AllFkJoindData
+ */
+export const getFeedsWithAllByChannelId = async (channelId: string) => {
+  const { data, error } = await supabase
+    .from("get_feeds_with_user_and_likes")
+    .select("*")
+    .eq("channel_id", channelId);
+
+  if (error) {
+    errorHandler(error, "getFeedsWithAllByChannelId");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+/**
  * @description 유저 id에 기반한 모든 피드를 가져옵니다.
  * @param {string} uid
  * @returns {Promise<Tables<"feeds">[] | null>} feedData

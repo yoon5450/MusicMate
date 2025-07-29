@@ -42,6 +42,7 @@
   min-width: 80px;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.18s;
 }
 
 .authButton:hover {
