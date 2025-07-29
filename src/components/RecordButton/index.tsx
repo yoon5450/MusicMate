@@ -86,7 +86,7 @@ function RecordButton({ setRecordingData, recordingData }: Props) {
         type="button"
         onClick={() => (isRecording ? stopRecording() : startRecording())}
       >
-        <div className={S.outerCircle}>
+        <div className={isRecording ? `${S.halfCircle} ${S.spin}` : S.outerCircle}>
           <div className={S.innerCircle} ref={recordBtnRef}></div>
         </div>
       </button>
