@@ -1,8 +1,9 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 51px);
   margin-top: 51px;
+  overflow: hidden;
 }
 
 .main {
@@ -13,13 +14,20 @@
 
 .sidebar {
   width: 240px;
+  height: calc(100vh - 51px);;
   background-color: var(--gray_02);
   border-right: 1px solid var(--primary_default);
   overflow-y: auto;
 }
 
+/* 페이지 전체 기본 설정 */
 .pageContent {
   flex: 1;
-  overflow-y: auto;
-  background: var(--gray_03)
+  height: calc(100vh - 51px);
+  /* position 부여해서 기준점 잡기 */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--gray_03);
+  overflow-y: hidden;
 }

@@ -1,0 +1,20 @@
+.container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .info404 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h1 {
+    white-space: nowrap;
+  }
+}

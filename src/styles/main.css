@@ -1,6 +1,7 @@
 
-
+@import './_scroll.css';
 @import './_theme.css';
 @import './_reset.css';
 @import './_utils.css';
 @import './_loginModal.module.css'
+

@@ -1,39 +1,12 @@
 .component {
   overflow: auto;
-  resize: horizontal;
   min-inline-size: 160px;
   max-inline-size: 320px;
   min-block-size: 94vh;
   padding: 20px;
   background-color: var(--gray_03);
   border-inline-end: 1px solid var(--gray_06);
-  color: var(--white);
-
-  h1 {
-    display: inline-block;
-    margin-block: 0 20px;
-    font-size: 24px;
-    font-weight: 400;
-    position: relative;
-  }
-
-  ul {
-    display: flex;
-    flex-flow: column;
-    margin-block-start: -4px;
-  }
-
-  a {
-    opacity: 0.75;
-    display: flex;
-    margin-inline: -4px;
-    padding: 4px;
-    font-size: 16px;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
+  height: 100%;
 }
 
 .active{
@@ -60,6 +33,47 @@
   }
 }
 
-.createChannelButton{
-  background-color: var(--gray_04);
+.createChannelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary_default); 
+  color: var(--gray_01); 
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); 
+}
+
+.createChannelButton:hover {
+  background-color: var(--primary_hover); 
+  transform: translateY(-1px);
+}
+
+.createChannelButton:active {
+  transform: translateY(0); 
+}
+
+.channelItem {
+  color: var(--gray_10);
+  display: block;
+  position: relative;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 20px;
+  font-weight: 400;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease, color 0.1s ease;
+}
+
+.channelItem:hover {
+  border-bottom: 2px solid var(--gray_04);
+}
+
+.channelItem.active {
+  border-bottom: 2px solid var(--primary_default);
+  color: var(--gray_10);
+  font-weight: bold;
 }
