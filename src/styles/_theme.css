@@ -1,21 +1,21 @@
 :root {
-  --primary_active: #E4A00DFF;
-  --primary_hover: #FFD950FF;
-  --primary_default: #F9BB04FF;
-  --primary_disabled: #FBE38BFF;
-  --white: #FFFFFFFF;
-  --black: #000000FF;
-  --background: #1E1E1EFF;
-  --gray_01: #181818FF;
-  --gray_02: #232323FF;
-  --gray_03: #333333FF;
-  --gray_04: #4B4B4BFF;
-  --gray_05: #6B6B6BFF;
-  --gray_06: #8C8C8CFF;
-  --gray_07: #B0B0B0FF;
-  --gray_08: #D1D1D1FF;
-  --gray_09: #E5E5E5FF;
-  --gray_10: #F6F6F6FF;
+  --primary_active: #e4a00dff;
+  --primary_hover: #ffd950ff;
+  --primary_default: #f9bb04ff;
+  --primary_disabled: #fbe38bff;
+  --white: #ffffffff;
+  --black: #000000ff;
+  --background: #1e1e1eff;
+  --gray_01: #181818ff;
+  --gray_02: #232323ff;
+  --gray_03: #333333ff;
+  --gray_04: #4b4b4bff;
+  --gray_05: #6b6b6bff;
+  --gray_06: #8c8c8cff;
+  --gray_07: #b0b0b0ff;
+  --gray_08: #d1d1d1ff;
+  --gray_09: #e5e5e5ff;
+  --gray_10: #f6f6f6ff;
   --spacing-4: 4px;
   --spacing-8: 8px;
   --spacing-12: 12px;
@@ -26,4 +26,5 @@
   --spacing-32: 32px;
   --spacing-36: 36px;
   --spacing-40: 40px;
+  font-family: "Pretendard Variable", sans-serif;
 }

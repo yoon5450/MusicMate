@@ -25,7 +25,7 @@ function NavLink({to, children, activeClassName = S.active, className}: Props) {
   }
   
   return (
-    <a href={to} className={classNames} onClick={handleLink} style={{color:"white"}}>{children}</a>
+    <a href={to} className={classNames} onClick={handleLink} >{children}</a>
   )
 }
 export default NavLink
