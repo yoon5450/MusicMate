@@ -1,8 +1,10 @@
 import { signIn } from "@/api/auth";
 import { useLoginModal } from "@/context/LoginModalContext";
-import S from "@/styles/_loginModal.module.css";
+import S from "@/styles/_modal.module.css";
 import { useState } from "react";
+import RegisterModal from "./RegisterModal";
 
+// 에러메세지
 function getKoreanErrorMessage(message: string): string {
   switch (message) {
     case "Invalid login credentials":
@@ -19,6 +21,7 @@ function LoginModal() {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   const handleClose = () => {
     setId("");
@@ -27,37 +30,47 @@ function LoginModal() {
     closeLogin();
   };
 
-  if (!open) return null;
+  if (!open && !registerOpen) return null;
 
-
-
+  // api 요청
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { data, error } = await signIn(id, pw);
+    const { error } = await signIn(id, pw);
 
     if (error) {
       // 로그인 실패
-      console.log(error);
       setError(getKoreanErrorMessage(error.message));
     } else {
       // 로그인 성공
-      console.log(data);
-      setError("");
-      setId("");
-      setPw("");
-      closeLogin();
+      handleClose();
+      alert('로그인에 성공하였습니다!')
     }
   };
 
+  // 회원가입 모달 열기
+  const handleOpenRegister = () => {
+    handleClose();
+    setRegisterOpen(true);
+  };
 
+  // 회원가입 모달 닫기
+  const handleCloseRegister = () => {
+    setRegisterOpen(false);
+  };
+
+  // true 일때 회원가입 모달 return
+  if (registerOpen) {
+    return <RegisterModal onClose={handleCloseRegister} />;
+  }
+
+  // 로그인 모달 return
   return (
     <div className={S.modalBackdrop}>
       <div className={S.modalBox}>
         <button className={S.closeBtn} onClick={handleClose}>
           ✕
         </button>
-        <div className={S.logoWrap}>{/* 로고 넣기 */}</div>
         <h2 className={S.title}>Sign in</h2>
         <form className={S.form} onSubmit={handleLogin}>
           <input
@@ -82,11 +95,9 @@ function LoginModal() {
         <p
           className={S.bottomText}
           onClick={() => {
-            closeLogin();
-            openRegister();
+            handleOpenRegister();
           }}
         >
-          {/* 로그인 모달 닫고 회원가입 모달 열리기 */}
           아직 회원이 아니신가요?
         </p>
         {error && <div className={S.errorMsg}>{error}</div>}
