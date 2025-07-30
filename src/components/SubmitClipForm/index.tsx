@@ -53,7 +53,7 @@ function SubmitClipForm({
     handleDelete();
   }
 
-  // 열 때마다 강제 리렌더(초기화)
+  // 열 때마다 리렌더(초기화)
   return (
     recordingData?.url && (
       <div className={S.wrapper}>

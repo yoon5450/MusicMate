@@ -134,15 +134,7 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
             : S.wrapper
       }
     >
-      <div
-        className={
-          playerType === "flat"
-            ? S.flatBtnGroup
-            : playerType === "mini"
-              ? S.miniWrapper
-              : S.btnGroup
-        }
-      >
+      <div className={S.btnGroup}>
         <button type="button">
           <img
             src={playBackBtnImg}
@@ -152,13 +144,7 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
         </button>
         <button type="button" onClick={() => setIsPlaying(!isPlaying)}>
           <img
-            width={
-              playerType === "flat"
-                ? "29px"
-                : playerType === "mini"
-                  ? S.miniWrapper
-                  : undefined
-            }
+            className={S.playBtnImg}
             src={isPlaying ? pauseBtnImg : playBtnImg}
             alt="플레이버튼"
           />
@@ -200,7 +186,6 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
         onChange={handleChangeRange}
       />
 
-      
       {playerType === "flat" && (
         <div className={S.timeDisplay}>
           <span>{formatTime(currentTime)}</span> /{" "}

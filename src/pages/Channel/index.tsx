@@ -7,6 +7,7 @@ import { getFeedsWithAllByChannelId } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrl } from "@/api/user_avatar";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
+import CustomAudioPlayer from "@/components/CustomAudioPlayer";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;

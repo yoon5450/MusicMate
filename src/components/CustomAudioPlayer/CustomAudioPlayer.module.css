@@ -1,34 +1,43 @@
+/* 아. type별로 네스팅 처리할걸. 바보인가 */
 .wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+
+  .btnGroup {
+    display: flex;
+    gap: 30px;
+  }
+
+  .progress {
+    width: 300px;
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  .timeDisplay {
+    color: white;
+  }
 }
 
 .flatWrapper {
   display: flex;
   align-items: center;
   gap: 10px;
-}
 
-.btnGroup {
-  display: flex;
-  gap: 30px;
-}
+  .progress {
+    width: 200px;
+  }
 
-.flatBtnGroup{
-  display: flex;
-  gap: 10px;
-}
-
-.progress {
-  width: 300px;
-}
-
-textarea {
-  resize: none;
-}
-
-.timeDisplay {
-  color: white;
+  .btnGroup {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .playBtnImg{
+    width: 29px;
+  }
 }
