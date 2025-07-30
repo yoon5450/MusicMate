@@ -3,6 +3,7 @@ import S from "./UserList.module.css";
 import { useEffect, useState } from "react";
 import type { Tables } from "@/@types/database.types";
 import { getGenreCodeByChannelId } from "@/api/genres";
+import { getAvatarUrlPreview } from "@/api/user_avatar";
 
 export type GenreUserProfilesType = Tables<"view_genre_user_profiles">;
 
@@ -46,7 +47,7 @@ export const UserList = ({ channelId }: Props) => {
                 className={S.avatar}
                 src={
                   user.profile_url
-                    ? user.profile_url
+                    ? getAvatarUrlPreview(user.profile_url)!
                     : "/music_mate_symbol_fixed.svg"
                 }
                 alt="유저이미지"
