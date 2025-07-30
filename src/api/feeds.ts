@@ -62,7 +62,8 @@ export const getFeedsWithAllByChannelId = async (channelId: string) => {
   const { data, error } = await supabase
     .from("get_feeds_with_user_and_likes")
     .select("*")
-    .eq("channel_id", channelId);
+    .eq("channel_id", channelId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     errorHandler(error, "getFeedsWithAllByChannelId");
