@@ -3,6 +3,7 @@ import S from "./InputFeed.module.css";
 import RecordButton, { type RecordingData } from "@/components/RecordButton";
 import SubmitClipForm from "@/components/SubmitClipForm";
 import buttonImg from "@/assets/circle_plus_button.svg";
+import sendImg from "@/assets/send_icon.svg";
 import { setFilePreview } from "@/utils/setImagePreview";
 import { addFeedsWithFiles } from "@/api";
 
@@ -22,6 +23,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   // Id
   const audioBtnId = useId();
   const imageBtnId = useId();
+  const submitBtnId = useId();
 
   const initialize = () => {
     const text = textareaRef.current;
@@ -42,7 +44,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
 
     if (text) {
       addFeedsWithFiles({
-        content:text.value,
+        content: text.value,
         channel_id: curChannelId,
         message_type: "default",
         image_file: image,
@@ -53,6 +55,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   };
 
   const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false);
     const file = e.target.files?.[0] ?? null;
     if (file) {
       const url = URL.createObjectURL(file);
@@ -63,6 +66,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   };
 
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false);
     const file = e.target.files?.[0] ?? null;
     if (file) {
       setImage(file);
@@ -91,7 +95,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     <div className={S.wrapper}>
       {/* key로 열릴 때마다 key 초기화 */}
       <SubmitClipForm
-        key={Date.now()}
+        key={recordingData?.url ?? 'no-data'}
         recordingData={recordingData}
         setRecordingData={setRecordingData}
         curChannelId={curChannelId}
@@ -154,15 +158,20 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
           rows={1}
           className={S.textInput}
           onInput={handleInputText}
-          placeholder="채널에 메세지 보내기"
+          placeholder="메세지를 입력하세요"
         />
-
-        <input type="submit" value="제출" />
 
         <RecordButton
           setRecordingData={setRecordingData}
           recordingData={recordingData}
         />
+
+        <label htmlFor={submitBtnId} className="a11y-hidden">
+          메세지 보내기
+        </label>
+        <button type="submit" id={submitBtnId}>
+          <img width={"36px"} src={sendImg} alt="제출" />
+        </button>
       </form>
     </div>
   );

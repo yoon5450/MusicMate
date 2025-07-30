@@ -59,7 +59,7 @@ function SubmitClipForm({
       <div className={S.wrapper}>
         <form className={S.playerForm} onSubmit={handleSubmit} action="">
           <label htmlFor={previewId} className={S.addImgBtn}>
-            <img src={imagePreview ? imagePreview : imgIcon} />
+            <img src={imagePreview ? imagePreview : imgIcon} width={'40px'}/>
           </label>
           <input
             id={previewId}
