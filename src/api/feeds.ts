@@ -147,6 +147,12 @@ export const getFeedsByKeyword = async (
   }
 };
 
+/**
+ * @description 지정한 채널의 지정한 시간보다 큰 feed를 20개 가져옵니다.
+ * @param curChannelId 
+ * @param lastTime 
+ * @returns 
+ */
 export const getFeedsByChannelAndBefore = async (
   curChannelId: string,
   lastTime: string
@@ -167,6 +173,12 @@ export const getFeedsByChannelAndBefore = async (
   }
 };
 
+/**
+ * @description 지정한 채널의 지정한 시간보다 나중에 나온 모든 피드를 가져옵니다.
+ * @param curChannelId 
+ * @param lastTime 
+ * @returns 
+ */
 export const getFeedsByChannelAndAfter = async (
   curChannelId: string,
   lastTime: string

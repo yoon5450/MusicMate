@@ -77,6 +77,12 @@ export const updateUserProfileByUserId = async ({
   }
 };
 
+
+/**
+ * @description 키워드가 포함된 닉네임 목록을 리턴합니다.
+ * @param keyword 
+ * @returns userProfile
+ */
 export const getUserByNickname = async (keyword: string) => {
   const { data, error } = await supabase
     .from("user_profile")
