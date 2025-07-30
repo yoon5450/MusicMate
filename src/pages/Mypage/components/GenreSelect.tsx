@@ -8,8 +8,10 @@ interface Props {
 }
 
 function GenreSelect({ user }: Props) {
+  const [previousGenres, setPreviousGenres] = useState<number[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const [genres, setGenres] = useState<GenreType[]>([]);
+  const [isChanged, setIsChanged] = useState(false);
 
   useEffect(() => {
     // 장르 목록 불러오기
@@ -24,14 +26,23 @@ function GenreSelect({ user }: Props) {
     const getUserGenres = async () => {
       const data = await getUserPreferredGenre();
       if (!data) {
+        setPreviousGenres([]);
         setSelectedGenres([]);
         return;
       }
+      setPreviousGenres(data);
       setSelectedGenres(data);
       return;
     };
     getUserGenres();
   }, []);
+
+  useEffect(() => {
+    const changed =
+      selectedGenres.every((genre) => previousGenres.includes(genre)) &&
+      previousGenres.every((genre) => selectedGenres.includes(genre));
+    setIsChanged(!changed);
+  }, [selectedGenres, previousGenres]);
 
   // 장르 토글
   const toggleGenre = (code: number) => {
@@ -41,19 +52,17 @@ function GenreSelect({ user }: Props) {
   };
 
   const handleChangeGenre = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
     e.stopPropagation();
 
-    console.log(selectedGenres);
-
-    if (selectedGenres.length > 0) {
-      const data = await updateUserGenres({
-        selected_genres: selectedGenres,
-        user_id: user.id,
-      });
-      console.log(data);
-      if (!data) return;
-    }
+    if (!isChanged) return;
+    const data = await updateUserGenres({
+      selected_genres: selectedGenres,
+      user_id: user.id,
+    });
+    console.log(data);
+    if (!data) return;
+    setIsChanged(false);
+    alert("선호 장르가 변경되었습니다");
   };
 
   return (
@@ -71,7 +80,11 @@ function GenreSelect({ user }: Props) {
           </button>
         ))}
       </div>
-      <button type="button" className={S.submitBtn} onClick={handleChangeGenre}>
+      <button
+        type="button"
+        className={isChanged ? `${S.changedSubmitBtn}` : `${S.submitBtn}`}
+        onClick={handleChangeGenre}
+      >
         수정하기
       </button>
     </div>

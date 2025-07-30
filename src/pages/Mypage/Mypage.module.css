@@ -105,6 +105,7 @@
     padding: 0.5rem;
     border-radius: 8px;
     background-color: var(--gray_09);
+    cursor: pointer;
 
     &:hover {
       background-color: var(--gray_08);
@@ -154,14 +155,21 @@
     font-size: 1.2rem;
     font-weight: bold;
   }
-  button {
+  .submitBtn {
     font-size: 1rem;
     padding: 0.5rem;
     border-radius: 8px;
     background-color: var(--gray_09);
+  }
+  .changedSubmitBtn {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--primary_active);
+    cursor: pointer;
 
     &:hover {
-      background-color: var(--gray_08);
+      background-color: var(--primary_default);
     }
   }
 }
