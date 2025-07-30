@@ -1,4 +1,8 @@
 /* 아. type별로 네스팅 처리할걸. 바보인가 */
+.timeDisplay {
+  color: white;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -17,10 +21,6 @@
   textarea {
     resize: none;
   }
-
-  .timeDisplay {
-    color: white;
-  }
 }
 
 .flatWrapper {
@@ -34,10 +34,15 @@
 
   .btnGroup {
     display: flex;
-    gap: 10px;
+    gap: 5px;
   }
-  
-  .playBtnImg{
+
+  .playBtnImg {
     width: 29px;
   }
+}
+
+
+.progress {
+  accent-color: var(--primary_active);
 }

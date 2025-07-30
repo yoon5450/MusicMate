@@ -46,6 +46,7 @@ function Channel() {
 
   return (
     <>
+    <CustomAudioPlayer recordingData={{url:"a"}} playerType="flat"/>
       <div className={S.contentContainer}>
         <div className={S.contentArea}>
           {feedData
