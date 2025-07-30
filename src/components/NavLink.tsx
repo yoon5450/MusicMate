@@ -9,12 +9,9 @@ interface Props {
   className?:string;
 }
 function NavLink({to, children, activeClassName = S.active, className}: Props) {
-
   const {currentPath, setHistoryRoute} = useContext(RouterContext)!;
 
-  
   const isActive = currentPath === to;
-
 
   const classNames = `${isActive ? activeClassName : ''} ${className}`.trim();
 

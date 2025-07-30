@@ -6,11 +6,13 @@ import buttonImg from "@/assets/circle_plus_button.svg";
 import sendImg from "@/assets/send_icon.svg";
 import { setFilePreview } from "@/utils/setImagePreview";
 import { addFeedsWithFiles } from "@/api";
+import { useAuth } from "@/auth/AuthProvider";
 
 function InputFeed({ curChannelId }: { curChannelId: string }) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
+  const {isAuth} = useAuth();
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -42,7 +44,18 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     e.preventDefault();
     const text = textareaRef.current;
 
+    if(!isAuth){
+      alert("채널에 메세지를 보내려면 로그인해야 합니다.")
+      return;
+    }
+
     if (text) {
+      const content = text.value.trim();
+      if (!content) {
+        alert("내용을 입력해주세요.");
+        return;
+      }
+
       addFeedsWithFiles({
         content: text.value,
         channel_id: curChannelId,
@@ -54,17 +67,17 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     }
   };
 
-  const handleTextKeydown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if(e.key === "Enter" && !e.shiftKey){
+  const handleTextKeydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      
+
       // submit 동작을 form에 위임시킴
       const form = e.currentTarget.form;
-      if(form){
+      if (form) {
         form.requestSubmit();
       }
     }
-  }
+  };
 
   const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOpen(false);
@@ -107,7 +120,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     <div className={S.wrapper}>
       {/* key로 열릴 때마다 key 초기화 */}
       <SubmitClipForm
-        key={recordingData?.url ?? 'no-data'}
+        key={recordingData?.url ?? "no-data"}
         recordingData={recordingData}
         setRecordingData={setRecordingData}
         curChannelId={curChannelId}

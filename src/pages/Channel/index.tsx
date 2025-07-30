@@ -145,12 +145,14 @@ function Channel() {
               </>
             ) : null}
           </div>
-          <div className={S.userListArea}>
-            <UserList channelId={id} />
+            <div>
+          <InputFeed curChannelId={id} />
           </div>
         </div>
+        <div className={S.userListArea}>
+          <UserList channelId={id} />
+        </div>
       </div>
-      <InputFeed curChannelId={id} />
     </>
   );
 }
