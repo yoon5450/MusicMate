@@ -1,11 +1,11 @@
 .wrapper {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 0 0 10px 0;
   position: relative;
   width: 100%;
   background-color: var(--gray_03);
-  border-top: 1px solid var(--gray_06);
+  position: relative;
 
   .feedSubmittForm {
     display: flex;
@@ -22,10 +22,11 @@
     flex-shrink: 0;
     border: 0;
     background: transparent;
+    cursor: pointer;
   }
 
   .textInput {
-    overflow:hidden;
+    overflow: hidden;
     flex-shrink: 1;
     font-family: "Pretendard Variable", sans-serif;
     border: 0;
@@ -40,5 +41,74 @@
     outline: none;
   }
 
+  .dropdownWrapper {
+    position: relative;
+    display: inline-block;
+  }
 
+  .imagePreviewWrapper {
+    position: absolute;
+    top:0;
+    left: 30px;
+    background-color: var(--background);
+    padding: 1rem;
+    border-radius: 20px;
+    border: 1px var(--primary_default) solid;
+    transform: translateY(calc(-100% - 8px));
+    transition: transform 0.3s ease;
+  }
+
+  .imagePreview{
+    width: 10vw;
+    border-radius: 10px;
+  }
+
+  .imageDeleteBtn{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: var(--background);
+    border-radius: 50%;
+    color: var(--primary_default);
+    border: 0.5px var(--primary_default) solid;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+.dropdownList {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: black;
+  border: 1px solid var(--primary_default);
+  padding: 0.5rem;
+  list-style: none;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  color: var(--white);
+  height: fit-content;
+  width: fit-content;
+  border-radius: 10px;
+
+  li {
+    white-space: nowrap;
+    padding: 4px 12px;
+    line-height: 1.4;
+    border-radius: 5px;
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+
+  li label {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  li:hover {
+    background-color: var(--primary_active);
+    color: black;
+  }
 }

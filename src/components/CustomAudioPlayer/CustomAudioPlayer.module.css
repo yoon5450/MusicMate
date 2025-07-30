@@ -1,24 +1,48 @@
+/* 아. type별로 네스팅 처리할걸. 바보인가 */
+.timeDisplay {
+  color: white;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+
+  .btnGroup {
+    display: flex;
+    gap: 30px;
+  }
+
+  .progress {
+    width: 300px;
+  }
+
+  textarea {
+    resize: none;
+  }
 }
 
-.btnGroup {
+.flatWrapper {
   display: flex;
-  gap: 30px;
+  align-items: center;
+  gap: 10px;
+
+  .progress {
+    width: 200px;
+  }
+
+  .btnGroup {
+    display: flex;
+    gap: 5px;
+  }
+
+  .playBtnImg {
+    width: 29px;
+  }
 }
+
 
 .progress {
-  width: 300px;
-}
-
-textarea {
-  resize: none;
-}
-
-
-.timeDisplay{
-  color:white;
+  accent-color: var(--primary_active);
 }

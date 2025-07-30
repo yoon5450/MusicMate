@@ -62,7 +62,8 @@ export const getFeedsWithAllByChannelId = async (channelId: string) => {
   const { data, error } = await supabase
     .from("get_feeds_with_user_and_likes")
     .select("*")
-    .eq("channel_id", channelId);
+    .eq("channel_id", channelId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     errorHandler(error, "getFeedsWithAllByChannelId");
@@ -113,7 +114,6 @@ export const getFeedsByUserInChannel = async (
     errorHandler(error, "getFeedsByUserInChannel");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 };
@@ -144,7 +144,57 @@ export const getFeedsByKeyword = async (
     errorHandler(error, "getFeedsByKeyword");
     return null;
   } else {
-    console.log(data);
+    return data;
+  }
+};
+
+/**
+ * @description 지정한 채널의 지정한 시간보다 큰 feed를 20개 가져옵니다.
+ * @param curChannelId 
+ * @param lastTime 
+ * @returns 
+ */
+export const getFeedsByChannelAndBefore = async (
+  curChannelId: string,
+  lastTime: string
+) => {
+  const { data, error } = await supabase
+    .from("feeds")
+    .select("*")
+    .eq("channel_id", curChannelId)
+    .lt("created_at", lastTime)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndBefore");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+/**
+ * @description 지정한 채널의 지정한 시간보다 나중에 나온 모든 피드를 가져옵니다.
+ * @param curChannelId 
+ * @param lastTime 
+ * @returns 
+ */
+export const getFeedsByChannelAndAfter = async (
+  curChannelId: string,
+  lastTime: string
+) => {
+  const { data, error } = await supabase
+    .from("feeds")
+    .select("*")
+    .eq("channel_id", curChannelId)
+    .gt("created_at", lastTime)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndAfter");
+    return null;
+  } else {
     return data;
   }
 };
@@ -180,13 +230,14 @@ export const addFeeds = async ({
     errorHandler(error, "addChannelMessages");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 };
 
-// 녹음이 없으면 아예 실행되지 않음.
-// 아 이쁘게 짠거같은데.
+/**
+ * @description 파일 객체 피드를 한번에 업로드합니다.
+ *
+ */
 export const addFeedsWithFiles = async ({
   title,
   content,
@@ -227,8 +278,8 @@ export const addFeedsWithFiles = async ({
     message_type,
   });
 
+  // DB에 에러가 있으면 업로드 취소
   if (dbError) {
-    // Optional: Rollback storage upload if DB insert fails
     pathArr.forEach((path) => {
       supabase.storage.from("feed-audio").remove([path]);
     });
@@ -236,6 +287,13 @@ export const addFeedsWithFiles = async ({
   }
 };
 
+/**
+ * @description 파일을 업로드하고 해당 파일의 public url을 리턴합니다.
+ * @param path
+ * @param file
+ * @param target
+ * @returns publicUrl
+ */
 const uploadAndGetUrl = async (path: string, file: File, target: string) => {
   const [uploadResult, urlResult] = await Promise.all([
     supabase.storage.from(target).upload(path, file),

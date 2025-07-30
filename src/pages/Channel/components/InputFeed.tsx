@@ -1,13 +1,100 @@
-import { useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import S from "./InputFeed.module.css";
-import buttonImg from "@/assets/circle_plus_button.svg";
 import RecordButton, { type RecordingData } from "@/components/RecordButton";
 import SubmitClipForm from "@/components/SubmitClipForm";
+import buttonImg from "@/assets/circle_plus_button.svg";
+import sendImg from "@/assets/send_icon.svg";
+import { setFilePreview } from "@/utils/setImagePreview";
+import { addFeedsWithFiles } from "@/api";
 
-function InputFeed({curChannelId}:{curChannelId:string}) {
-  const [recordingData, setRecordingData] = useState<RecordingData>()
+function InputFeed({ curChannelId }: { curChannelId: string }) {
+  // 데이터 상태관리
+  const [recordingData, setRecordingData] = useState<RecordingData>();
+  const [image, setImage] = useState<File>();
+
+  // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // View 상태관리
+  const [open, setOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>();
+
+  // Id
+  const audioBtnId = useId();
+  const imageBtnId = useId();
+  const submitBtnId = useId();
+
+  const initialize = () => {
+    const text = textareaRef.current;
+    if (text) text.value = "";
+    setImage(undefined);
+    setImagePreview(undefined);
+  };
+
+  const handleClose = (e: MouseEvent) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const text = textareaRef.current;
+
+    if (text) {
+      addFeedsWithFiles({
+        content: text.value,
+        channel_id: curChannelId,
+        message_type: "default",
+        image_file: image,
+      });
+
+      initialize();
+    }
+  };
+
+  const handleTextKeydown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      
+      // submit 동작을 form에 위임시킴
+      const form = e.currentTarget.form;
+      if(form){
+        form.requestSubmit();
+      }
+    }
+  }
+
+  const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false);
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setRecordingData({ url, file });
+    } else {
+      alert("유효하지 않은 파일입니다.");
+    }
+  };
+
+  const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false);
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      setImage(file);
+      setFilePreview(file, setImagePreview);
+    } else {
+      alert("유효하지 않은 파일입니다.");
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClose);
+    return () => {
+      document.removeEventListener("mousedown", handleClose);
+    };
+  }, []);
+
   function handleInputText() {
     const cur = textareaRef.current;
     if (cur) {
@@ -19,22 +106,85 @@ function InputFeed({curChannelId}:{curChannelId:string}) {
   return (
     <div className={S.wrapper}>
       {/* key로 열릴 때마다 key 초기화 */}
-      <SubmitClipForm key={Date.now()} recordingData={recordingData} setRecordingData={setRecordingData} curChannelId={curChannelId}/>
+      <SubmitClipForm
+        key={recordingData?.url ?? 'no-data'}
+        recordingData={recordingData}
+        setRecordingData={setRecordingData}
+        curChannelId={curChannelId}
+      />
 
-      <form className={S.feedSubmittForm} action="">
-        <button type="button">
-          <img width={"32px"} src={buttonImg} alt="추가 버튼" />
-        </button>
+      {/* 이미지 프리뷰 영역 */}
+      {imagePreview && (
+        <div className={S.imagePreviewWrapper}>
+          <img className={S.imagePreview} src={imagePreview} />
+          <button
+            type="button"
+            className={S.imageDeleteBtn}
+            onClick={() => {
+              setImage(undefined);
+              setImagePreview(undefined);
+            }}
+          >
+            x
+          </button>
+        </div>
+      )}
+
+      {/* 입력 Form 영역 */}
+      <form className={S.feedSubmittForm} onSubmit={handleSubmit}>
+        {/* 추가 기능 버튼 */}
+        <div ref={wrapperRef} className={S.dropdownWrapper}>
+          <button type="button" onClick={() => setOpen(!open)}>
+            <img width={"32px"} src={buttonImg} alt="추가 버튼" />
+          </button>
+          {open && (
+            <ul className={`${S.dropdownList}`}>
+              <li>
+                <label htmlFor={audioBtnId}>클립 오디오 파일로 업로드</label>
+                <input
+                  type="file"
+                  accept="audio/*"
+                  id={audioBtnId}
+                  name={audioBtnId}
+                  style={{ display: "none" }}
+                  onChange={handleUploadAudio}
+                />
+              </li>
+              <li>
+                <label htmlFor={imageBtnId}>피드에 이미지 추가</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id={imageBtnId}
+                  name={imageBtnId}
+                  style={{ display: "none" }}
+                  onChange={handleUploadImage}
+                />
+              </li>
+            </ul>
+          )}
+        </div>
 
         <textarea
           ref={textareaRef}
           rows={1}
           className={S.textInput}
           onInput={handleInputText}
-          placeholder="채널에 메세지 보내기"
+          onKeyDown={handleTextKeydown}
+          placeholder="메세지를 입력하세요"
         />
-        
-        <RecordButton setRecordingData={setRecordingData} recordingData={recordingData}/>
+
+        <RecordButton
+          setRecordingData={setRecordingData}
+          recordingData={recordingData}
+        />
+
+        <label htmlFor={submitBtnId} className="a11y-hidden">
+          메세지 보내기
+        </label>
+        <button type="submit" id={submitBtnId}>
+          <img width={"36px"} src={sendImg} alt="제출" />
+        </button>
       </form>
     </div>
   );

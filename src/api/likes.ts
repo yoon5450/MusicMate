@@ -20,3 +20,47 @@ export const getLikesByFeedId = async (feedId: string) => {
     return data;
   }
 };
+
+export const getLikesByUserId = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("likes")
+    .select("feed_id")
+    .eq("user_id", userId);
+
+  if (error) {
+    errorHandler(error, "getLikesByUserId");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const addLikeByUserIdAndFeedId = async (
+  feedId: string,
+  userId: string
+) => {
+  const { error } = await supabase
+    .from("likes")
+    .insert([{ feed_id: feedId, user_id: userId }]);
+  if (error) {
+    console.log(error.message);
+    errorHandler(error, "addLikeByUserIdAndFeedId");
+    return null;
+  } else return true;
+};
+
+export const removeLikeByUserIdAndFeedId = async (
+  feedId: string,
+  userId: string
+) => {
+  const { error } = await supabase
+    .from("likes")
+    .delete()
+    .eq("feed_id", feedId)
+    .eq("user_id", userId);
+  if (error) {
+    console.log(error.message);
+    errorHandler(error, "removeLikeByUserIdAndFeedId");
+    return null;
+  } else return true;
+};
