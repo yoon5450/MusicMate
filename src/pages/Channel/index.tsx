@@ -17,7 +17,7 @@ function Channel() {
   const { id } = useParams();
 
   const [feedData, setFeedData] = useState<FeedWithPreview[] | null>(null);
-
+  
   useEffect(() => {
     const getFeedsByChannelId = async () => {
       const data = await getFeedsWithAllByChannelId(id);
@@ -68,7 +68,7 @@ function Channel() {
               : null}
           </div>
           <div className={S.userListArea}>
-            <UserList />
+            <UserList channelId={id}/>
           </div>
         </div>
         <div className={S.detailContentArea}></div>
