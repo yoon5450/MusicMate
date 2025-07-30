@@ -49,20 +49,10 @@ function ChannelFeedAudio({
         />
       </div>
       <div className={S.messageFeed}>
-        {title ? (
-          <>
-            <p>{author_nickname} </p>
-            <h3>
-              {title} <small>{createdTime}</small>
-            </h3>
-          </>
-        ) : (
-          <>
-            <p>
-              {author_nickname} <small>{createdTime}</small>
-            </p>
-          </>
-        )}
+        <p>
+          {author_nickname} <small>{createdTime}</small>
+        </p>
+        {title ? <h3>{title}</h3> : null}
         <div className={S.audioPlayerAndImg}>
           {audio_url ? (
             image_url ? (

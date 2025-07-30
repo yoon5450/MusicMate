@@ -38,7 +38,7 @@
 }
 
 .detailContentArea.open {
-  flex: 1;
+  flex: 0.7;
 }
 
 .closeButton {
@@ -51,6 +51,3 @@
     height: 30px;
   }
 }
-
-
-
