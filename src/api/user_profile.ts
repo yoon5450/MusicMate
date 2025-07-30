@@ -56,6 +56,7 @@ interface UserInfo {
   profile_url: string | null;
   description: string | null;
 }
+
 export const updateUserProfileByUserId = async ({
   id,
   nickname,
@@ -70,6 +71,20 @@ export const updateUserProfileByUserId = async ({
 
   if (error) {
     errorHandler(error, "updateUserProfileByUserId");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const getUserByNickname = async (keyword: string) => {
+  const { data, error } = await supabase
+    .from("user_profile")
+    .select("*")
+    .ilike("nickname", `%${keyword}%`);
+
+  if (error) {
+    errorHandler(error, "getUserByNickname");
     return null;
   } else {
     return data;

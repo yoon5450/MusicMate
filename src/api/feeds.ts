@@ -113,7 +113,6 @@ export const getFeedsByUserInChannel = async (
     errorHandler(error, "getFeedsByUserInChannel");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 };
@@ -144,7 +143,45 @@ export const getFeedsByKeyword = async (
     errorHandler(error, "getFeedsByKeyword");
     return null;
   } else {
-    console.log(data);
+    return data;
+  }
+};
+
+export const getFeedsByChannelAndBefore = async (
+  curChannelId: string,
+  lastTime: string
+) => {
+  const { data, error } = await supabase
+    .from("feeds")
+    .select("*")
+    .eq("channel_id", curChannelId)
+    .lt("created_at", lastTime)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndBefore");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const getFeedsByChannelAndAfter = async (
+  curChannelId: string,
+  lastTime: string
+) => {
+  const { data, error } = await supabase
+    .from("feeds")
+    .select("*")
+    .eq("channel_id", curChannelId)
+    .gt("created_at", lastTime)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndAfter");
+    return null;
+  } else {
     return data;
   }
 };
@@ -180,14 +217,13 @@ export const addFeeds = async ({
     errorHandler(error, "addChannelMessages");
     return null;
   } else {
-    console.log(data);
     return data;
   }
 };
 
 /**
  * @description 파일 객체 피드를 한번에 업로드합니다.
- * 
+ *
  */
 export const addFeedsWithFiles = async ({
   title,
@@ -229,8 +265,8 @@ export const addFeedsWithFiles = async ({
     message_type,
   });
 
+  // DB에 에러가 있으면 업로드 취소
   if (dbError) {
-    // Optional: Rollback storage upload if DB insert fails
     pathArr.forEach((path) => {
       supabase.storage.from("feed-audio").remove([path]);
     });
@@ -240,9 +276,9 @@ export const addFeedsWithFiles = async ({
 
 /**
  * @description 파일을 업로드하고 해당 파일의 public url을 리턴합니다.
- * @param path 
- * @param file 
- * @param target 
+ * @param path
+ * @param file
+ * @param target
  * @returns publicUrl
  */
 const uploadAndGetUrl = async (path: string, file: File, target: string) => {
