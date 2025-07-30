@@ -1,7 +1,7 @@
 .wrapper {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 0 0 10px 0;
   position: relative;
   width: 100%;
   background-color: var(--gray_03);
@@ -48,12 +48,14 @@
 
   .imagePreviewWrapper {
     position: absolute;
-    bottom: 90px;
+    top:0;
     left: 30px;
     background-color: var(--background);
     padding: 1rem;
     border-radius: 20px;
     border: 1px var(--primary_default) solid;
+    transform: translateY(calc(-100% - 8px));
+    transition: transform 0.3s ease;
   }
 
   .imagePreview{
