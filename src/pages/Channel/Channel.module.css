@@ -16,6 +16,27 @@
 }
 
 .detailContentArea {
+  position: relative;
+  flex: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: flex 0.3s ease;
+  background-color: var(--gray_01);
+}
+
+.detailContentArea.open {
   flex: 1;
-  display: none;
+}
+
+.closeButton {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
 }

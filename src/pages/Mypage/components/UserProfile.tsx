@@ -8,7 +8,6 @@ import { updateUserAvatar } from "@/api/user_avatar";
 interface Props {
   userInfo:
     | (Tables<"user_profile"> & {
-        avatarFile: Blob | null;
         profilePreview: string | null;
       })
     | null;
@@ -22,7 +21,7 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
 
   const [nickname, setNickName] = useState<string>("");
   const [description, setDescription] = useState<string | null>(null);
-  const [userAvatar, setUserAvatar] = useState<File | Blob | null>(null); // 이미지파일
+  const [userAvatar, setUserAvatar] = useState<File | null>(null); // 이미지파일
   const [userAvatarPreview, setUserAvatarPreview] = useState<string | null>(
     null
   ); // 이미지프리뷰생성url
@@ -32,7 +31,6 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
       setNickName(userInfo.nickname);
       setDescription(userInfo.description);
       setUserAvatarPreview(userInfo.profilePreview);
-      setUserAvatar(userInfo.avatarFile);
     }
   }, [userInfo]);
 
@@ -40,22 +38,17 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
 
   const handleEditUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const userAvatarUrl = { path: "" }; // supabase스토리지에 저장된 파일명(유저아이디/profile.확장자)
+    const userAvatarUrl = { path: userInfo.profile_url }; // supabase스토리지에 저장된 파일명(유저아이디/profile.확장자)
 
     if (userAvatar) {
-      if (userAvatar instanceof File) {
-        const fileExt = userAvatar.name.split(".").pop();
-        const fileName = `${userInfo.id}/profile.${fileExt}`;
-        const filePath = fileName;
-        const data = await updateUserAvatar({
-          filePath,
-          userAvatar,
-        });
+      const fileExt = userAvatar.name.split(".").pop();
+      const fileName = `${userInfo.id}/profile.${fileExt}`;
+      const data = await updateUserAvatar({
+        filePath: fileName,
+        userAvatar,
+      });
 
-        if (data) userAvatarUrl.path = data.path;
-      } else {
-        if (userInfo.profile_url) userAvatarUrl.path = userInfo.profile_url;
-      }
+      if (data) userAvatarUrl.path = data.path;
     }
 
     const data = await updateUserProfileByUserId({
