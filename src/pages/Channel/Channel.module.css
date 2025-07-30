@@ -1,5 +1,5 @@
 .contentArea {
-  height: calc(100vh - 140px);
+  height: 100vh;
   padding: 1rem;
   overflow-y: scroll;
   display: flex;
@@ -17,13 +17,13 @@
 
 .contentWrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
 }
 
 .userListArea {
   width: 250px;
-  height: calc(100vh - 140px);
+  height: 100vh;
 }
 
 .detailContentArea {
