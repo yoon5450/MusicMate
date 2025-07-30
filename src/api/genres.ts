@@ -15,3 +15,17 @@ export const getGenres = async (): Promise<GenreType[] | null> => {
   return data;
 }
 
+export const getGenreCodeByChannelId = async (channelId: string) => {
+  const { data, error } = await supabase
+    .from('channels')
+    .select('genre_code')
+    .eq('id', channelId)
+    .single();
+
+  if(error){
+    errorHandler(error,"getGenreCodeByChannelId");
+    return null;
+  }
+
+  return data;
+}

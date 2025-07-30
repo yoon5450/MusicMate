@@ -15,7 +15,42 @@
   min-height: 0;
 }
 
-.detailContentArea {
-  flex: 1;
-  display: none;
+.contentWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
+
+.userListArea {
+  width: 250px;
+  height: calc(100vh - 140px);
+}
+
+.detailContentArea {
+  position: relative;
+  flex: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: flex 0.3s ease;
+  background-color: var(--gray_01);
+}
+
+.detailContentArea.open {
+  flex: 1;
+}
+
+.closeButton {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+
+

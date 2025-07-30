@@ -1,18 +1,27 @@
 import errorHandler from "@/error/supabaseErrorHandler";
 import supabase from "@/utils/supabase";
 
-export async function getAvatarUrl(
-  userAvatarPath: string
-): Promise<Blob | null> {
-  const { data, error } = await supabase.storage
+// export async function getAvatarUrl(
+//   userAvatarPath: string
+// ): Promise<Blob | null> {
+//   const { data, error } = await supabase.storage
+//     .from("user-avatar")
+//     .download(userAvatarPath);
+//   if (error) {
+//     errorHandler(error, "getAvatarUrl");
+//     return null;
+//   } else {
+//     return data;
+//   }
+// }
+
+// 그냥 유저정보에 아바타url넣으면 퍼블릭url생성해줍니다........
+export function getAvatarUrlPreview(userAvatarPath: string): string | null {
+  const { data } = supabase.storage
     .from("user-avatar")
-    .download(userAvatarPath);
-  if (error) {
-    errorHandler(error, "getAvatarUrl");
-    return null;
-  } else {
-    return data;
-  }
+    .getPublicUrl(userAvatarPath);
+  if (!data) return null;
+  return `${data.publicUrl}?t=${Date.now()}`;
 }
 
 type UserAvatarInfo = {

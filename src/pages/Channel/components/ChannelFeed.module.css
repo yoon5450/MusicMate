@@ -1,7 +1,6 @@
 .container {
   display: flex;
   padding: 1rem;
-  background-color: var(--gray_10);
   width: 100%;
   gap: var(--spacing-12);
   position: relative;
@@ -35,22 +34,27 @@
     }
 
     iframe {
-      width: 30%;
+      max-width: 300px;
       aspect-ratio: 16/9;
     }
 
     .audioPlayerAndImg {
       display: flex;
       flex-direction: column;
-      width: fit-content;
-      align-items: center;
+      align-items: flex-start;
       gap: var(--spacing-12);
+      width: 100%;
+    }
 
-      img {
-        width: 80%;
-      }
+    .audioPlayerWithNoImage {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-12);
+      width: 100%;
+
       .audioPlayer {
-        align-self: baseline;
+        width: 100%;
       }
     }
   }
@@ -67,11 +71,15 @@
     pointer-events: none;
 
     button {
-      color: var(--white);
-      border: 2px var(--primary_active) solid;
-      background-color: var(--background);
+      color: var(--black);
+      background-color: var(--primary_active);
+      font-weight: bold;
       padding: 8px;
       border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-4);
     }
   }
 
@@ -79,4 +87,18 @@
     opacity: 1;
     pointer-events: auto;
   }
+}
+.active {
+  border: 2px solid var(--primary_active);
+}
+
+p small,
+h3 small {
+  font-size: 0.8rem;
+  color: var(--gray_05);
+}
+
+.feedImage {
+  width: 100%;
+  max-width: 300px;
 }

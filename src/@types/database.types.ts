@@ -636,6 +636,32 @@ export type Database = {
           },
         ]
       }
+      view_genre_user_profiles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          genre_code: number | null
+          nickname: string | null
+          profile_url: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_genres_genre_code_fkey"
+            columns: ["genre_code"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "user_profile_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+        ]
+      }
       view_notification_detail: {
         Row: {
           created_at: string | null
