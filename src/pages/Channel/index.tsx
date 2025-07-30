@@ -14,6 +14,7 @@ import { handleToggleLike } from "@/utils/handleLikeToggle";
 import { getRepliesWithUserInfo } from "@/api/replies";
 import close from "@/assets/close.svg";
 import { useUserProfile } from "@/context/UserProfileContext";
+import { UserList } from "./components/UserList";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -116,28 +117,37 @@ function Channel() {
   return (
     <>
       <div className={S.contentContainer}>
-        <ul className={S.contentArea}>
-          {feedData?.map((data) => renderFeedComponent(data))}
-        </ul>
-        <div className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}>
-          {selectedFeed ? (
-            <>
-              <DetailFeeds
-                feedItem={selectedFeed}
-                replies={repliesData?.length}
-                onToggleLike={onToggleLike}
-                isUserLike={userLikes?.includes(selectedFeed.feed_id!) ?? false}
-              />
-              <FeedReplies replies={repliesData} />
-              <button
-                type="button"
-                className={S.closeButton}
-                onClick={() => setSelectedFeed(null)}
-              >
-                <img src={close} alt="" />
-              </button>
-            </>
-          ) : null}
+        <div className={S.contentWrapper}>
+          <ul className={S.contentArea}>
+            {feedData?.map((data) => renderFeedComponent(data))}
+          </ul>
+          <div
+            className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+          >
+            {selectedFeed ? (
+              <>
+                <DetailFeeds
+                  feedItem={selectedFeed}
+                  replies={repliesData?.length}
+                  onToggleLike={onToggleLike}
+                  isUserLike={
+                    userLikes?.includes(selectedFeed.feed_id!) ?? false
+                  }
+                />
+                <FeedReplies replies={repliesData} />
+                <button
+                  type="button"
+                  className={S.closeButton}
+                  onClick={() => setSelectedFeed(null)}
+                >
+                  <img src={close} alt="" />
+                </button>
+              </>
+            ) : null}
+          </div>
+          <div className={S.userListArea}>
+            <UserList channelId={id} />
+          </div>
         </div>
       </div>
       <InputFeed curChannelId={id} />
