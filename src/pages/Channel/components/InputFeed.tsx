@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import S from "./InputFeed.module.css";
 import RecordButton, { type RecordingData } from "@/components/RecordButton";
 import SubmitClipForm from "@/components/SubmitClipForm";
@@ -53,6 +53,18 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
       initialize();
     }
   };
+
+  const handleTextKeydown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      
+      // submit 동작을 form에 위임시킴
+      const form = e.currentTarget.form;
+      if(form){
+        form.requestSubmit();
+      }
+    }
+  }
 
   const handleUploadAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOpen(false);
@@ -158,6 +170,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
           rows={1}
           className={S.textInput}
           onInput={handleInputText}
+          onKeyDown={handleTextKeydown}
           placeholder="메세지를 입력하세요"
         />
 
