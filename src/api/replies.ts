@@ -40,15 +40,18 @@ export const getRepliesWithUserInfo = async (
 };
 
 export const addReply = async ({
+  author_id,
   content,
   feed_id,
 }: {
+  author_id: string | null;
   content: string;
   feed_id: string;
 }) => {
   const { data, error } = await supabase
     .from("feed_replies")
     .insert({
+      author_id,
       content,
       feed_id,
     })

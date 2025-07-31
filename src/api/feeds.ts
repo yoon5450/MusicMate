@@ -304,3 +304,24 @@ const uploadAndGetUrl = async (path: string, file: File, target: string) => {
 
   return urlResult.data?.publicUrl;
 };
+
+
+/**
+ * @description 인기 클립(message_type이 clip이고, audio_url이 있는 피드)
+ * @returns 인기 클립 리스트
+ */
+export const getPopularClips = async ():Promise<Tables<"get_feeds_with_user_and_likes">[]|null> => {
+  const{data,error} = await supabase
+    .from("get_feeds_with_user_and_likes")
+    .select("*")
+    .eq("message_type","clip")
+    .not("audio_url","is",null)
+    .order("like_count",{ascending:false})
+    .limit(10);
+
+  if(error){
+    errorHandler(error,"getPopularClips");
+    return null;
+  }
+  return data;
+};

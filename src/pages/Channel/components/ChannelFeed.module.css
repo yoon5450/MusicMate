@@ -99,6 +99,13 @@ h3 small {
   font-size: 0.8rem;
   color: var(--gray_05);
 }
+.imgContainer {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 1rem;
+}
 
 .feedImage {
   width: 100%;
