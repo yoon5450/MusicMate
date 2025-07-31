@@ -1,48 +1,41 @@
-import { getGenreUserProFiles } from "@/api/genre_user_profiles";
 import S from "./UserList.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Tables } from "@/@types/database.types";
-import { getGenreCodeByChannelId } from "@/api/genres";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
+import { getChannelUserProFiles } from "@/api";
 
-export type GenreUserProfilesType = Tables<"view_genre_user_profiles">;
+export type userProfileType = Tables<"user_profile">;
 
 type Props = { channelId: string };
 
 export const UserList = ({ channelId }: Props) => {
-  const [users, setUsers] = useState<GenreUserProfilesType[]>([]);
-
-  const [genreCode, setGenreCode] = useState<number>(1);
+  const [users, setUsers] = useState<userProfileType[]>([]);
 
   useEffect(() => {
-    async function fetchGenreCode() {
-      const data = await getGenreCodeByChannelId(channelId);
-      if (data?.genre_code) setGenreCode(data?.genre_code);
-    }
+    if (!channelId) return;
 
-    fetchGenreCode();
-  }, [channelId]);
-
-  useEffect(() => {
-    if (!genreCode) return;
-
+    console.log("channelId ", channelId);
+    
     async function fetchUsers() {
-      const data = await getGenreUserProFiles(genreCode);
-      setUsers(data ?? []);
+      const data = await getChannelUserProFiles(channelId);
+      console.log("data == ", data);
+      
+      setUsers((data ?? []) as userProfileType[]);
     }
 
     fetchUsers();
-  }, [genreCode]);
+  }, [channelId]);
+
 
   return (
     <div className={S.container}>
       <div className={S.searchBar}>
-        <input type="text" placeholder="검색하기" />
+        <input type="text" placeholder="검색하기" onChange={handleChange} />
       </div>
       <div className={S.listWrapper}>
         <ul className={S.userList}>
           {users.map((user) => (
-            <li key={user.user_id} className={S.userItem}>
+            <li key={user.id} className={S.userItem}>
               <img
                 className={S.avatar}
                 src={

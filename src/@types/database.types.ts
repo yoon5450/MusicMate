@@ -573,6 +573,32 @@ export type Database = {
           },
         ]
       }
+      view_channel_user_profiles: {
+        Row: {
+          channel_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          nickname: string | null
+          profile_url: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_channels_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profile_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+        ]
+      }
       view_feed_search: {
         Row: {
           audio_url: string | null
@@ -789,6 +815,13 @@ export type Database = {
       create_channel_and_link_user: {
         Args: { name: string; description?: string; genre_code?: number }
         Returns: string
+      }
+      update_user_genres: {
+        Args: { user_id: string; selected_genres: number[] }
+        Returns: {
+          data: boolean
+          error: string
+        }[]
       }
     }
     Enums: {
