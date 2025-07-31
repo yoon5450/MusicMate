@@ -1,11 +1,17 @@
 .contentArea {
-  height: 100vh;
+  height: 100%;
   padding: 1rem;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-12);
   flex: 1;
+}
+
+.feedArea{
+  height:  calc(100% - 85px);
+  display: flex;
+  overflow: hidden;
 }
 
 .contentContainer {

@@ -19,6 +19,10 @@ export const getUserChannels = async (): Promise<UserChannelsType[] | null> => {
   }
 };
 
+export const getUserChannelsByChannelId = async () => {
+  
+}
+
 /**
  *
  * @description 유저 id 기반한 가입한 채널을 조회합니다.
@@ -35,6 +39,24 @@ export const getUserChannelsByUserId = async (user_id: string) => {
     return null;
   } else {
     return data;
+  }
+};
+
+export const checkUserInChannels = async (channel_id:string, user_id:string) => {
+  const {data, error} = await supabase
+  .from('user_channels')
+  .select('*')
+  .eq("channel_id", channel_id)
+  .eq("user_id", user_id)
+  console.log(channel_id, user_id)
+
+  if(error){
+    errorHandler(error, "checkUserInChannels")
+    return false
+  }else{
+    console.log(data)
+    if(data.length > 0) return true;
+    else return false
   }
 };
 

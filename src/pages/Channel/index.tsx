@@ -39,7 +39,6 @@ function Channel() {
       setSelectedFeed(null);
 
       const feeds = await getFeedsWithAllByChannelId(id);
-      console.log(feeds);
       if (!feeds) return;
 
       const updatedFeeds = await Promise.all(
@@ -118,35 +117,37 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
-          <ul className={S.contentArea}>
-            {feedData?.map((data) => renderFeedComponent(data))}
-          </ul>
-          <div
-            className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
-          >
-            {selectedFeed ? (
-              <>
-                <DetailFeeds
-                  feedItem={selectedFeed}
-                  replies={repliesData?.length}
-                  onToggleLike={onToggleLike}
-                  isUserLike={
-                    userLikes?.includes(selectedFeed.feed_id!) ?? false
-                  }
-                />
-                <FeedReplies replies={repliesData} />
-                <button
-                  type="button"
-                  className={S.closeButton}
-                  onClick={() => setSelectedFeed(null)}
-                >
-                  <img src={close} alt="" />
-                </button>
-              </>
-            ) : null}
-          </div>
-            <div>
-          <InputFeed curChannelId={id} />
+          <div className={S.feedArea}>
+            <ul className={S.contentArea}>
+              {feedData?.map((data) => renderFeedComponent(data))}
+            </ul>
+            <div
+              className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+            >
+              {selectedFeed ? (
+                <>
+                  <DetailFeeds
+                    feedItem={selectedFeed}
+                    replies={repliesData?.length}
+                    onToggleLike={onToggleLike}
+                    isUserLike={
+                      userLikes?.includes(selectedFeed.feed_id!) ?? false
+                    }
+                  />
+                  <FeedReplies replies={repliesData} />
+                  <button
+                    type="button"
+                    className={S.closeButton}
+                    onClick={() => setSelectedFeed(null)}
+                  >
+                    <img src={close} alt="" />
+                  </button>
+                </>
+              ) : null}
+            </div>
+            </div>
+          <div>
+            <InputFeed curChannelId={id} />
           </div>
         </div>
         <div className={S.userListArea}>
