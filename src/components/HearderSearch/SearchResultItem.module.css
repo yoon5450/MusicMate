@@ -1,15 +1,30 @@
-.resultItemContainer{
+.resultItemContainer {
   width: 100%;
-  height: 30px;
+  padding: 1rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  color: var(--primary_default);
-  background-color: var(--background);
-}
+  color: var(--white);
+  background-color: #1e1e1eff;
 
-.content{
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  h3{
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  small{
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--gray_06);
+  }
+
+  .mainContents{
+    max-width: 80%;
+  }
 }

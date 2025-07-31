@@ -73,6 +73,7 @@ function HeaderSearch({ setIsSearch }: Props) {
         </button>
 
         {searchResult.length > 0 ? (
+          
           <div className={S.searchResultContainer}>
             {searchResult.slice(0, 5).map((item) => (
               <SearchResultItem item={item} />

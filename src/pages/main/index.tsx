@@ -10,14 +10,23 @@ import PlaylistSwiper from './components/PlaylistSwiper';
 import FeedList from './components/FeedList';
 import ClipSwiper from './components/ClipSwiper';
 import S from './style.module.css';
+import { useEffect } from 'react';
+import useAlert from '@/hook/useAlert';
 
 function Main() {
+  const { AlertModal, showAlert } = useAlert();
+
+  useEffect(() => {
+    showAlert("테스트 메세지입니다.");
+  }, []);
+
   return (
     <div className={S.container}>
       <PlaylistSwiper/>
       <FeedList title='인기 게시글'/>
       <ClipSwiper/>
+      {AlertModal}
     </div>
-  )
+  );
 }
-export default Main
+export default Main;

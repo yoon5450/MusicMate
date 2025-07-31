@@ -1,0 +1,19 @@
+.alertBackdrop {
+  position: absolute;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+}
+
+.alertBox {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: 60vw;
+  height: 40vh;
+  min-width: 400px;
+  min-height: 200px;
+  background-color: var(--gray_04);
+}
