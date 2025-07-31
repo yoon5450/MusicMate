@@ -1,6 +1,7 @@
 import Channel from "@/pages/Channel";
-import Main from "@/pages/Main";
+import Main from "@/pages/main";
 import Mypage from "@/pages/Mypage/Mypage";
+import UserProfilePage from "@/pages/Users/UserProfilePage";
 
 export const routes = [
   {
@@ -22,5 +23,10 @@ export const routes = [
     title: "마이페이지",
     path: "/mypage",
     element: <Mypage />,
+  },
+  {
+    title: "유저 프로필",
+    path: "/user/:id",
+    element: <UserProfilePage />,
   },
 ];

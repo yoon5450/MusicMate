@@ -29,5 +29,5 @@
   display: flex;
   flex-direction: column;
   background: var(--gray_03);
-  overflow-y: hidden;
+  overflow-y: auto;
 }
