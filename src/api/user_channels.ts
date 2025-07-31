@@ -54,7 +54,6 @@ export const checkUserInChannels = async (channel_id:string, user_id:string) => 
     errorHandler(error, "checkUserInChannels")
     return false
   }else{
-    console.log(data)
     if(data.length > 0) return true;
     else return false
   }

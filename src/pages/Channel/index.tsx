@@ -2,7 +2,7 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getFeedsWithAllByChannelId, getLikesByUserId } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -22,7 +22,7 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
 };
 
 function Channel() {
-  const { id } = useParams(); // 채널아이디
+  const { id, feedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
 
@@ -84,7 +84,7 @@ function Channel() {
     return previewUrl;
   };
 
-  const onToggleLike = async (feedId: string) => {
+  const onToggleLike = useCallback(async (feedId: string) => {
     if (!user) return;
     const result = await handleToggleLike(user.id, feedId, userLikes, feedData);
     if (!result) return;
@@ -98,9 +98,9 @@ function Channel() {
         setSelectedFeed(updatedFeed);
       }
     }
-  };
+  }, [user, userLikes, feedData, selectedFeed])
 
-  const renderFeedComponent = (feed: FeedWithPreview) => {
+  const renderFeedComponent = useCallback((feed: FeedWithPreview) => {
     if (!feed.feed_id) return;
     const commonProps = {
       feedItem: feed,
@@ -113,7 +113,7 @@ function Channel() {
     if (feed.message_type === "clip")
       return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
     return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
-  };
+  }, [selectedFeed, userLikes, onToggleLike]);
 
   return (
     <>

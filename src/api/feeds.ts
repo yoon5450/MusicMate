@@ -138,7 +138,7 @@ export const getFeedsByKeyword = async (
 
   if (channel_id) query = query.eq("channel_id", channel_id);
 
-  const { data, error } = await query;;
+  const { data, error } = await query;
 
   if (error) {
     errorHandler(error, "getFeedsByKeyword");
@@ -175,7 +175,7 @@ export const getFeedsByChannelAndBefore = async (
 };
 
 /**
- * @description 지정한 채널의 지정한 시간보다 나중에 나온 모든 피드를 가져옵니다.
+ * @description 지정한 채널의 지정한 시간보다 나중에 나온 20개의 피드를 가져옵니다.
  * @param curChannelId
  * @param lastTime
  * @returns
@@ -189,7 +189,8 @@ export const getFeedsByChannelAndAfter = async (
     .select("*")
     .eq("channel_id", curChannelId)
     .gt("created_at", lastTime)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .limit(20);
 
   if (error) {
     errorHandler(error, "getFeedsByChannelAndAfter");

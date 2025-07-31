@@ -6,6 +6,7 @@
   align-items: center;
   color: var(--white);
   background-color: #1e1e1eff;
+  border-bottom: 1px solid var(--gray_04);
 
   div {
     white-space: nowrap;
@@ -21,10 +22,11 @@
   small{
     font-size: 14px;
     font-weight: 300;
-    color: var(--gray_06);
+    color: var(--gray_08);
   }
 
   .mainContents{
+    flex: 1;
     max-width: 80%;
   }
 }

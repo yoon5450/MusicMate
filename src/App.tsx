@@ -16,7 +16,6 @@ import { UserProfileProvider } from "./context/UserProfileContext";
 function App() {
 
   return (
-
     <>
       <LoginModalProvider>
         <AuthProvider>
