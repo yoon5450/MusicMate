@@ -6,16 +6,17 @@ Main
 ㄴ추천 플레이리스트 (Wapper 포함)
 */
 
+import PlaylistSwiper from './components/PlaylistSwiper';
 import FeedList from './components/FeedList';
-import SwipeList from './components/SwipeList';
+import ClipSwiper from './components/ClipSwiper';
 import S from './style.module.css';
 
 function Main() {
   return (
     <div className={S.container}>
-      <SwipeList />
+      <PlaylistSwiper/>
       <FeedList title='인기 게시글'/>
-      <SwipeList />
+      <ClipSwiper/>
     </div>
   )
 }
