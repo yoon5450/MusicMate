@@ -4,9 +4,13 @@ import S from "./Mypage.module.css";
 import UserProfile from "./components/UserProfile";
 import GenreSelect from "./components/GenreSelect";
 import { useUserProfile } from "@/context/UserProfileContext";
+import { useAuth } from "@/auth/AuthProvider";
 
 function Mypage() {
+  const { user } = useAuth();
   const { setProfileIsChanged, userProfile } = useUserProfile();
+
+  if (!user) return;
 
   return (
     <div className={S.container}>
@@ -14,9 +18,7 @@ function Mypage() {
         userInfo={userProfile}
         setProfileIsChanged={setProfileIsChanged}
       />
-      <div className={S.myGenre}>
-        <GenreSelect />
-      </div>
+      <GenreSelect user={user} />
     </div>
   );
 }
