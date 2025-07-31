@@ -49,17 +49,19 @@ export const updateUserGenres = async ({
   return data;
 };
 
+export type UserGenreDetail = Tables<"user_genre_details">;
 
-export const getUserPreferredGenreByUserId = async(userId:string):Promise<number[]|null> => {
-  const {data,error} = await supabase
-  .from("user_genres")
-  .select("genre_code")
-  .eq("user_id",userId)
+export const getUserProfilePageGenres = async (
+  userId: string
+): Promise<UserGenreDetail[] | null> => {
+  const { data, error } = await supabase
+    .from("user_genre_details")
+    .select("*") 
+    .eq("user_id", userId);
 
-    if (error) {
-    errorHandler(error, "getUserPreferredGenreByUserId");
+  if (error) {
+    errorHandler(error, "getUserProfilePageGenres");
     return null;
   }
-  return data.map((item) => item.genre_code);
-}
-
+  return data;
+};
