@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "@/router/RouterProvider"
-import S from "../Mypage/Mypage.module.css";
-import logo from "@/assets/logo.svg";
 import { getUserProfileByUserId } from "@/api";
-import { getAvatarPublicUrl } from "@/utils/getAvatarPublicUrl";
 import type { Tables } from "@/@types/database.types";
+import UserProfileReadOnly from "./components/UserProfileReadOnly";
+import GenreSelectReadOnly from "./components/GenreSelectReadOnly";
+import S from "../Mypage/Mypage.module.css";
 
 
 
 function UserProfilePage() {
   const { id } = useParams();
   const [userProfile, setUserProfile] = useState<Tables<"user_profile"> | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  // const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
   (async () => {
@@ -21,7 +21,7 @@ function UserProfilePage() {
     
     if (data && data.length > 0) {
       setUserProfile(data[0]);
-      setAvatarUrl(getAvatarPublicUrl(data[0].profile_url));
+      // setAvatarUrl(getAvatarPublicUrl(data[0].profile_url));
     }
   })();
 }, [id]);
@@ -31,25 +31,8 @@ function UserProfilePage() {
 
   return (
     <div className={S.container}>
-      <div className={S.editUserInfoForm}>
-        <div className={S.editUserAvatar}>
-          <img
-            src={avatarUrl ?? logo}
-            alt={`${userProfile.nickname}의 프로필 이미지`}
-            className={S.userAvatar}
-          />
-        </div>
-        <div className={S.formInput}>
-          <div className={S.formControl}>
-            <label htmlFor="nickname">닉네임</label>
-            <input id="nickname"type="text" value={userProfile.nickname} readOnly />
-          </div>
-          <div className={S.formControl}>
-            <label htmlFor="description">설명</label>
-            <textarea id="description" value={userProfile.description ?? ""} readOnly />
-          </div>
-        </div>
-      </div>
+      <UserProfileReadOnly userInfo={userProfile} />
+      <GenreSelectReadOnly userId ={userProfile.id}/>
     </div>
   );
 }

@@ -48,3 +48,18 @@ export const updateUserGenres = async ({
   }
   return data;
 };
+
+
+export const getUserPreferredGenreByUserId = async(userId:string):Promise<number[]|null> => {
+  const {data,error} = await supabase
+  .from("user_genres")
+  .select("genre_code")
+  .eq("user_id",userId)
+
+    if (error) {
+    errorHandler(error, "getUserPreferredGenreByUserId");
+    return null;
+  }
+  return data.map((item) => item.genre_code);
+}
+
