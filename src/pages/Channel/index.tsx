@@ -15,6 +15,7 @@ import { getRepliesWithUserInfo } from "@/api/replies";
 import close from "@/assets/close.svg";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { UserList } from "./components/UserList";
+import InputReplies from "./components/InputReplies";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -33,13 +34,13 @@ function Channel() {
   const [repliesData, setRepliesData] = useState<
     Tables<"get_replies_with_user">[] | null
   >(null);
+  const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
 
   useEffect(() => {
     const fetchData = async () => {
       setSelectedFeed(null);
 
       const feeds = await getFeedsWithAllByChannelId(id);
-      console.log(feeds);
       if (!feeds) return;
 
       const updatedFeeds = await Promise.all(
@@ -70,7 +71,7 @@ function Channel() {
     };
     if (!selectedFeed.feed_id) return;
     getReplies(selectedFeed.feed_id);
-  }, [selectedFeed]);
+  }, [selectedFeed, updateReplies]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -118,39 +119,50 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
-          <ul className={S.contentArea}>
-            {feedData?.map((data) => renderFeedComponent(data))}
-          </ul>
-          <div
-            className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
-          >
-            {selectedFeed ? (
-              <>
-                <DetailFeeds
-                  feedItem={selectedFeed}
-                  replies={repliesData?.length}
-                  onToggleLike={onToggleLike}
-                  isUserLike={
-                    userLikes?.includes(selectedFeed.feed_id!) ?? false
-                  }
-                />
-                <FeedReplies replies={repliesData} />
-                <button
-                  type="button"
-                  className={S.closeButton}
-                  onClick={() => setSelectedFeed(null)}
-                >
-                  <img src={close} alt="" />
-                </button>
-              </>
-            ) : null}
+          <div className={S.feedArea}>
+            <ul className={S.contentArea}>
+              {feedData?.map((data) => renderFeedComponent(data))}
+            </ul>
+            <div
+              className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+            >
+              {selectedFeed ? (
+                <>
+                  <DetailFeeds
+                    feedItem={selectedFeed}
+                    replies={repliesData?.length}
+                    onToggleLike={onToggleLike}
+                    isUserLike={
+                      userLikes?.includes(selectedFeed.feed_id!) ?? false
+                    }
+                  />
+                  <FeedReplies replies={repliesData} />
+                  <InputReplies
+                    currentFeedId={selectedFeed.feed_id!}
+                    setUpdateReplies={setUpdateReplies}
+                  />
+                  <button
+                    type="button"
+                    className={S.closeButton}
+                    onClick={() => setSelectedFeed(null)}
+                  >
+                    <img src={close} alt="" />
+                  </button>
+                </>
+              ) : null}
+            </div>
           </div>
-          <div className={S.userListArea}>
-            <UserList channelId={id} />
+
+          <div
+            className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
+          >
+            <InputFeed curChannelId={id} />
           </div>
         </div>
+        <div className={S.userListArea}>
+          <UserList channelId={id} />
+        </div>
       </div>
-      <InputFeed curChannelId={id} />
     </>
   );
 }

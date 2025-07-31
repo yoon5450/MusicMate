@@ -67,63 +67,67 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
   };
 
   return (
-    <form className={S.editUserInfoForm} onSubmit={handleEditUser}>
-      <div className={S.editUserAvatar}>
-        <img
-          src={userAvatarPreview ? userAvatarPreview : logo}
-          alt="프로필이미지"
-          className={S.userAvatar}
-        />
-
-        <label htmlFor={avatarId}>
-          <div className={S.fileSelectButton}>파일선택하기</div>
-        </label>
-        <input
-          id={avatarId}
-          name={avatarId}
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files?.[0] ?? null;
-            setUserAvatar(file);
-            if (file) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                setUserAvatarPreview(reader.result as string);
-              };
-              reader.readAsDataURL(file);
-            } else {
-              setUserAvatarPreview(null);
-            }
-          }}
-        />
-      </div>
-      <div className={S.formInput}>
-        <div className={S.formControl}>
-          <label htmlFor={emailId}>닉네임</label>
-          <input
-            id={emailId}
-            type="text"
-            name="nickname"
-            value={nickname ? nickname : ""}
-            onChange={(e) => setNickName(e.target.value)}
-            required
+    <div className={S.profileContainer}>
+      <h3>프로필 수정</h3>
+      <form className={S.editUserInfoForm} onSubmit={handleEditUser}>
+        {" "}
+        <div className={S.editUserAvatar}>
+          <img
+            src={userAvatarPreview ? userAvatarPreview : logo}
+            alt="프로필이미지"
+            className={S.userAvatar}
           />
-        </div>
-        <div className={S.formControl}>
-          <label htmlFor={descriptionId}>설명</label>
-          <textarea
-            id={descriptionId}
-            name="description"
-            value={description ? description : undefined}
+
+          <label htmlFor={avatarId}>
+            <div className={S.fileSelectButton}>파일선택하기</div>
+          </label>
+          <input
+            id={avatarId}
+            name={avatarId}
+            type="file"
+            accept="image/*"
             onChange={(e) => {
-              setDescription(e.target.value);
+              const file = e.target.files?.[0] ?? null;
+              setUserAvatar(file);
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setUserAvatarPreview(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                setUserAvatarPreview(null);
+              }
             }}
           />
         </div>
-      </div>
-      <button type="submit">변경</button>
-    </form>
+        <div className={S.formInput}>
+          <div className={S.formControl}>
+            <label htmlFor={emailId}>닉네임</label>
+            <input
+              id={emailId}
+              type="text"
+              name="nickname"
+              value={nickname ? nickname : ""}
+              onChange={(e) => setNickName(e.target.value)}
+              required
+            />
+          </div>
+          <div className={S.formControl}>
+            <label htmlFor={descriptionId}>설명</label>
+            <textarea
+              id={descriptionId}
+              name="description"
+              value={description ? description : undefined}
+              onChange={(e) => {
+                setDescription(e.target.value);
+              }}
+            />
+          </div>
+          <button type="submit">변경</button>
+        </div>
+      </form>
+    </div>
   );
 }
 
