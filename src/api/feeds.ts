@@ -120,7 +120,7 @@ export const getFeedsByUserInChannel = async (
 
 /**
  * @description 키워드에 기반한 피드를 검색해 가져옵니다. [Option] 채널 안에서 조회 가능합니다.
- * @returns {Promise<Tables<"feeds">[] | null>} feedData
+ * @returns {Promise<Tables<"view_feed_search">[] | null>} feedData
  */
 export const getFeedsByKeyword = async (
   keyword: string,

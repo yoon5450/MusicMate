@@ -1,7 +1,13 @@
-.searchForm {
+.headerSearchWrapper {
   width: 100%;
   height: 100%;
   position: absolute;
+}
+
+.searchForm {
+  width: 100%;
+  height: 100%;
+  position: relative;
   background-color: var(--background);
 }
 
@@ -23,9 +29,14 @@
   color: var(--primary_default);
 }
 
-.resultContiner{
+.searchResultContainer {
   position: absolute;
-  left: 0;
-  top: 0;
-  transform: translateY(-100%);
+  top: 100%;
+  left: 50%;
+  translate: -50% ;
+  z-index: 10;
+  background-color: var(--background);
+  border: 1px solid var(--gray_07);
+  width: 95%;
+  border-radius: 0 0 10px 10px;
 }
