@@ -10,7 +10,7 @@ type Props = { channelId: string };
 
 export const UserList = ({ channelId }: Props) => {
   const [users, setUsers] = useState<GenreUserProfilesType[]>([]);
-
+  
   const [genreCode, setGenreCode] = useState<number>(1);
 
   useEffect(() => {
