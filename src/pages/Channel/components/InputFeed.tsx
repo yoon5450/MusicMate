@@ -5,14 +5,17 @@ import SubmitClipForm from "@/components/SubmitClipForm";
 import buttonImg from "@/assets/circle_plus_button.svg";
 import sendImg from "@/assets/send_icon.svg";
 import { setFilePreview } from "@/utils/setImagePreview";
-import { addFeedsWithFiles } from "@/api";
+import { addFeedsWithFiles, checkUserInChannels } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
+import { useParams } from "@/router/RouterProvider";
 
 function InputFeed({ curChannelId }: { curChannelId: string }) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const {isAuth} = useAuth();
+  const {isAuth, user} = useAuth();
+  const {id:channelId} = useParams(); 
+  const [isMember, setIsMember] = useState<boolean | null>(false)
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -26,6 +29,24 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const audioBtnId = useId();
   const imageBtnId = useId();
   const submitBtnId = useId();
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClose);
+    return () => {
+      document.removeEventListener("mousedown", handleClose);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function check() {
+      if(channelId && user) {
+        const flag = await checkUserInChannels(channelId, user?.id)
+        setIsMember(flag)
+      }
+    }
+    check()
+    console.log(isMember)
+  }, [channelId, user])
 
   const initialize = () => {
     const text = textareaRef.current;
@@ -43,10 +64,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const text = textareaRef.current;
-
     if(!isAuth){
       alert("채널에 메세지를 보내려면 로그인해야 합니다.")
       return;
+    }
+
+    if(!isMember){
+      alert("채널에 메세지를 보내려면 멤버여야 합니다.")
+      return
     }
 
     if (text) {
@@ -101,12 +126,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClose);
-    return () => {
-      document.removeEventListener("mousedown", handleClose);
-    };
-  }, []);
+
 
   function handleInputText() {
     const cur = textareaRef.current;
