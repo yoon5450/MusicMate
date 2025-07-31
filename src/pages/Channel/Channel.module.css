@@ -8,8 +8,8 @@
   flex: 1;
 }
 
-.feedArea{
-  height:  calc(100% - 85px);
+.feedArea {
+  height: 100%;
   display: flex;
   overflow: hidden;
 }
@@ -44,6 +44,7 @@
 }
 
 .detailContentArea.open {
+  transition-delay: 0.2s;
   flex: 0.7;
 }
 
@@ -56,4 +57,20 @@
     width: 30px;
     height: 30px;
   }
+}
+
+.inputFeedContainer {
+  transform: translateY(0);
+  transition:
+    transform 0.2s ease,
+    max-height 0.2s ease;
+  max-height: 85px;
+  transition-delay: 0.3s;
+}
+.inputFeedContainer.hide {
+  transform: translateY(100%);
+  transition:
+    transform 0.2s ease,
+    max-height 0.2s ease;
+  max-height: 0px;
 }

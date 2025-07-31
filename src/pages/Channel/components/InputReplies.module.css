@@ -1,0 +1,43 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 10px 0;
+  position: relative;
+  width: 100%;
+  background-color: transparent;
+  position: relative;
+
+  .feedSubmittForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--gray_01);
+    border: 1px solid var(--primary_default);
+    border-radius: 30px;
+    width: 94%;
+    padding: 1rem;
+  }
+
+  button {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .textInput {
+    overflow: hidden;
+    flex-shrink: 1;
+    font-family: "Pretendard Variable", sans-serif;
+    border: 0;
+    width: 90%;
+    background-color: transparent;
+    size: 24px;
+    resize: none;
+    color: white;
+  }
+
+  .textInput:focus {
+    outline: none;
+  }
+}
