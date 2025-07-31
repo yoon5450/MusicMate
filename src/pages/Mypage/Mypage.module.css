@@ -5,27 +5,42 @@
   padding: 2rem;
   background-color: var(--gray_03);
   color: var(--white);
+  gap: var(--spacing-32);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.profileContainer {
+  padding: 2rem;
+  background-color: var(--gray_02);
+  color: var(--white);
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-32);
+  border-radius: 8px;
+  flex: 1;
+  min-width: 400px;
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
 
   .editUserInfoForm {
     display: flex;
-    flex-direction: row;
-    width: 100%;
-    padding: 1rem;
     align-items: center;
     gap: var(--spacing-12);
-    border-radius: 8px;
-    background-color: var(--gray_02);
+    width: 100%;
   }
 
   .editUserAvatar {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: end;
+    justify-content: center;
     width: 150px;
-    height: 200px;
     gap: 1rem;
 
     input {
@@ -68,6 +83,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-8);
+    width: 100%;
   }
 
   .formControl input,
@@ -78,11 +94,10 @@
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
-    resize: vertical;
   }
 
   .formControl textarea {
-    min-height: 120px;
+    resize: vertical;
   }
 
   button {
@@ -90,9 +105,71 @@
     padding: 0.5rem;
     border-radius: 8px;
     background-color: var(--gray_09);
+    cursor: pointer;
 
     &:hover {
       background-color: var(--gray_08);
+    }
+  }
+}
+
+.genreContainer {
+  padding: 2rem;
+  background-color: var(--gray_02);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-32);
+  border-radius: 8px;
+  flex: 1;
+  min-width: 400px;
+
+  .genreGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-8);
+  }
+  .genreBtn {
+    background: var(--gray_02);
+    color: var(--white);
+    border: none;
+    border-radius: var(--spacing-8);
+    padding: var(--spacing-8) var(--spacing-16);
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+      background 0.1s,
+      color 0.1s;
+
+    &:hover {
+      background: var(--primary_hover);
+      color: var(--gray_02);
+    }
+
+    &.active {
+      background: var(--primary_default);
+      color: var(--gray_02);
+    }
+  }
+  h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .submitBtn {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--gray_09);
+  }
+  .changedSubmitBtn {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--primary_active);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--primary_default);
     }
   }
 }
