@@ -19,7 +19,10 @@ import ChannelLink from '@/components/common/Link/ChannelLink';
 
 function ClipSwiper() {
   const [clips,setClips] = useState<Tables<"get_feeds_with_user_and_likes">[]>([]);
-  const [selectedAudio, setSelectedAudio] = useState<{url:string; channel_id:string} | null>(null);
+  const [selectedAudio, setSelectedAudio] = useState<
+    {url:string; 
+    channel_id:string; 
+    feed_id:string} | null>(null);
 
 
   useEffect(()=>{
@@ -54,19 +57,21 @@ function ClipSwiper() {
                 tabIndex={0}
                 aria-label={`${title ?? "클립"}재생`}
                 onClick={()=>{
-                  if(audio_url && channel_id){
+                  if(audio_url && channel_id && feed_id){
                     setSelectedAudio({
                       url:audio_url,
-                      channel_id
+                      channel_id,
+                      feed_id
                     });
                   }
                 }}
                 onKeyDown={(e)=>{
                   if(e.key === "Enter"){
-                    if(audio_url && channel_id){
+                    if(audio_url && channel_id && feed_id){
                       setSelectedAudio({
                         url:audio_url,
-                        channel_id
+                        channel_id,
+                        feed_id
                       });
                     }
                   }
@@ -97,7 +102,7 @@ function ClipSwiper() {
         <CustomAudioPlayer playerType="mini"recordingData={selectedAudio} />
 
         <div className={S.gotoChannelWrapper}>
-          <ChannelLink channelId={selectedAudio.channel_id}>
+          <ChannelLink channelId={selectedAudio.channel_id} feedId={selectedAudio.feed_id}>
           채널로 이동
           </ChannelLink>
         </div>

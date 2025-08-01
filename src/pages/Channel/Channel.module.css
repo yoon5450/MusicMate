@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: 1rem;
+  padding: 0 var(--spacing-12) var(--spacing-12);
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
 .contentContainer {
   display: flex;
   justify-content: space-between;
-  overflow: hidden  ;
+  overflow: hidden;
   flex: 1;
   min-height: 0;
 }
@@ -76,4 +76,20 @@
     max-height 0.2s ease;
   max-height: 0px;
   overflow: hidden;
+}
+
+.channelInfo {
+  display: flex;
+  align-items: end;
+  gap: var(--spacing-8);
+  margin: 1rem;
+  margin-bottom: 1rem;
+  color: white;
+
+  h3 {
+    font-size: 1.5rem;
+  }
+  p {
+    font-size: 1rem;
+  }
 }

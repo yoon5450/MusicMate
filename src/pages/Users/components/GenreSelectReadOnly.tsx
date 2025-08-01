@@ -25,7 +25,7 @@ function GenreSelectReadOnly({userId}:Props) {
       <div className={S.genreGrid}>
         {userGenres.length > 0 ? (
           userGenres.map((genre) => (
-            <span key={genre.genre_code} className={`${S.genreBtn} ${S.active}`}>
+            <span key={genre.genre_code} className={`${S.genreReadOnly}`}>
               {genre.genre_name}
             </span>
           ))

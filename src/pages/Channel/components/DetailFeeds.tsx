@@ -8,6 +8,7 @@ interface Props {
   replies: number | undefined;
   onToggleLike: (feedId: string) => void;
   isUserLike: boolean;
+  scrollToSelectedFeed: () => void;
 }
 
 function DetailFeeds({
@@ -15,6 +16,7 @@ function DetailFeeds({
   replies,
   onToggleLike,
   isUserLike,
+  scrollToSelectedFeed,
 }: Props) {
   const handleLikeToggle = () => {
     onToggleLike(feed_id!);
@@ -32,7 +34,9 @@ function DetailFeeds({
         </div>
         <div className={S.messageFeed}>
           <p>{author_nickname}</p>
-          <button type="button">현재 게시물로 돌아가기</button>
+          <button type="button" onClick={scrollToSelectedFeed}>
+            현재 게시물로 돌아가기
+          </button>
         </div>
       </div>
       <div className={S.reactsInfo}>

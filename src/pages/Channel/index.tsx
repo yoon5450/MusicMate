@@ -2,13 +2,14 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  checkUserInChannels,
+  getChannelInfoById,
   getFeedsWithAllByChannelId,
   getLikesByUserId,
-  checkUserInChannels,
-  getFeedsByChannelAndAfter,
+    getFeedsByChannelAndAfter,
 } from "@/api";
-import { useCallback, useEffect, useRef, useState } from "react";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
@@ -26,12 +27,15 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
 };
 
+type channelInfoType = {
+  name: string;
+  description: string | null;
+};
+
 function Channel() {
   const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
-
-  const feedUlRef = useRef<HTMLUListElement>(null);
 
   const [selectedFeed, setSelectedFeed] = useState<FeedWithPreview | null>(
     null
@@ -43,6 +47,10 @@ function Channel() {
   >(null);
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
+  const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
+  const feedContainerRef = useRef<HTMLUListElement>(null);
+
+  const [channelInfo, setChannelInfo] = useState<channelInfoType>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +89,15 @@ function Channel() {
     console.log(isMember);
   }, [id, user]);
 
+  useEffect(() => {
+    const getChannelInfo = async () => {
+      const data = await getChannelInfoById(id);
+      if (!data) return;
+      setChannelInfo(data[0]);
+    };
+    getChannelInfo();
+  }, [id]);
+
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
     if (!selectedFeed?.feed_id) return;
@@ -103,6 +120,11 @@ function Channel() {
       setSelectedFeed(updatedFeed ?? null);
     }
   }, [paramsFeedId, feedData]);
+  // 선택된 피드 바뀔때마다 스크롤이동하기
+  useEffect(() => {
+    if (!selectedFeed?.feed_id) return;
+    scrollToSelectedFeed();
+  }, [selectedFeed]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -158,6 +180,49 @@ function Channel() {
       };
 
       if (feed.message_type === "clip")
+        return (
+          <li
+            key={feed.feed_id}
+            id={feed.feed_id}
+            ref={(el) => {
+              if (el) feedRefs.current[feed.feed_id!] = el;
+            }}
+          >
+            <ChannelFeedAudio {...commonProps} />
+          </li>
+        );
+      return (
+        <li
+          key={feed.feed_id}
+          id={feed.feed_id}
+          ref={(el) => {
+            if (el) feedRefs.current[feed.feed_id!] = el;
+          }}
+        >
+          <ChannelFeedMessage {...commonProps} />
+        </li>
+      );
+    },
+    [selectedFeed, userLikes, onToggleLike]
+  );
+
+  const scrollToSelectedFeed = () => {
+    if (selectedFeed?.feed_id) {
+      const feed = feedRefs.current[selectedFeed.feed_id];
+      const feedContainer = feedContainerRef.current;
+      if (feed && feedContainer) {
+        const feedRect = feed.getBoundingClientRect();
+        const feedContainerRect = feedContainer.getBoundingClientRect();
+        const offset =
+          feedContainer.scrollTop + (feedRect.top - feedContainerRect.top - 12);
+        feedContainer.scrollTo({
+          top: offset,
+          behavior: "smooth",
+        });
+      }
+    }
+  };
+      if (feed.message_type === "clip")
         return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
       return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
     },
@@ -184,7 +249,7 @@ function Channel() {
   }, [feedData, id]);
 
   const scrollToBottom = useCallback(() => {
-    const el = feedUlRef.current;
+    const el = feedContainerRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, []);
@@ -193,8 +258,18 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
-          <div className={S.feedArea} >
-            <ul className={S.contentArea} ref={feedUlRef}>
+          <div className={S.channelInfo}>
+            {channelInfo ? (
+              <>
+                <h3>{channelInfo.name}</h3>
+                <p>{channelInfo.description}</p>
+              </>
+            ) : (
+              <p>채널정보를 가져올 수 없습니다</p>
+            )}
+          </div>
+          <div className={S.feedArea}>
+            <ul className={S.contentArea} ref={feedContainerRef}>
               {feedData?.map((data) => renderFeedComponent(data))}
             </ul>
             <div
@@ -209,6 +284,7 @@ function Channel() {
                     isUserLike={
                       userLikes?.includes(selectedFeed.feed_id!) ?? false
                     }
+                    scrollToSelectedFeed={scrollToSelectedFeed}
                   />
                   <FeedReplies replies={repliesData} />
                   <InputReplies
