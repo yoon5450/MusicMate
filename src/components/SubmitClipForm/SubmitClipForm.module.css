@@ -13,6 +13,10 @@
   transform: translateY(calc(-100% - 8px));
   transition: transform 0.3s ease;
 
+  textarea{
+    resize: none;
+  }
+
   .addImgBtn {
     height: 170px;
     width: 170px;

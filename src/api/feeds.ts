@@ -159,7 +159,7 @@ export const getFeedsByChannelAndBefore = async (
   lastTime: string
 ) => {
   const { data, error } = await supabase
-    .from("feeds")
+    .from("get_feeds_with_user_and_likes")
     .select("*")
     .eq("channel_id", curChannelId)
     .lt("created_at", lastTime)
@@ -185,7 +185,7 @@ export const getFeedsByChannelAndAfter = async (
   lastTime: string
 ) => {
   const { data, error } = await supabase
-    .from("feeds")
+    .from("get_feeds_with_user_and_likes")
     .select("*")
     .eq("channel_id", curChannelId)
     .gt("created_at", lastTime)

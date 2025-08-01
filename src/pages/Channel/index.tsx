@@ -8,6 +8,7 @@ import {
   getChannelInfoById,
   getFeedsWithAllByChannelId,
   getLikesByUserId,
+    getFeedsByChannelAndAfter,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -111,6 +112,8 @@ function Channel() {
 
   // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
+    // 선택된 피드가 없을 때만 스크롤
+    if(!paramsFeedId) scrollToBottom();
     if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
       console.log(paramsFeedId);
@@ -220,6 +223,32 @@ function Channel() {
     }
   };
 
+
+  // 마지막 요소에서 20개를 더 로드
+  // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
+  const renderTailFeeds = useCallback(async () => {
+    if (!feedData) return;
+    const lastTime = feedData[feedData.length - 1].created_at;
+    const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
+
+    if (!afterFeedData) return;
+
+    const updatedFeeds = await Promise.all(
+      afterFeedData.map(async (feed) => {
+        const previewUrl = await getPreviewImage(feed);
+        return { ...feed, preview_url: previewUrl };
+      })
+    );
+
+    setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
+  }, [feedData, id]);
+
+  const scrollToBottom = useCallback(() => {
+    const el = feedContainerRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, []);
+
   return (
     <>
       <div className={S.contentContainer}>
@@ -272,7 +301,7 @@ function Channel() {
           <div
             className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
           >
-            <InputFeed curChannelId={id} />
+            <InputFeed curChannelId={id} renderTailFeeds={renderTailFeeds} scrollToBottom={scrollToBottom} />
           </div>
         </div>
         <div className={S.userListArea}>

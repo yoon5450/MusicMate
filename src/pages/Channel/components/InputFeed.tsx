@@ -9,13 +9,19 @@ import { addFeedsWithFiles, checkUserInChannels } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
 import { useParams } from "@/router/RouterProvider";
 
-function InputFeed({ curChannelId }: { curChannelId: string }) {
+interface Props {
+  curChannelId: string;
+  renderTailFeeds: () => Promise<void>;
+  scrollToBottom: () => void
+}
+
+function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const {isAuth, user} = useAuth();
-  const {id:channelId} = useParams(); 
-  const [isMember, setIsMember] = useState<boolean | null>(false)
+  const { isAuth, user } = useAuth();
+  const { id: channelId } = useParams();
+  const [isMember, setIsMember] = useState<boolean | null>(false);
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -31,6 +37,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const submitBtnId = useId();
 
   useEffect(() => {
+    textareaRef.current?.focus();
     document.addEventListener("mousedown", handleClose);
     return () => {
       document.removeEventListener("mousedown", handleClose);
@@ -39,20 +46,24 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
 
   useEffect(() => {
     async function check() {
-      if(channelId && user) {
-        const flag = await checkUserInChannels(channelId, user?.id)
-        setIsMember(flag)
+      if (channelId && user) {
+        const flag = await checkUserInChannels(channelId, user?.id);
+        setIsMember(flag);
       }
     }
-    check()
-    console.log(isMember)
-  }, [channelId, user])
+    check();
+    console.log(isMember);
+  }, [channelId, user]);
 
   const initialize = () => {
     const text = textareaRef.current;
-    if (text) text.value = "";
+    if (text) {
+      text.value = "";
+      text.focus();
+    }
     setImage(undefined);
     setImagePreview(undefined);
+    scrollToBottom();
   };
 
   const handleClose = (e: MouseEvent) => {
@@ -61,17 +72,18 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const text = textareaRef.current;
-    if(!isAuth){
-      alert("채널에 메세지를 보내려면 로그인해야 합니다.")
+    if (!isAuth) {
+      alert("채널에 메세지를 보내려면 로그인해야 합니다.");
       return;
     }
 
-    if(!isMember){
-      alert("채널에 메세지를 보내려면 멤버여야 합니다.")
-      return
+    if (!isMember) {
+      alert("채널에 메세지를 보내려면 멤버여야 합니다.");
+      return;
     }
 
     if (text) {
@@ -81,12 +93,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
         return;
       }
 
-      addFeedsWithFiles({
+      await addFeedsWithFiles({
         content: text.value,
         channel_id: curChannelId,
         message_type: "default",
         image_file: image,
       });
+
+      await renderTailFeeds();
 
       initialize();
     }
@@ -125,8 +139,6 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
       alert("유효하지 않은 파일입니다.");
     }
   };
-
-
 
   function handleInputText() {
     const cur = textareaRef.current;
