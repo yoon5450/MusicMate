@@ -23,11 +23,15 @@ function GenreSelectReadOnly({userId}:Props) {
     <div className={S.genreContainer}>
       <h3>선호 장르</h3>
       <div className={S.genreGrid}>
-        {userGenres.map((genre) => (
-          <span key={genre.genre_code} className={`${S.genreBtn} ${S.active}`}>
-            {genre.genre_name}
-          </span>
-        ))}
+        {userGenres.length > 0 ? (
+          userGenres.map((genre) => (
+            <span key={genre.genre_code} className={`${S.genreBtn} ${S.active}`}>
+              {genre.genre_name}
+            </span>
+          ))
+        ) : (
+          <p>선호하는 장르가 없습니다.</p>
+        )}
       </div>
     </div>
   );
