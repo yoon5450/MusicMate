@@ -2,8 +2,13 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { getFeedsWithAllByChannelId, getLikesByUserId, checkUserInChannels } from "@/api";
-import { useCallback, useEffect, useState } from "react";
+import {
+  getFeedsWithAllByChannelId,
+  getLikesByUserId,
+  checkUserInChannels,
+  getFeedsByChannelAndAfter,
+} from "@/api";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
@@ -22,9 +27,11 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
 };
 
 function Channel() {
-  const { id, feedId:paramsFeedId } = useParams(); // 채널아이디
+  const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
+
+  const feedsUlRef = useRef<HTMLUListElement>(null);
 
   const [selectedFeed, setSelectedFeed] = useState<FeedWithPreview | null>(
     null
@@ -76,7 +83,7 @@ function Channel() {
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
-    if (!selectedFeed?.feed_id) return;    
+    if (!selectedFeed?.feed_id) return;
 
     const getReplies = async (feedId: string) => {
       const data = await getRepliesWithUserInfo(feedId);
@@ -86,15 +93,14 @@ function Channel() {
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
 
-
-    // Params에 feedId가 들어오면 자동으로 선택하기
+  // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
-    if(feedData && paramsFeedId) {
+    if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      console.log(paramsFeedId)
-      setSelectedFeed(updatedFeed ?? null)
+      console.log(paramsFeedId);
+      setSelectedFeed(updatedFeed ?? null);
     }
-  },[paramsFeedId, feedData])
+  }, [paramsFeedId, feedData]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -107,50 +113,80 @@ function Channel() {
     return previewUrl;
   };
 
-  const onToggleLike = useCallback(async (feedId: string) => {
-    if (!user) {
-      alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
-      return;
-    }
-    if (!isMember) {
-      alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
-      return;
-    }
-    const result = await handleToggleLike(user.id, feedId, userLikes, feedData);
-    if (!result) return;
-    const { newUserLikes, newFeedData } = result;
-    setUserLikes(newUserLikes);
-    setFeedData(newFeedData);
-
-    if (selectedFeed?.feed_id === feedId && newFeedData) {
-      const updatedFeed = newFeedData.find((f) => f.feed_id === feedId);
-      if (updatedFeed) {
-        setSelectedFeed(updatedFeed);
+  const onToggleLike = useCallback(
+    async (feedId: string) => {
+      if (!user) {
+        alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
+        return;
       }
-    }
-  }, [user, userLikes, feedData, selectedFeed])
+      if (!isMember) {
+        alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
+        return;
+      }
+      const result = await handleToggleLike(
+        user.id,
+        feedId,
+        userLikes,
+        feedData
+      );
+      if (!result) return;
+      const { newUserLikes, newFeedData } = result;
+      setUserLikes(newUserLikes);
+      setFeedData(newFeedData);
 
-  const renderFeedComponent = useCallback((feed: FeedWithPreview) => {
-    if (!feed.feed_id) return;
-    const commonProps = {
-      feedItem: feed,
-      isActive: selectedFeed?.feed_id === feed.feed_id,
-      isUserLike: userLikes?.includes(feed.feed_id!) ?? false,
-      onReplyClicked: () => setSelectedFeed(feed),
-      onToggleLike: () => onToggleLike(feed.feed_id!),
-    };
+      if (selectedFeed?.feed_id === feedId && newFeedData) {
+        const updatedFeed = newFeedData.find((f) => f.feed_id === feedId);
+        if (updatedFeed) {
+          setSelectedFeed(updatedFeed);
+        }
+      }
+    },
+    [user, userLikes, feedData, selectedFeed]
+  );
 
-    if (feed.message_type === "clip")
-      return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
-    return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
-  }, [selectedFeed, userLikes, onToggleLike]);
+  const renderFeedComponent = useCallback(
+    (feed: FeedWithPreview) => {
+      if (!feed.feed_id) return;
+      const commonProps = {
+        feedItem: feed,
+        isActive: selectedFeed?.feed_id === feed.feed_id,
+        isUserLike: userLikes?.includes(feed.feed_id!) ?? false,
+        onReplyClicked: () => setSelectedFeed(feed),
+        onToggleLike: () => onToggleLike(feed.feed_id!),
+      };
+
+      if (feed.message_type === "clip")
+        return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
+      return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
+    },
+    [selectedFeed, userLikes, onToggleLike]
+  );
+
+  // 마지막 요소에서 20개를 더 로드
+  // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
+  const renderTailFeeds = useCallback(async () => {
+    if (!feedData) return;
+    const lastTime = feedData[feedData.length - 1].created_at;
+    const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
+
+    if(!afterFeedData) return;
+    
+    const updatedFeeds = await Promise.all(
+      afterFeedData.map(async (feed) => {
+        const previewUrl = await getPreviewImage(feed);
+        return { ...feed, preview_url: previewUrl };
+      })
+    );
+
+    setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
+  }, [user, feedData, id]);
 
   return (
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
           <div className={S.feedArea}>
-            <ul className={S.contentArea}>
+            <ul className={S.contentArea} ref={feedsUlRef}>
               {feedData?.map((data) => renderFeedComponent(data))}
             </ul>
             <div
@@ -186,7 +222,7 @@ function Channel() {
           <div
             className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
           >
-            <InputFeed curChannelId={id} />
+            <InputFeed curChannelId={id} renderTailFeeds={renderTailFeeds} />
           </div>
         </div>
         <div className={S.userListArea}>
