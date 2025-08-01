@@ -5,6 +5,7 @@ import ChannelFeedMessage from "./components/ChannelFeedMessage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   checkUserInChannels,
+  getChannelInfoById,
   getFeedsWithAllByChannelId,
   getLikesByUserId,
 } from "@/api";
@@ -25,6 +26,11 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
 };
 
+type channelInfoType = {
+  name: string;
+  description: string | null;
+};
+
 function Channel() {
   const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
@@ -42,6 +48,8 @@ function Channel() {
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
+
+  const [channelInfo, setChannelInfo] = useState<channelInfoType>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +87,15 @@ function Channel() {
     check();
     console.log(isMember);
   }, [id, user]);
+
+  useEffect(() => {
+    const getChannelInfo = async () => {
+      const data = await getChannelInfoById(id);
+      if (!data) return;
+      setChannelInfo(data[0]);
+    };
+    getChannelInfo();
+  }, [id]);
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
@@ -207,6 +224,16 @@ function Channel() {
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
+          <div className={S.channelInfo}>
+            {channelInfo ? (
+              <>
+                <h3>{channelInfo.name}</h3>
+                <p>{channelInfo.description}</p>
+              </>
+            ) : (
+              <p>채널정보를 가져올 수 없습니다</p>
+            )}
+          </div>
           <div className={S.feedArea}>
             <ul className={S.contentArea} ref={feedContainerRef}>
               {feedData?.map((data) => renderFeedComponent(data))}
