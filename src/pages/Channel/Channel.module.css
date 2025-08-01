@@ -73,4 +73,5 @@
     transform 0.2s ease,
     max-height 0.2s ease;
   max-height: 0px;
+  overflow: hidden;
 }
