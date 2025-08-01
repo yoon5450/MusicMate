@@ -1,39 +1,25 @@
 import type { Tables } from "@/@types/database.types";
 import S from "./style.FeedList.module.css";
+import { useEffect, useState } from "react";
+import { getPopularFeeds } from "@/api";
 
-type Props = {
-  title:string,
-  contents?:Tables<"get_feeds_with_all">
-}
 
-function FeedList({title, contents}:Props) {
+function FeedList() {
+  const [feeds,setFeeds] = useState<Tables<"get_feeds_with_user_and_likes">[]>([]);
+  
 
-  console.log(contents);
+  useEffect(()=>{
+    const fetchFeeds = async()=>{
+      const data = await getPopularFeeds();
+      if(data) setFeeds(data);
+    };
+    fetchFeeds();
+  },[]);
+
   return (
     <>
-      <h2 className={S.title}>{title}</h2>
-      <div className={S.fcWrapper} style={{marginBottom:'20px'}}>
-        <div className={S.container}>
-          <div>
-            <div className={S.feed}>
-              <div>컨텐츠</div> <div>+16</div>
-            </div>
-            <hr />
-          </div>
-          <div>
-            <div className={S.feed}>
-              <div>컨텐츠</div> <div>+16</div>
-            </div>
-            <hr />
-          </div>
-          <div>
-            <div className={S.feed}>
-              <div>컨텐츠</div> <div>+16</div>
-            </div>
-            <hr />
-          </div>
-        </div>
-      </div>
+      <h2 className={S.title}>인기 게시글</h2>
+     
     </>
   );
 }
