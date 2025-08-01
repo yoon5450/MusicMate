@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: 1rem;
+  padding: var(--spacing-12);
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
 .contentContainer {
   display: flex;
   justify-content: space-between;
-  overflow: hidden  ;
+  overflow: hidden;
   flex: 1;
   min-height: 0;
 }
