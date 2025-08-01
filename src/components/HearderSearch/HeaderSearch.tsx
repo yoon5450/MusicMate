@@ -86,7 +86,7 @@ function HeaderSearch({ setIsSearch }: Props) {
         {searchResult.length > 0 ? (
           <div className={S.searchResultContainer}>
             {searchResult.slice(0, 5).map((item) => (
-              <SearchResultItem item={item} initFunc={initFunc} keyword={searchKeyword}/>
+              <SearchResultItem item={item} initFunc={initFunc} keyword={searchKeyword} key={item.id}/>
             ))}
           </div>
         ) : undefined}
