@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import { getChannelUserProFiles, getUserByNickname } from "@/api";
+import { useRouter } from "@/router/RouterProvider";
 
 export type userProfileType = Tables<"user_profile">;
 
@@ -13,6 +14,7 @@ export const UserList = ({ channelId }: Props) => {
   const [channelUsers, setChannelUsers] = useState<userProfileType[]>([]); // 채널 전체 유저 목록
   const [searchText, setSearchText] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { setHistoryRoute } = useRouter();
 
   // 채널 전체 유저 목록
   useEffect(() => {
@@ -67,6 +69,12 @@ export const UserList = ({ channelId }: Props) => {
     }
   };
 
+  // 유저 프로필 클릭시
+  const handleClick = (userId: string) => {
+    window.history.pushState(null, "", `/user/${userId}`);
+    setHistoryRoute(`/user/${userId}`);
+  };
+
   return (
     <div className={S.container}>
       <div className={S.searchBar}>
@@ -80,7 +88,11 @@ export const UserList = ({ channelId }: Props) => {
       <div className={S.listWrapper}>
         <ul className={S.userList}>
           {users.map((user) => (
-            <li key={user.id} className={S.userItem}>
+            <li
+              key={user.id}
+              className={S.userItem}
+              onClick={() => handleClick(user.id)}
+            >
               <img
                 className={S.avatar}
                 src={
