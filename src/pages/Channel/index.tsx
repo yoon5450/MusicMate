@@ -2,8 +2,12 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { getFeedsWithAllByChannelId, getLikesByUserId, checkUserInChannels } from "@/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  checkUserInChannels,
+  getFeedsWithAllByChannelId,
+  getLikesByUserId,
+} from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
@@ -22,7 +26,7 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
 };
 
 function Channel() {
-  const { id, feedId:paramsFeedId } = useParams(); // 채널아이디
+  const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
 
@@ -36,6 +40,8 @@ function Channel() {
   >(null);
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
+  const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
+  const feedContainerRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +82,7 @@ function Channel() {
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
-    if (!selectedFeed?.feed_id) return;    
+    if (!selectedFeed?.feed_id) return;
 
     const getReplies = async (feedId: string) => {
       const data = await getRepliesWithUserInfo(feedId);
@@ -86,15 +92,19 @@ function Channel() {
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
 
-
-    // Params에 feedId가 들어오면 자동으로 선택하기
+  // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
-    if(feedData && paramsFeedId) {
+    if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      console.log(paramsFeedId)
-      setSelectedFeed(updatedFeed ?? null)
+      console.log(paramsFeedId);
+      setSelectedFeed(updatedFeed ?? null);
     }
-  },[paramsFeedId, feedData])
+  }, [paramsFeedId, feedData]);
+  // 선택된 피드 바뀔때마다 스크롤이동하기
+  useEffect(() => {
+    if (!selectedFeed?.feed_id) return;
+    scrollToSelectedFeed();
+  }, [selectedFeed]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -107,50 +117,98 @@ function Channel() {
     return previewUrl;
   };
 
-  const onToggleLike = useCallback(async (feedId: string) => {
-    if (!user) {
-      alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
-      return;
-    }
-    if (!isMember) {
-      alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
-      return;
-    }
-    const result = await handleToggleLike(user.id, feedId, userLikes, feedData);
-    if (!result) return;
-    const { newUserLikes, newFeedData } = result;
-    setUserLikes(newUserLikes);
-    setFeedData(newFeedData);
+  const onToggleLike = useCallback(
+    async (feedId: string) => {
+      if (!user) {
+        alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
+        return;
+      }
+      if (!isMember) {
+        alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
+        return;
+      }
+      const result = await handleToggleLike(
+        user.id,
+        feedId,
+        userLikes,
+        feedData
+      );
+      if (!result) return;
+      const { newUserLikes, newFeedData } = result;
+      setUserLikes(newUserLikes);
+      setFeedData(newFeedData);
 
-    if (selectedFeed?.feed_id === feedId && newFeedData) {
-      const updatedFeed = newFeedData.find((f) => f.feed_id === feedId);
-      if (updatedFeed) {
-        setSelectedFeed(updatedFeed);
+      if (selectedFeed?.feed_id === feedId && newFeedData) {
+        const updatedFeed = newFeedData.find((f) => f.feed_id === feedId);
+        if (updatedFeed) {
+          setSelectedFeed(updatedFeed);
+        }
+      }
+    },
+    [user, userLikes, feedData, selectedFeed]
+  );
+
+  const renderFeedComponent = useCallback(
+    (feed: FeedWithPreview) => {
+      if (!feed.feed_id) return;
+      const commonProps = {
+        feedItem: feed,
+        isActive: selectedFeed?.feed_id === feed.feed_id,
+        isUserLike: userLikes?.includes(feed.feed_id!) ?? false,
+        onReplyClicked: () => setSelectedFeed(feed),
+        onToggleLike: () => onToggleLike(feed.feed_id!),
+      };
+
+      if (feed.message_type === "clip")
+        return (
+          <li
+            key={feed.feed_id}
+            id={feed.feed_id}
+            ref={(el) => {
+              if (el) feedRefs.current[feed.feed_id!] = el;
+            }}
+          >
+            <ChannelFeedAudio {...commonProps} />
+          </li>
+        );
+      return (
+        <li
+          key={feed.feed_id}
+          id={feed.feed_id}
+          ref={(el) => {
+            if (el) feedRefs.current[feed.feed_id!] = el;
+          }}
+        >
+          <ChannelFeedMessage {...commonProps} />
+        </li>
+      );
+    },
+    [selectedFeed, userLikes, onToggleLike]
+  );
+
+  const scrollToSelectedFeed = () => {
+    if (selectedFeed?.feed_id) {
+      const feed = feedRefs.current[selectedFeed.feed_id];
+      const feedContainer = feedContainerRef.current;
+      if (feed && feedContainer) {
+        const feedRect = feed.getBoundingClientRect();
+        const feedContainerRect = feedContainer.getBoundingClientRect();
+        const offset =
+          feedContainer.scrollTop + (feedRect.top - feedContainerRect.top - 12);
+        feedContainer.scrollTo({
+          top: offset,
+          behavior: "smooth",
+        });
       }
     }
-  }, [user, userLikes, feedData, selectedFeed])
-
-  const renderFeedComponent = useCallback((feed: FeedWithPreview) => {
-    if (!feed.feed_id) return;
-    const commonProps = {
-      feedItem: feed,
-      isActive: selectedFeed?.feed_id === feed.feed_id,
-      isUserLike: userLikes?.includes(feed.feed_id!) ?? false,
-      onReplyClicked: () => setSelectedFeed(feed),
-      onToggleLike: () => onToggleLike(feed.feed_id!),
-    };
-
-    if (feed.message_type === "clip")
-      return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
-    return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
-  }, [selectedFeed, userLikes, onToggleLike]);
+  };
 
   return (
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
           <div className={S.feedArea}>
-            <ul className={S.contentArea}>
+            <ul className={S.contentArea} ref={feedContainerRef}>
               {feedData?.map((data) => renderFeedComponent(data))}
             </ul>
             <div
@@ -165,6 +223,7 @@ function Channel() {
                     isUserLike={
                       userLikes?.includes(selectedFeed.feed_id!) ?? false
                     }
+                    scrollToSelectedFeed={scrollToSelectedFeed}
                   />
                   <FeedReplies replies={repliesData} />
                   <InputReplies

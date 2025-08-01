@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: 1rem;
+  padding: var(--spacing-12);
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@
 
 .userListArea {
   min-width: 250px;
-  height: 100%;
+  height: 100vh;
 }
 
 .detailContentArea {

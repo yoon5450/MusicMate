@@ -37,7 +37,7 @@ function ChannelFeedAudio({
   const createdTime =
     created_at!.slice(0, 10) + " " + created_at!.slice(11, 16);
   return (
-    <li
+    <div
       id={feed_id}
       className={isActive ? `${S.container} ${S.active}` : `${S.container}`}
     >
@@ -91,7 +91,7 @@ function ChannelFeedAudio({
           댓글
         </button>
       </div>
-    </li>
+    </div>
   );
 }
 
