@@ -25,7 +25,7 @@ export const routes = [
     element: <Mypage />,
   },
   {
-    title: "유저 프로필",
+    title: "유저 프로필 페이지",
     path: "/user/:id",
     element: <UserProfilePage />,
   },
