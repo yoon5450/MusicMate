@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import supabase from "@/utils/supabase";
 import { signOut } from "@/api/auth";
 
@@ -33,7 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (event, session) => {
         if (event === "SIGNED_IN" && session?.user) {
           setUser({ id: session.user.id, email: session.user.email! });
-
         } else if (event === "SIGNED_OUT") {
           setUser(null);
         }
@@ -44,21 +43,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     const { error } = await signOut();
 
     if (error) console.error("Logout error:", error.message);
 
     setUser(null);
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, isAuth: Boolean(user), logout }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      isAuth: Boolean(user),
+      logout,
+    }),
+    [user, logout]
   );
-}
 
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
