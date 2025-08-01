@@ -222,12 +222,7 @@ function Channel() {
       }
     }
   };
-      if (feed.message_type === "clip")
-        return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
-      return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
-    },
-    [selectedFeed, userLikes, onToggleLike]
-  );
+
 
   // 마지막 요소에서 20개를 더 로드
   // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
