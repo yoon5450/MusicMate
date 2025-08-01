@@ -5,8 +5,10 @@
   justify-content: space-between;
   align-items: center;
   color: var(--white);
-  background-color: #1e1e1eff;
+  background-color: var(--background);
   border-bottom: 1px solid var(--gray_04);
+  transition: background-color 0.4s;
+  cursor: pointer;
 
   div {
     white-space: nowrap;
@@ -29,4 +31,8 @@
     flex: 1;
     max-width: 80%;
   }
+}
+
+.resultItemContainer:hover{
+  background-color: var(--gray_04);
 }

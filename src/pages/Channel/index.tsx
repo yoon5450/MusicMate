@@ -22,7 +22,7 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
 };
 
 function Channel() {
-  const { id, feedId } = useParams(); // 채널아이디
+  const { id, feedId:paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
 
@@ -64,7 +64,8 @@ function Channel() {
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
-    if (!selectedFeed?.feed_id) return;
+    if (!selectedFeed?.feed_id) return;    
+
     const getReplies = async (feedId: string) => {
       const data = await getRepliesWithUserInfo(feedId);
       setRepliesData(data);
@@ -72,6 +73,16 @@ function Channel() {
     if (!selectedFeed.feed_id) return;
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
+
+
+    // Params에 feedId가 들어오면 자동으로 선택하기
+  useEffect(() => {
+    if(feedData && paramsFeedId) {
+      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
+      console.log(paramsFeedId)
+      setSelectedFeed(updatedFeed ?? null)
+    }
+  },[paramsFeedId, feedData])
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (

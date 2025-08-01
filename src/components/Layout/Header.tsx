@@ -4,7 +4,7 @@ import propile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
 
 interface Props {
@@ -13,11 +13,29 @@ interface Props {
 }
 
 // 상위 요소에서 useRoute를 받아오도록 수정
-// TODO : 채널에 관한 정보를 뽑아서 전달해 주는 방법
 function Header({ currentPage, setHistoryRoute }: Props) {
   const { openLogin } = useLoginModal();
   const { isAuth, logout } = useAuth();
   const [isSearch, setIsSearch] = useState<boolean>(false);
+
+  // document 단에서 키보드 이벤트로 탐지
+  useEffect(() => {
+    const searchPop = (e: KeyboardEvent) => {
+      if (e.key === "f" && e.ctrlKey) {
+        e.preventDefault();
+        setIsSearch((prev) => !prev);
+      }
+
+      if (e.key === "Escape") {
+        setIsSearch(false);
+      }
+    };
+
+    document.addEventListener("keydown", searchPop);
+    return () => {
+      document.removeEventListener("keydown", searchPop);
+    };
+  }, []);
 
   const handleLoginModal = () => {
     // 로그인 모달창 열기

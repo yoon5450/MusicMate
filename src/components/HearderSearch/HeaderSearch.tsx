@@ -11,10 +11,17 @@ interface Props {
 }
 
 function HeaderSearch({ setIsSearch }: Props) {
-  const textInputRef = useRef<HTMLInputElement>(null);
   const [searchResult, setSearchResult] = useState<
     Tables<"view_feed_search">[]
   >([]);
+  const [searchInput, setSearchInput] = useState<string>("")
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+
+  const initFunc = () => {
+    setSearchResult([]);
+    setSearchKeyword("")
+    setSearchInput("")
+  }
 
   const searchAction = async (k: string) => {
     if (!k) return;
@@ -37,7 +44,8 @@ function HeaderSearch({ setIsSearch }: Props) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if(!value.trim()) setSearchResult([])
+    setSearchInput(value);
+    if (value.trim()) setSearchResult([]);
     debounceSearch.current(value);
   };
 
@@ -47,6 +55,7 @@ function HeaderSearch({ setIsSearch }: Props) {
 
   const debounceSearch = useRef(
     debounce(async (k: string) => {
+      setSearchKeyword(k);
       const data = await searchAction(k);
       if (data) setSearchResult(data);
     }, 300)
@@ -56,12 +65,12 @@ function HeaderSearch({ setIsSearch }: Props) {
     <div className={S.headerSearchWrapper}>
       <form onSubmit={handleSubmit} className={S.searchForm}>
         <input
-          ref={textInputRef}
           className={S.searchInput}
           type="text"
           placeholder="검색어를 입력하세요"
           onChange={handleChange}
           onKeyDown={handleTextKeydown}
+          value={searchInput}
         />
 
         <button
@@ -73,10 +82,9 @@ function HeaderSearch({ setIsSearch }: Props) {
         </button>
 
         {searchResult.length > 0 ? (
-          
           <div className={S.searchResultContainer}>
             {searchResult.slice(0, 5).map((item) => (
-              <SearchResultItem item={item} />
+              <SearchResultItem item={item} initFunc={initFunc} keyword={searchKeyword}/>
             ))}
           </div>
         ) : undefined}
