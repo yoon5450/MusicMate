@@ -31,7 +31,7 @@ function Channel() {
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
 
-  const feedsUlRef = useRef<HTMLUListElement>(null);
+  const feedUlRef = useRef<HTMLUListElement>(null);
 
   const [selectedFeed, setSelectedFeed] = useState<FeedWithPreview | null>(
     null
@@ -95,6 +95,7 @@ function Channel() {
 
   // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
+    scrollToBottom();
     if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
       console.log(paramsFeedId);
@@ -169,8 +170,8 @@ function Channel() {
     const lastTime = feedData[feedData.length - 1].created_at;
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
 
-    if(!afterFeedData) return;
-    
+    if (!afterFeedData) return;
+
     const updatedFeeds = await Promise.all(
       afterFeedData.map(async (feed) => {
         const previewUrl = await getPreviewImage(feed);
@@ -179,14 +180,20 @@ function Channel() {
     );
 
     setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
-  }, [user, feedData, id]);
+  }, [feedData, id]);
+
+  const scrollToBottom = useCallback(() => {
+    const el = feedUlRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, []);
 
   return (
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
-          <div className={S.feedArea}>
-            <ul className={S.contentArea} ref={feedsUlRef}>
+          <div className={S.feedArea} >
+            <ul className={S.contentArea} ref={feedUlRef}>
               {feedData?.map((data) => renderFeedComponent(data))}
             </ul>
             <div
@@ -222,7 +229,7 @@ function Channel() {
           <div
             className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
           >
-            <InputFeed curChannelId={id} renderTailFeeds={renderTailFeeds} />
+            <InputFeed curChannelId={id} renderTailFeeds={renderTailFeeds} scrollToBottom={scrollToBottom} />
           </div>
         </div>
         <div className={S.userListArea}>

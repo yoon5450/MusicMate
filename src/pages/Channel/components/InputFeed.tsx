@@ -12,9 +12,10 @@ import { useParams } from "@/router/RouterProvider";
 interface Props {
   curChannelId: string;
   renderTailFeeds: () => Promise<void>;
+  scrollToBottom: () => void
 }
 
-function InputFeed({ curChannelId, renderTailFeeds }: Props) {
+function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
@@ -62,6 +63,7 @@ function InputFeed({ curChannelId, renderTailFeeds }: Props) {
     }
     setImage(undefined);
     setImagePreview(undefined);
+    scrollToBottom();
   };
 
   const handleClose = (e: MouseEvent) => {
