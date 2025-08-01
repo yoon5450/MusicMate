@@ -91,7 +91,7 @@
   }
 }
 .active {
-  border: 2px solid var(--primary_active);
+  outline: 2px solid var(--primary_active);
 }
 
 p small,
@@ -99,6 +99,7 @@ h3 small {
   font-size: 0.8rem;
   color: var(--gray_05);
 }
+
 .imgContainer {
   width: 100%;
   display: flex;

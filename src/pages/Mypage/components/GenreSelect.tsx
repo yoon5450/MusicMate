@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import S from "../Mypage.module.css";
 import { getGenres, type GenreType } from "@/api/genres";
-import { getUserPreferredGenre, updateUserGenres } from "@/api";
+import { updateUserGenres } from "@/api";
+import { useUserGenre } from "@/context/UserGenreContext";
 
 interface Props {
   user: { id: string; email: string };
@@ -13,6 +14,8 @@ function GenreSelect({ user }: Props) {
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [isChanged, setIsChanged] = useState(false);
 
+  const { setIsGenreChanged, userGenre } = useUserGenre();
+
   useEffect(() => {
     // 장르 목록 불러오기
     const fetchGenres = async () => {
@@ -23,19 +26,9 @@ function GenreSelect({ user }: Props) {
   }, []);
 
   useEffect(() => {
-    const getUserGenres = async () => {
-      const data = await getUserPreferredGenre();
-      if (!data) {
-        setPreviousGenres([]);
-        setSelectedGenres([]);
-        return;
-      }
-      setPreviousGenres(data);
-      setSelectedGenres(data);
-      return;
-    };
-    getUserGenres();
-  }, []);
+    setPreviousGenres(userGenre);
+    setSelectedGenres(userGenre);
+  }, [userGenre]);
 
   useEffect(() => {
     const changed =
@@ -62,6 +55,7 @@ function GenreSelect({ user }: Props) {
     console.log(data);
     if (!data) return;
     setIsChanged(false);
+    setIsGenreChanged();
     alert("선호 장르가 변경되었습니다");
   };
 
