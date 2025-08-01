@@ -17,6 +17,7 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "reset-css": "^5.0.2",
+    "sweetalert2": "^11.22.2",
     "swiper": "^11.2.10"
   },
   "devDependencies": {

@@ -8,6 +8,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
 import { filterChannels } from "@/utils/filterChannels";
 import { useUserGenre } from "@/context/UserGenreContext";
+import { alert } from "../common/CustomAlert";
 
 function SideNavigation() {
   const [channelList, setChannelList] = useState<ChannelsType[] | null>(null);
@@ -53,8 +54,7 @@ function SideNavigation() {
     if (isAuth) {
       setIsModalOpen(true);
     } else {
-      alert("로그인 후 이용해주세요.");
-      openLogin();
+      alert("로그인 후 이용해주세요.").then(() => openLogin());
     }
   };
   return (

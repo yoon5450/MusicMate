@@ -8,14 +8,15 @@ import { setFilePreview } from "@/utils/setImagePreview";
 import { addFeedsWithFiles, checkUserInChannels } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
 import { useParams } from "@/router/RouterProvider";
+import { alert, showToast } from "@/components/common/CustomAlert";
 
 function InputFeed({ curChannelId }: { curChannelId: string }) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const {isAuth, user} = useAuth();
-  const {id:channelId} = useParams(); 
-  const [isMember, setIsMember] = useState<boolean | null>(false)
+  const { isAuth, user } = useAuth();
+  const { id: channelId } = useParams();
+  const [isMember, setIsMember] = useState<boolean | null>(false);
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -39,14 +40,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
 
   useEffect(() => {
     async function check() {
-      if(channelId && user) {
-        const flag = await checkUserInChannels(channelId, user?.id)
-        setIsMember(flag)
+      if (channelId && user) {
+        const flag = await checkUserInChannels(channelId, user?.id);
+        setIsMember(flag);
       }
     }
-    check()
-    console.log(isMember)
-  }, [channelId, user])
+    check();
+    console.log(isMember);
+  }, [channelId, user]);
 
   const initialize = () => {
     const text = textareaRef.current;
@@ -64,14 +65,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const text = textareaRef.current;
-    if(!isAuth){
-      alert("채널에 메세지를 보내려면 로그인해야 합니다.")
+    if (!isAuth) {
+      alert("채널에 메세지를 보내려면 로그인해야 합니다.");
       return;
     }
 
-    if(!isMember){
-      alert("채널에 메세지를 보내려면 멤버여야 합니다.")
-      return
+    if (!isMember) {
+      alert("채널에 메세지를 보내려면 멤버여야 합니다.");
+      return;
     }
 
     if (text) {
@@ -111,7 +112,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
       const url = URL.createObjectURL(file);
       setRecordingData({ url, file });
     } else {
-      alert("유효하지 않은 파일입니다.");
+      showToast("유효하지 않은 파일입니다.");
     }
   };
 
@@ -122,11 +123,9 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
       setImage(file);
       setFilePreview(file, setImagePreview);
     } else {
-      alert("유효하지 않은 파일입니다.");
+      showToast("유효하지 않은 파일입니다.");
     }
   };
-
-
 
   function handleInputText() {
     const cur = textareaRef.current;
