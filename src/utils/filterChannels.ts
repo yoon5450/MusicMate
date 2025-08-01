@@ -11,24 +11,44 @@ import type { ChannelsType } from "@/api";
  */
 
 export function filterChannels(
-  channelList:ChannelsType[],
+  channelList: ChannelsType[],
   preferredGenres: number[],
   currentUserId: string | null
-):ChannelsType[] {
+): ChannelsType[] {
+  // 선택된 채널 {채널이름 : boolean}
+  const selectedChannels: Record<string, boolean> = {};
+
   if (!currentUserId || preferredGenres.length === 0) {
     return channelList;
   }
 
-  const preferred = channelList.filter(
-    (channel)=> preferredGenres.includes(channel.genre_code!)
+  const preferred = channelList.filter((channel) => {
+    if (
+      preferredGenres.includes(channel.genre_code!) &&
+      !selectedChannels[channel.id]
+    ) {
+      selectedChannels[channel.id] = true;
+      return true;
+    }
+    return false;
+  });
+
+  const myChannels = channelList.filter((channel) => {
+    if (channel.owner_id === currentUserId && !selectedChannels[channel.id]) {
+      selectedChannels[channel.id] = true;
+      return true;
+    }
+    return false;
+  });
+
+  console.log(preferred);
+  console.log(myChannels);
+
+  const remainingChannels = channelList.filter(
+    (channel) => !selectedChannels[channel.id]
   );
 
-  const myChannels =  channelList.filter(
-    (channel) => channel.owner_id === currentUserId
-  );
+  const combineChannels = [...preferred, ...myChannels, ...remainingChannels];
 
-  const combineChannels = [...preferred, ...myChannels];
-  const showChannels = Array.from(new Map(combineChannels.map(item => [item.id, item])).values());
-
-  return showChannels;
+  return combineChannels;
 }
