@@ -10,13 +10,13 @@ export const routes = [
     element: <Main />,
   },
   {
-    title: "채널",
-    path: "/Channel", // 동적 라우팅
+    title: "채널 상세",
+    path: "/Channel/:id", // 동적 라우팅
     element: <Channel />,
   },
   {
     title: "채널 상세",
-    path: "/Channel/:id", // 동적 라우팅
+    path: "/Channel/:id/feed/:feedId", // 동적 라우팅
     element: <Channel />,
   },
   {

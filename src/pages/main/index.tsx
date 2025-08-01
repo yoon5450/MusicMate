@@ -12,12 +12,13 @@ import ClipSwiper from './components/ClipSwiper';
 import S from './style.module.css';
 
 function Main() {
+
   return (
     <div className={S.container}>
       <PlaylistSwiper/>
       <FeedList title='인기 게시글'/>
       <ClipSwiper/>
     </div>
-  )
+  );
 }
-export default Main
+export default Main;

@@ -84,7 +84,6 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
     const handleDurationChange = () => {
       if (isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
-        console.log("duration 변경됨:", audio.duration);
       }
     };
 
@@ -115,8 +114,6 @@ function CustomAudioPlayer({ recordingData, playerType = "default" }: Props) {
         raf = requestAnimationFrame(update);
       }
     };
-
-    console.log(audio.duration);
 
     raf = requestAnimationFrame(update);
 

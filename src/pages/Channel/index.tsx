@@ -2,12 +2,8 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useEffect, useState } from "react";
-import {
-  checkUserInChannels,
-  getFeedsWithAllByChannelId,
-  getLikesByUserId,
-} from "@/api";
+import { getFeedsWithAllByChannelId, getLikesByUserId, checkUserInChannels } from "@/api";
+import { useCallback, useEffect, useState } from "react";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
@@ -26,7 +22,7 @@ type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
 };
 
 function Channel() {
-  const { id } = useParams(); // 채널아이디
+  const { id, feedId:paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt } = useUserProfile();
 
@@ -80,7 +76,8 @@ function Channel() {
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
-    if (!selectedFeed?.feed_id) return;
+    if (!selectedFeed?.feed_id) return;    
+
     const getReplies = async (feedId: string) => {
       const data = await getRepliesWithUserInfo(feedId);
       setRepliesData(data);
@@ -88,6 +85,16 @@ function Channel() {
     if (!selectedFeed.feed_id) return;
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
+
+
+    // Params에 feedId가 들어오면 자동으로 선택하기
+  useEffect(() => {
+    if(feedData && paramsFeedId) {
+      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
+      console.log(paramsFeedId)
+      setSelectedFeed(updatedFeed ?? null)
+    }
+  },[paramsFeedId, feedData])
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -100,7 +107,7 @@ function Channel() {
     return previewUrl;
   };
 
-  const onToggleLike = async (feedId: string) => {
+  const onToggleLike = useCallback(async (feedId: string) => {
     if (!user) {
       alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
       return;
@@ -121,9 +128,9 @@ function Channel() {
         setSelectedFeed(updatedFeed);
       }
     }
-  };
+  }, [user, userLikes, feedData, selectedFeed])
 
-  const renderFeedComponent = (feed: FeedWithPreview) => {
+  const renderFeedComponent = useCallback((feed: FeedWithPreview) => {
     if (!feed.feed_id) return;
     const commonProps = {
       feedItem: feed,
@@ -136,7 +143,7 @@ function Channel() {
     if (feed.message_type === "clip")
       return <ChannelFeedAudio key={feed.feed_id} {...commonProps} />;
     return <ChannelFeedMessage key={feed.feed_id} {...commonProps} />;
-  };
+  }, [selectedFeed, userLikes, onToggleLike]);
 
   return (
     <>
