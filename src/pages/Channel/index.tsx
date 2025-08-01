@@ -95,7 +95,8 @@ function Channel() {
 
   // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
-    scrollToBottom();
+    // 선택된 피드가 없을 때만 스크롤
+    if(!paramsFeedId) scrollToBottom();
     if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
       console.log(paramsFeedId);
