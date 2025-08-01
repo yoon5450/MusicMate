@@ -6,11 +6,11 @@ import { RouterContext } from "@/router/RouterProvider";
 interface Props {
   item: Tables<"view_feed_search">;
   initFunc: () => void;
-  keyword: string
+  keyword?: string
 }
 
 // TODO: 키워드 기반 하이라이팅
-function SearchResultItem({ item, initFunc, keyword }: Props) {
+function SearchResultItem({ item, initFunc }: Props) {
   const createdTime =
     item.created_at!.slice(0, 10) + " " + item.created_at!.slice(11, 16);
   const { setHistoryRoute } = useContext(RouterContext)!;
@@ -27,7 +27,6 @@ function SearchResultItem({ item, initFunc, keyword }: Props) {
   return (
     <div
       id={item.id ?? undefined}
-      key={item.id}
       className={S.resultItemContainer}
       onClick={handleClick}
     >
