@@ -9,6 +9,7 @@ interface Props {
   keyword: string
 }
 
+// TODO: 키워드 기반 하이라이팅
 function SearchResultItem({ item, initFunc, keyword }: Props) {
   const createdTime =
     item.created_at!.slice(0, 10) + " " + item.created_at!.slice(11, 16);

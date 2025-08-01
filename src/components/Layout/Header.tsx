@@ -21,6 +21,8 @@ function Header({ currentPage, setHistoryRoute }: Props) {
   // document 단에서 키보드 이벤트로 탐지
   useEffect(() => {
     const searchPop = (e: KeyboardEvent) => {
+      e.preventDefault();
+      
       if (e.key === "f" && e.ctrlKey) {
         e.preventDefault();
         setIsSearch((prev) => !prev);

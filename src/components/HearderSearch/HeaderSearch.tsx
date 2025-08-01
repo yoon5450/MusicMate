@@ -10,6 +10,8 @@ interface Props {
   setIsSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+//TODO: 채널 내부에서 검색
+// TODO: 엔터를 눌렀을 때 
 function HeaderSearch({ setIsSearch }: Props) {
   const [searchResult, setSearchResult] = useState<
     Tables<"view_feed_search">[]
