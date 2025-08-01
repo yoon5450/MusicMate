@@ -24,6 +24,18 @@ export const alert = (text: string, title = `MusicMate🎵`) => {
   });
 };
 
+export const alertNewLine = (text: string, title = `MusicMate🎵`) => {
+  return Swal.fire({
+    ...baseConfig,
+    icon: undefined,
+    title,
+    html: text,
+    customClass: {
+      htmlContainer: "htmlContainer",
+    },
+  });
+};
+
 export const Toast = Swal.mixin({
   toast: true,
   position: "top-end",
