@@ -48,3 +48,20 @@ export const updateUserGenres = async ({
   }
   return data;
 };
+
+export type UserGenreDetail = Tables<"user_genre_details">;
+
+export const getUserProfilePageGenres = async (
+  userId: string
+): Promise<UserGenreDetail[] | null> => {
+  const { data, error } = await supabase
+    .from("user_genre_details")
+    .select("*") 
+    .eq("user_id", userId);
+
+  if (error) {
+    errorHandler(error, "getUserProfilePageGenres");
+    return null;
+  }
+  return data;
+};

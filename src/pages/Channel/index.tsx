@@ -2,8 +2,8 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
+import { getFeedsWithAllByChannelId, getLikesByUserId, checkUserInChannels } from "@/api";
 import { useCallback, useEffect, useState } from "react";
-import { getFeedsWithAllByChannelId, getLikesByUserId } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
@@ -35,6 +35,7 @@ function Channel() {
     Tables<"get_replies_with_user">[] | null
   >(null);
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
+  const [isMember, setIsMember] = useState<boolean | null>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +62,17 @@ function Channel() {
 
     fetchData();
   }, [id, user, lastUpdatedAt]);
+
+  useEffect(() => {
+    async function check() {
+      if (id && user) {
+        const flag = await checkUserInChannels(id, user?.id);
+        setIsMember(flag);
+      }
+    }
+    check();
+    console.log(isMember);
+  }, [id, user]);
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
   useEffect(() => {
@@ -96,7 +108,14 @@ function Channel() {
   };
 
   const onToggleLike = useCallback(async (feedId: string) => {
-    if (!user) return;
+    if (!user) {
+      alert("피드에 좋아요를 누르려면 로그인해야 합니다.");
+      return;
+    }
+    if (!isMember) {
+      alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
+      return;
+    }
     const result = await handleToggleLike(user.id, feedId, userLikes, feedData);
     if (!result) return;
     const { newUserLikes, newFeedData } = result;

@@ -71,3 +71,19 @@ export const addUserChannels = async (channel_id: string) => {
     console.log("성공");
   }
 };
+
+/**
+ * @description 파라미터에 주어진 channelId에 가입한 userProfile 을 가져옵니다.
+ */
+export const getChannelUserProFiles = async (channelId: string) => {
+  const { data, error } = await supabase
+    .from("view_channel_user_profiles")
+    .select("*")
+    .eq("channel_id", channelId);
+
+  if (error) {
+    errorHandler(error, "getChannelUserProFiles");
+  } else {
+    return data;
+  }
+};
