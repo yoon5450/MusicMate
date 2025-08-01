@@ -27,11 +27,15 @@ function UserProfileReadOnly({userInfo}:Props) {
       <div className={S.formInput}>
         <div className={S.formControl}>
           <label htmlFor="nickname">닉네임</label>
-          <input id="nickname"type="text" value={userInfo.nickname} readOnly />
+          <div id="nickname" className={S.profileReadOnly}>
+            {userInfo.nickname}
+          </div>
         </div>
         <div className={S.formControl}>
           <label htmlFor="description">설명</label>
-          <textarea id="description" value={userInfo.description ?? ""} readOnly />
+          <div id="description" className={S.profileReadOnly}>
+            {userInfo.description}
+          </div>
         </div>
       </div>
     </div>
