@@ -12,17 +12,22 @@ import { useRouter } from "@/router/RouterProvider";
 interface ChannelLinkProps{
   channelId : string;
   children : React.ReactNode;
+  feedId? : string;
 }
 
 function ChannelLink({
   channelId,
-  children
+  children,
+  feedId
 }:ChannelLinkProps) {
   const {setHistoryRoute} = useRouter();
 
   const handleClick = () => {
-    window.history.pushState(null, "", `/Channel/${channelId}`);
-    setHistoryRoute(`/Channel/${channelId}`); 
+    const newPath = feedId ?
+      `/Channel/${channelId}/feed/${feedId}` :
+      `/Channel/${channelId}`;
+      window.history.pushState(null, "", newPath);
+      setHistoryRoute(newPath); 
   }
 
   return (
