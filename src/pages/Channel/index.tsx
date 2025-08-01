@@ -4,7 +4,9 @@ import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  addUserChannels,
   checkUserInChannels,
+  deleteUserChannels,
   getChannelInfoById,
   getFeedsWithAllByChannelId,
   getLikesByUserId,
@@ -21,7 +23,7 @@ import close from "@/assets/close.svg";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
-import { alert } from "@/components/common/CustomAlert";
+import { alert, confirmAlert } from "@/components/common/CustomAlert";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -221,19 +223,65 @@ function Channel() {
     }
   };
 
+  const handleChannelJoin = () => {
+    if (!isMember) {
+      if (channelInfo)
+        confirmAlert(`${channelInfo.name} 채널에 가입하시겠습니까?`).then(
+          async () => {
+            const data = await addUserChannels(id);
+            if (data) {
+              alert(`${channelInfo.name} 채널에 가입하셨습니다`);
+              setIsMember(true);
+            }
+          }
+        );
+    } else {
+      if (channelInfo)
+        confirmAlert(`${channelInfo.name} 채널에서 탈퇴하시겠습니까?`).then(
+          async () => {
+            if (!user) return;
+            const data = await deleteUserChannels(user?.id, id);
+            if (data) {
+              alert(`${channelInfo.name} 채널에서 탈퇴하셨습니다`);
+              setIsMember(false);
+            }
+          }
+        );
+    }
+  };
+
   return (
     <>
       <div className={S.contentContainer}>
         <div className={S.contentWrapper}>
           <div className={S.channelInfo}>
             {channelInfo ? (
-              <>
-                <h3>{channelInfo.name}</h3>
+              <details className={S.channelDescription}>
+                <summary>{channelInfo.name}</summary>
                 <p>{channelInfo.description}</p>
-              </>
+              </details>
             ) : (
               <p>채널정보를 가져올 수 없습니다</p>
             )}
+            {user ? (
+              isMember ? (
+                <button
+                  type="button"
+                  className={S.channelLeaveButton}
+                  onClick={handleChannelJoin}
+                >
+                  채널탈퇴하기
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={S.channelJoinButton}
+                  onClick={handleChannelJoin}
+                >
+                  채널가입하기
+                </button>
+              )
+            ) : null}
           </div>
           <div className={S.feedArea}>
             <ul className={S.contentArea} ref={feedContainerRef}>

@@ -6,6 +6,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
 import React, { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
+import { showToast } from "../common/CustomAlert";
 
 interface Props {
   currentPage: string;
@@ -20,7 +21,7 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   // document 단에서 키보드 이벤트로 탐지
   useEffect(() => {
-    const searchPop = (e: KeyboardEvent) => {    
+    const searchPop = (e: KeyboardEvent) => {
       if (e.key === "f" && e.ctrlKey) {
         e.preventDefault();
         setIsSearch((prev) => !prev);
@@ -58,7 +59,9 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   const handleLogout = () => {
     // 로그아웃 하기
-    logout();
+    logout().then(() => {
+      showToast("로그아웃 되었습니다");
+    });
   };
 
   return (
