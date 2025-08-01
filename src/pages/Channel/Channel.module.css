@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: 0 var(--spacing-12) var(--spacing-12);
+  padding: var(--spacing-12);
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -83,8 +83,8 @@
   align-items: end;
   gap: var(--spacing-8);
   margin: 1rem;
-  margin-bottom: 1rem;
   color: white;
+  flex-wrap: wrap;
 
   h3 {
     font-size: 1.5rem;

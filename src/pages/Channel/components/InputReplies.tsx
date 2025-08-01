@@ -5,6 +5,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useParams } from "@/router/RouterProvider";
 import { checkUserInChannels } from "@/api";
 import { addReply } from "@/api/replies";
+import { alert } from "@/components/common/CustomAlert";
 interface Props {
   currentFeedId: string;
   setUpdateReplies: (time: number) => void;
@@ -40,11 +41,13 @@ function InputReplies({ currentFeedId, setUpdateReplies }: Props) {
 
     if (!isAuth) {
       alert("피드에 댓글을 작성하려면 로그인해야 합니다.");
+      if (text) text.value = "";
       return;
     }
 
     if (!isMember) {
       alert("채널에 메세지를 보내려면 멤버여야 합니다.");
+      if (text) text.value = "";
       return;
     }
 

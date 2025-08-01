@@ -1,0 +1,28 @@
+.custom-icon {
+  border: none;
+}
+.swal2-popup {
+  width: 370px;
+  background-color: var(--gray_09);
+  padding: 1rem;
+}
+
+.swal2-title {
+  font-weight: bold;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.swal2-actions {
+  margin-top: var(--spacing-4);
+}
+
+.htmlContainer {
+  font-family: inherit;
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+
+.custom-toast {
+  background-color: var(--gray_09);
+}

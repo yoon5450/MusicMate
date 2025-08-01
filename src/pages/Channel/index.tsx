@@ -22,6 +22,7 @@ import close from "@/assets/close.svg";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
+import { alert } from "@/components/common/CustomAlert";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;

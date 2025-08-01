@@ -8,6 +8,7 @@ import { setFilePreview } from "@/utils/setImagePreview";
 import { addFeedsWithFiles, checkUserInChannels } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
 import { useParams } from "@/router/RouterProvider";
+import { alert, showToast } from "@/components/common/CustomAlert";
 
 interface Props {
   curChannelId: string;
@@ -125,7 +126,7 @@ function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
       const url = URL.createObjectURL(file);
       setRecordingData({ url, file });
     } else {
-      alert("유효하지 않은 파일입니다.");
+      showToast("유효하지 않은 파일입니다.");
     }
   };
 
@@ -136,7 +137,7 @@ function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
       setImage(file);
       setFilePreview(file, setImagePreview);
     } else {
-      alert("유효하지 않은 파일입니다.");
+      showToast("유효하지 않은 파일입니다.");
     }
   };
 
