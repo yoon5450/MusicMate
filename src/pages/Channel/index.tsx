@@ -272,9 +272,9 @@ function Channel() {
 
   // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
+    if(hasInitializedRef) return
     if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      console.log(paramsFeedId);
       setSelectedFeed(updatedFeed ?? null);
     }
   }, [paramsFeedId, feedData]);
