@@ -13,7 +13,7 @@ import { alert, showToast } from "@/components/common/CustomAlert";
 interface Props {
   curChannelId: string;
   renderTailFeeds: () => Promise<void>;
-  scrollToBottom: () => void
+  scrollToBottom: () => void;
 }
 
 function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
@@ -64,7 +64,10 @@ function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
     }
     setImage(undefined);
     setImagePreview(undefined);
-    scrollToBottom();
+    
+    requestAnimationFrame(() => {
+      scrollToBottom();
+    });
   };
 
   const handleClose = (e: MouseEvent) => {
