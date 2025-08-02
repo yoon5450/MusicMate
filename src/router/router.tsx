@@ -1,5 +1,5 @@
 import Channel from "@/pages/Channel";
-import Main from "@/pages/main";
+import Main from "@/pages/Main";
 import Mypage from "@/pages/Mypage/Mypage";
 import UserProfilePage from "@/pages/Users/UserProfilePage";
 
@@ -10,13 +10,13 @@ export const routes = [
     element: <Main />,
   },
   {
-    title: "채널",
-    path: "/Channel", // 동적 라우팅
+    title: "채널 상세",
+    path: "/Channel/:id", // 동적 라우팅
     element: <Channel />,
   },
   {
     title: "채널 상세",
-    path: "/Channel/:id", // 동적 라우팅
+    path: "/Channel/:id/feed/:feedId", // 동적 라우팅
     element: <Channel />,
   },
   {
@@ -25,7 +25,7 @@ export const routes = [
     element: <Mypage />,
   },
   {
-    title: "유저 프로필",
+    title: "유저 프로필 페이지",
     path: "/user/:id",
     element: <UserProfilePage />,
   },

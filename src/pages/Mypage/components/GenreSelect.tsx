@@ -3,6 +3,7 @@ import S from "../Mypage.module.css";
 import { getGenres, type GenreType } from "@/api/genres";
 import { updateUserGenres } from "@/api";
 import { useUserGenre } from "@/context/UserGenreContext";
+import { showToast } from "@/components/common/CustomAlert";
 
 interface Props {
   user: { id: string; email: string };
@@ -56,7 +57,7 @@ function GenreSelect({ user }: Props) {
     if (!data) return;
     setIsChanged(false);
     setIsGenreChanged();
-    alert("선호 장르가 변경되었습니다");
+    showToast("선호 장르가 변경되었습니다");
   };
 
   return (

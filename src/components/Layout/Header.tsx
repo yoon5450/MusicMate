@@ -1,10 +1,12 @@
 import S from "./Header.module.css";
 import bell from "@/assets/bell.svg";
-import propile from "@/assets/propile.svg";
+import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
+import { showToast } from "../common/CustomAlert";
 
 interface Props {
   currentPage: string;
@@ -12,12 +14,29 @@ interface Props {
 }
 
 // 상위 요소에서 useRoute를 받아오도록 수정
-// TODO : 채널에 관한 정보를 뽑아서 전달해 주는 방법
 function Header({ currentPage, setHistoryRoute }: Props) {
   const { openLogin } = useLoginModal();
   const { isAuth, logout } = useAuth();
   const [isSearch, setIsSearch] = useState<boolean>(false);
-  const [keyword, setKeyword] = useState<string>();
+
+  // document 단에서 키보드 이벤트로 탐지
+  useEffect(() => {
+    const searchPop = (e: KeyboardEvent) => {
+      if (e.key === "f" && e.ctrlKey) {
+        e.preventDefault();
+        setIsSearch((prev) => !prev);
+      }
+
+      if (e.key === "Escape") {
+        setIsSearch(false);
+      }
+    };
+
+    document.addEventListener("keydown", searchPop);
+    return () => {
+      document.removeEventListener("keydown", searchPop);
+    };
+  }, []);
 
   const handleLoginModal = () => {
     // 로그인 모달창 열기
@@ -40,17 +59,10 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   const handleLogout = () => {
     // 로그아웃 하기
-    logout();
+    logout().then(() => {
+      showToast("로그아웃 되었습니다");
+    });
   };
-
-  const searchInput = (
-    <input
-      className={S.searchInput}
-      type="text"
-      placeholder="검색어를 입력하세요"
-      onChange={(e) => setKeyword(e.target.value)}
-    />
-  );
 
   return (
     <header className={S.topHeader}>
@@ -59,22 +71,36 @@ function Header({ currentPage, setHistoryRoute }: Props) {
         className={S.headerButton}
         onClick={handleClickLogo}
       >
-        <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        <div>
+          <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        </div>
       </button>
-      {isSearch ? searchInput : <div className={S.content}>{currentPage}</div>}
+      {isSearch ? (
+        <HeaderSearch setIsSearch={setIsSearch} />
+      ) : (
+        <div className={S.content}>{currentPage}</div>
+      )}
       <div className={S.btnGroup}>
         <button
           type="button"
           className={S.headerButton}
           onClick={() => setIsSearch(true)}
         >
-          <img src={search} width={"36px"} alt="검색" />
+          <div>
+            <img src={search} width={"34px"} alt="검색" />
+          </div>
         </button>
-        <button type="button" className={S.headerButton}>
-          <img src={bell} width={"44px"} alt="알림" />
+        <button
+          type="button"
+          className={S.headerButton}
+          style={{ paddingTop: "6px" }}
+        >
+          <div>
+            <img src={bell} width={"46px"} alt="알림" />
+          </div>
         </button>
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
-          <img src={propile} width={"44px"} alt="유저프로필" />
+          <img src={profile} width={"42px"} alt="유저프로필" />
         </button>
         {isAuth ? (
           <button type="button" className={S.authButton} onClick={handleLogout}>

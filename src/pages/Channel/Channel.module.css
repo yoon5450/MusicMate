@@ -1,7 +1,7 @@
 .contentArea {
   height: 100%;
-  padding: 1rem;
-  overflow-y: scroll;
+  padding: var(--spacing-12);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-12);
@@ -9,7 +9,7 @@
 }
 
 .feedArea {
-  height: 100%;
+  flex: 1;
   display: flex;
   overflow: hidden;
 }
@@ -17,6 +17,7 @@
 .contentContainer {
   display: flex;
   justify-content: space-between;
+  overflow: hidden;
   flex: 1;
   min-height: 0;
 }
@@ -25,11 +26,12 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  overflow: hidden;
 }
 
 .userListArea {
-  width: 250px;
-  height: 100vh;
+  min-width: 250px;
+  height: 100%;
 }
 
 .detailContentArea {
@@ -64,7 +66,7 @@
   transition:
     transform 0.2s ease,
     max-height 0.2s ease;
-  max-height: 85px;
+  max-height: 500px;
   transition-delay: 0.3s;
 }
 .inputFeedContainer.hide {
@@ -73,4 +75,57 @@
     transform 0.2s ease,
     max-height 0.2s ease;
   max-height: 0px;
+  overflow: hidden;
+}
+
+.channelInfo {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5rem;
+  color: white;
+  border-bottom: 1px solid var(--gray_09);
+
+  details {
+    summary {
+      padding: 8px;
+      font-weight: bold;
+    }
+    p {
+      padding-block: var(--spacing-4);
+      padding-left: var(--spacing-24);
+    }
+  }
+
+  .channelJoinButton {
+    color: var(--black);
+    background-color: var(--primary_default);
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    height: 32px;
+    cursor: pointer;
+  }
+  .channelLeaveButton {
+    color: var(--gray_10);
+    background-color: var(--gray_01);
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    height: 32px;
+    cursor: pointer;
+  }
+}
+
+.observerDiv{
+  height: 10px;
 }

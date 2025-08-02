@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { getUserPreferredGenre } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
+import { showToast } from "@/components/common/CustomAlert";
 import {
   createContext,
   useCallback,
@@ -44,7 +45,7 @@ export function UserGenreProvider({ children }: { children: React.ReactNode }) {
       if (data) {
         setUserGenre(data);
       } else {
-        alert("유저 선호 장르를 불러오지 못했습니다");
+        showToast("유저 선호 장르를 불러오지 못했습니다");
         setUserGenre([]);
       }
     };
