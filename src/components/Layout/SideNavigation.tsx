@@ -8,6 +8,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
 import { filterChannels } from "@/utils/filterChannels";
 import { useUserGenre } from "@/context/UserGenreContext";
+import { useParams } from "@/router/RouterProvider";
 import { alert } from "../common/CustomAlert";
 
 function SideNavigation() {
@@ -22,6 +23,8 @@ function SideNavigation() {
   const { openLogin } = useLoginModal();
 
   const { userGenre } = useUserGenre();
+
+  const { id: currentChannelId } = useParams();
 
   useEffect(() => {
     const fetchChannels = async () => {
@@ -66,8 +69,9 @@ function SideNavigation() {
             <li key={id}>
               <NavLink
                 to={`/Channel/${id}`}
-                className={`${S.channelItem}`}
-                activeClassName={S.active}
+                className={`${S.channelItem} ${
+                  currentChannelId === String(id) ? S.active : ""
+                }`}
               >
                 {name}
               </NavLink>
