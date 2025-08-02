@@ -3,6 +3,7 @@ import S from "./ChannelFeed.module.css";
 import { isFeedHaveLink } from "@/utils/isFeedHaveLink";
 import heartEmpty from "@/assets/heart_empty.svg";
 import heartFilled from "@/assets/heart_filled.svg";
+import { timeFormater } from "@/utils/timeFormatter";
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
   onReplyClicked: () => void;
@@ -31,8 +32,9 @@ function ChannelFeedMessage({
     e.stopPropagation();
     onReplyClicked();
   };
+  const kst = timeFormater(created_at!);
   const createdTime =
-    created_at!.slice(0, 10) + " " + created_at!.slice(11, 16);
+    kst!.slice(0, 10) + " " + kst!.slice(11, 16);
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import closeIcon from "@/assets/close.svg";
 import S from "./HeaderSearch.module.css";
 import { getFeedsByKeyword } from "@/api";
@@ -18,6 +18,7 @@ function HeaderSearch({ setIsSearch }: Props) {
   >([]);
   const [searchInput, setSearchInput] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const initFunc = () => {
     setSearchResult([]);
@@ -43,6 +44,11 @@ function HeaderSearch({ setIsSearch }: Props) {
       }
     }
   };
+
+  useEffect(() => {
+    const inputText = inputRef.current
+    if(inputText) inputText.focus();
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -72,6 +78,7 @@ function HeaderSearch({ setIsSearch }: Props) {
           placeholder="검색어를 입력하세요"
           onChange={handleChange}
           onKeyDown={handleTextKeydown}
+          ref={inputRef}
           value={searchInput}
         />
 
