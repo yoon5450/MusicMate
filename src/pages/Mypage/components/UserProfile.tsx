@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import { updateUserProfileByUserId } from "@/api";
 import logo from "@/assets/logo.svg";
 import { updateUserAvatar } from "@/api/user_avatar";
+import { showToast } from "@/components/common/CustomAlert";
 
 interface Props {
   userInfo:
@@ -61,7 +62,7 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
     console.log(data);
 
     if (!data) return;
-    alert("변경되었습니다");
+    showToast("프로필이 변경되었습니다");
     setProfileIsChanged();
     return data;
   };

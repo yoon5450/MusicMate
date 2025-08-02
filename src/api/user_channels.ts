@@ -19,9 +19,7 @@ export const getUserChannels = async (): Promise<UserChannelsType[] | null> => {
   }
 };
 
-export const getUserChannelsByChannelId = async () => {
-  
-}
+export const getUserChannelsByChannelId = async () => {};
 
 /**
  *
@@ -42,20 +40,23 @@ export const getUserChannelsByUserId = async (user_id: string) => {
   }
 };
 
-export const checkUserInChannels = async (channel_id:string, user_id:string) => {
-  const {data, error} = await supabase
-  .from('user_channels')
-  .select('*')
-  .eq("channel_id", channel_id)
-  .eq("user_id", user_id)
-  console.log(channel_id, user_id)
+export const checkUserInChannels = async (
+  channel_id: string,
+  user_id: string
+) => {
+  const { data, error } = await supabase
+    .from("user_channels")
+    .select("*")
+    .eq("channel_id", channel_id)
+    .eq("user_id", user_id);
+  console.log(channel_id, user_id);
 
-  if(error){
-    errorHandler(error, "checkUserInChannels")
-    return false
-  }else{
-    if(data.length > 0) return true;
-    else return false
+  if (error) {
+    errorHandler(error, "checkUserInChannels");
+    return false;
+  } else {
+    if (data.length > 0) return true;
+    else return false;
   }
 };
 
@@ -63,12 +64,37 @@ export const checkUserInChannels = async (channel_id:string, user_id:string) => 
  * @description 파라미터에 주어진 channel_id에 가입합니다. 로그인한 userId로 자동 바인딩됩니다.
  */
 export const addUserChannels = async (channel_id: string) => {
-  const { error } = await supabase.from("user_channels").insert({ channel_id });
+  const { data, error } = await supabase
+    .from("user_channels")
+    .insert({ channel_id })
+    .select();
 
   if (error) {
     errorHandler(error, "addUserChannels");
   } else {
     console.log("성공");
+    return data;
+  }
+};
+
+/**
+ * @description 파라미터에 주어진 channel_id에서 탈퇴합니다. 로그인한 userId로 자동 바인딩됩니다.
+ */
+export const deleteUserChannels = async (
+  user_id: string,
+  channel_id: string
+) => {
+  const { data, error } = await supabase
+    .from("user_channels")
+    .delete()
+    .eq("user_id", user_id)
+    .eq("channel_id", channel_id)
+    .select();
+
+  if (error) {
+    errorHandler(error, "addUserChannels");
+  } else {
+    return data;
   }
 };
 

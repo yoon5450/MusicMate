@@ -73,7 +73,7 @@
 
     button {
       color: var(--black);
-      background-color: var(--primary_active);
+      background-color: var(--primary_default);
       font-weight: bold;
       padding: 8px;
       border-radius: 8px;
@@ -82,6 +82,11 @@
       align-items: center;
       gap: var(--spacing-4);
       height: 32px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--primary_active);
+      }
     }
   }
 
