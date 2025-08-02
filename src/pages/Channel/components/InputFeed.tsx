@@ -10,7 +10,13 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useParams } from "@/router/RouterProvider";
 import { alert, showToast } from "@/components/common/CustomAlert";
 
-function InputFeed({ curChannelId }: { curChannelId: string }) {
+interface Props {
+  curChannelId: string;
+  renderTailFeeds: () => Promise<void>;
+  scrollToBottom: () => void
+}
+
+function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
@@ -32,6 +38,7 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
   const submitBtnId = useId();
 
   useEffect(() => {
+    textareaRef.current?.focus();
     document.addEventListener("mousedown", handleClose);
     return () => {
       document.removeEventListener("mousedown", handleClose);
@@ -51,9 +58,13 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
 
   const initialize = () => {
     const text = textareaRef.current;
-    if (text) text.value = "";
+    if (text) {
+      text.value = "";
+      text.focus();
+    }
     setImage(undefined);
     setImagePreview(undefined);
+    scrollToBottom();
   };
 
   const handleClose = (e: MouseEvent) => {
@@ -62,8 +73,9 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const text = textareaRef.current;
     if (!isAuth) {
       alert("채널에 메세지를 보내려면 로그인해야 합니다.");
@@ -82,12 +94,14 @@ function InputFeed({ curChannelId }: { curChannelId: string }) {
         return;
       }
 
-      addFeedsWithFiles({
+      await addFeedsWithFiles({
         content: text.value,
         channel_id: curChannelId,
         message_type: "default",
         image_file: image,
       });
+
+      await renderTailFeeds();
 
       initialize();
     }

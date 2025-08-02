@@ -1,6 +1,6 @@
 import S from "./Header.module.css";
 import bell from "@/assets/bell.svg";
-import propile from "@/assets/propile.svg";
+import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
@@ -71,7 +71,9 @@ function Header({ currentPage, setHistoryRoute }: Props) {
         className={S.headerButton}
         onClick={handleClickLogo}
       >
-        <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        <div>
+          <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        </div>
       </button>
       {isSearch ? (
         <HeaderSearch setIsSearch={setIsSearch} />
@@ -85,16 +87,20 @@ function Header({ currentPage, setHistoryRoute }: Props) {
           onClick={() => setIsSearch(true)}
         >
           <div>
-            <img src={search} width={"36px"} alt="검색" />
+            <img src={search} width={"34px"} alt="검색" />
           </div>
         </button>
-        <button type="button" className={S.headerButton}>
+        <button
+          type="button"
+          className={S.headerButton}
+          style={{ paddingTop: "6px" }}
+        >
           <div>
-            <img src={bell} width={"44px"} alt="알림" />
+            <img src={bell} width={"46px"} alt="알림" />
           </div>
         </button>
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
-          <img src={propile} width={"44px"} alt="유저프로필" />
+          <img src={profile} width={"42px"} alt="유저프로필" />
         </button>
         {isAuth ? (
           <button type="button" className={S.authButton} onClick={handleLogout}>

@@ -1,6 +1,6 @@
 import type { Tables } from "@/@types/database.types";
 import S from "./SearchResultItem.module.css";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { RouterContext } from "@/router/RouterProvider";
 
 interface Props {
@@ -15,7 +15,8 @@ function SearchResultItem({ item, initFunc }: Props) {
     item.created_at!.slice(0, 10) + " " + item.created_at!.slice(11, 16);
   const { setHistoryRoute } = useContext(RouterContext)!;
 
-  const handleClick = () => {
+  const handleClick = (e:React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     initFunc();
     const feedId = item.id!;
     const targetChannel = item.channel_id
