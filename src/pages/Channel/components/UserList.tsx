@@ -7,9 +7,9 @@ import { useRouter } from "@/router/RouterProvider";
 
 export type userProfileType = Tables<"user_profile">;
 
-type Props = { channelId: string };
+type Props = { channelId: string; isMember: boolean | null };
 
-export const UserList = ({ channelId }: Props) => {
+export const UserList = ({ channelId, isMember }: Props) => {
   const [users, setUsers] = useState<userProfileType[]>([]); // 보여줄 유저 목록 (검색어o)
   const [channelUsers, setChannelUsers] = useState<userProfileType[]>([]); // 채널 전체 유저 목록
   const [searchText, setSearchText] = useState("");
@@ -28,7 +28,7 @@ export const UserList = ({ channelId }: Props) => {
     }
 
     fetchUsers();
-  }, [channelId]);
+  }, [channelId, isMember]);
 
   // 검색 함수
   const handleSearch = async (text: string) => {

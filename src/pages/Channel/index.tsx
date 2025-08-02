@@ -145,7 +145,6 @@ function Channel() {
     }
   };
 
-
   const handleChannelJoin = () => {
     if (!isMember) {
       if (channelInfo)
@@ -172,7 +171,6 @@ function Channel() {
         );
     }
   };
-
 
   // 마지막 요소에서 20개를 더 로드
   // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
@@ -201,7 +199,7 @@ function Channel() {
 
     const firstFeedId = feedData[0].feed_id!;
     const container = feedContainerRef.current;
-    const firstEl = feedRefs.current[firstFeedId]
+    const firstEl = feedRefs.current[firstFeedId];
     const prevOffset = firstEl?.getBoundingClientRect().top ?? 0;
 
     const beforeTime = feedData[0].created_at;
@@ -223,10 +221,10 @@ function Channel() {
       const newFirstEl = feedRefs.current[firstFeedId];
       const newOffset = newFirstEl?.getBoundingClientRect().top ?? 0;
 
-      if(container) {
-        container.scrollTop += newOffset - prevOffset
+      if (container) {
+        container.scrollTop += newOffset - prevOffset;
       }
-    })
+    });
   }, [feedData, id]);
 
   const scrollToBottom = useCallback(() => {
@@ -304,7 +302,7 @@ function Channel() {
 
   // Params에 feedId가 들어오면 자동으로 선택하기
   useEffect(() => {
-    if(hasInitializedRef) return
+    if (hasInitializedRef) return;
     if (feedData && paramsFeedId) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
       setSelectedFeed(updatedFeed ?? null);
@@ -445,11 +443,12 @@ function Channel() {
               curChannelId={id}
               renderTailFeeds={renderTailFeeds}
               scrollToBottom={scrollToBottom}
+              isMember={isMember}
             />
           </div>
         </div>
         <div className={S.userListArea}>
-          <UserList channelId={id} />
+          <UserList channelId={id} isMember={isMember} />
         </div>
       </div>
     </>
