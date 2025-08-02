@@ -3,13 +3,13 @@ import { signIn, signOut, signUp } from "@/api/auth";
 import supabase from "@/utils/supabase";
 import S from "@/styles/_modal.module.css";
 import { getGenres, type GenreType } from "@/api/genres";
+import { showToast } from "./common/CustomAlert";
 
 interface Props {
   onClose: () => void;
 }
 
-
-// 에러메세지 
+// 에러메세지
 function getKoreanErrorMessage(message: string): string {
   if (message.includes("Anonymous sign-ins are disabled")) {
     return "이메일 또는 비밀번호를 입력해 주세요.";
@@ -23,7 +23,9 @@ function getKoreanErrorMessage(message: string): string {
   if (message.includes("already registered")) {
     return "이미 가입된 이메일입니다.";
   }
-  if (message.includes("For security purposes, you can only request this after")) {
+  if (
+    message.includes("For security purposes, you can only request this after")
+  ) {
     // n초 후 시도 하라는 메세지 출력하기
     const match = message.match(/after (\d+) second/);
     if (match) {
@@ -42,17 +44,14 @@ export default function SignUp({ onClose }: Props) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [genres, setGenres] = useState<GenreType[]>([]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     // 장르 목록 불러오기
     const fetchGenres = async () => {
       const data = await getGenres();
-      if(data)
-        setGenres(data);
-    }
+      if (data) setGenres(data);
+    };
     fetchGenres();
-  },[]);
-
+  }, []);
 
   // 장르 토글
   const toggleGenre = (code: number) => {
@@ -97,7 +96,7 @@ export default function SignUp({ onClose }: Props) {
     }
 
     handleClose();
-    alert("회원 가입이 완료되었습니다.");
+    showToast("회원 가입이 완료되었습니다.");
   };
 
   const handleClose = () => {
@@ -108,7 +107,7 @@ export default function SignUp({ onClose }: Props) {
     onClose();
   };
 
-   // 회원가입 모달 return
+  // 회원가입 모달 return
   return (
     <div className={S.modalBackdrop}>
       <div className={S.modalBox}>
