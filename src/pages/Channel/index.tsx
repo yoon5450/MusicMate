@@ -51,7 +51,7 @@ function Channel() {
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
-  const [hasInit, setHasInit ] = useState(false);
+  const [hasInit, setHasInit] = useState(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
@@ -238,7 +238,7 @@ function Channel() {
     if (hasInit) return;
     if (!feedData || feedData.length === 0) return;
 
-    if(!paramsFeedId) scrollToBottom();
+    scrollToBottom();
 
     setHasInit(true);
   }, [feedData, scrollToBottom]);
@@ -310,8 +310,6 @@ function Channel() {
     if (!selectedFeed.feed_id) return;
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
-
-
 
   // 선택된 피드 바뀔때마다 스크롤이동하기
   useEffect(() => {

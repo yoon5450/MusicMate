@@ -2,6 +2,7 @@ import type { Tables } from "@/@types/database.types";
 import S from "./SearchResultItem.module.css";
 import React, { useContext } from "react";
 import { RouterContext } from "@/router/RouterProvider";
+import { timeFormater } from "@/utils/timeFormatter";
 
 interface Props {
   item: Tables<"view_feed_search">;
@@ -11,8 +12,10 @@ interface Props {
 
 // TODO: 키워드 기반 하이라이팅
 function SearchResultItem({ item, initFunc }: Props) {
+  const kst = timeFormater(item.created_at!);
   const createdTime =
-    item.created_at!.slice(0, 10) + " " + item.created_at!.slice(11, 16);
+    kst!.slice(0, 10) + " " + kst!.slice(11, 16);
+
   const { setHistoryRoute } = useContext(RouterContext)!;
 
   const handleClick = (e:React.PointerEvent<HTMLDivElement>) => {

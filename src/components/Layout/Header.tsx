@@ -4,7 +4,7 @@ import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
 import { showToast } from "../common/CustomAlert";
 
