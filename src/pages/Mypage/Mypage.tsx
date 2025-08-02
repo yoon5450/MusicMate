@@ -5,12 +5,13 @@ import UserProfile from "./components/UserProfile";
 import GenreSelect from "./components/GenreSelect";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { useAuth } from "@/auth/AuthProvider";
+import YouNeedToLogin from "../NotFound/YouNeedToLogin";
 
 function Mypage() {
   const { user } = useAuth();
   const { setProfileIsChanged, userProfile } = useUserProfile();
 
-  if (!user) return;
+  if (!user) return <YouNeedToLogin />;
 
   return (
     <div className={S.container}>

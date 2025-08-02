@@ -311,6 +311,17 @@ function Channel() {
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
 
+
+  // Params에 feedId가 들어오면 자동으로 선택하기
+  useEffect(() => {
+    if (hasInitializedRef) return;
+    if (feedData && paramsFeedId) {
+      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
+      setSelectedFeed(updatedFeed ?? null);
+    }
+  }, [paramsFeedId, feedData]);
+
+
   // 선택된 피드 바뀔때마다 스크롤이동하기
   useEffect(() => {
     if (!selectedFeed?.feed_id) return;
@@ -445,11 +456,12 @@ function Channel() {
               curChannelId={id}
               renderTailFeeds={renderTailFeeds}
               scrollToBottom={scrollToBottom}
+              isMember={isMember}
             />
           </div>
         </div>
         <div className={S.userListArea}>
-          <UserList channelId={id} />
+          <UserList channelId={id} isMember={isMember} />
         </div>
       </div>
     </>

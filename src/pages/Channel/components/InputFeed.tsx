@@ -5,24 +5,28 @@ import SubmitClipForm from "@/components/SubmitClipForm";
 import buttonImg from "@/assets/circle_plus_button.svg";
 import sendImg from "@/assets/send_icon.svg";
 import { setFilePreview } from "@/utils/setImagePreview";
-import { addFeedsWithFiles, checkUserInChannels } from "@/api";
+import { addFeedsWithFiles } from "@/api";
 import { useAuth } from "@/auth/AuthProvider";
-import { useParams } from "@/router/RouterProvider";
 import { alert, showToast } from "@/components/common/CustomAlert";
 
 interface Props {
   curChannelId: string;
   renderTailFeeds: () => Promise<void>;
   scrollToBottom: () => void;
+  isMember: boolean | null;
 }
 
-function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
+function InputFeed({
+  curChannelId,
+  renderTailFeeds,
+  scrollToBottom,
+  isMember,
+}: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
-  const { isAuth, user } = useAuth();
-  const { id: channelId } = useParams();
-  const [isMember, setIsMember] = useState<boolean | null>(false);
+  const { isAuth } = useAuth();
+  // const [isMember, setIsMember] = useState<boolean | null>(false);
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -45,17 +49,6 @@ function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    async function check() {
-      if (channelId && user) {
-        const flag = await checkUserInChannels(channelId, user?.id);
-        setIsMember(flag);
-      }
-    }
-    check();
-    console.log(isMember);
-  }, [channelId, user]);
-
   const initialize = () => {
     const text = textareaRef.current;
     if (text) {
@@ -64,7 +57,7 @@ function InputFeed({ curChannelId, renderTailFeeds, scrollToBottom }: Props) {
     }
     setImage(undefined);
     setImagePreview(undefined);
-    
+
     requestAnimationFrame(() => {
       scrollToBottom();
     });

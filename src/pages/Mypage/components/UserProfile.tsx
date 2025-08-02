@@ -2,7 +2,6 @@ import type { Tables } from "@/@types/database.types";
 import S from "../Mypage.module.css";
 import { useEffect, useId, useState } from "react";
 import { updateUserProfileByUserId } from "@/api";
-import logo from "@/assets/logo.svg";
 import { updateUserAvatar } from "@/api/user_avatar";
 import { showToast } from "@/components/common/CustomAlert";
 
@@ -74,7 +73,11 @@ function UserProfile({ userInfo, setProfileIsChanged }: Props) {
         {" "}
         <div className={S.editUserAvatar}>
           <img
-            src={userAvatarPreview ? userAvatarPreview : logo}
+            src={
+              userAvatarPreview
+                ? userAvatarPreview
+                : "/music_mate_symbol_fixed.svg"
+            }
             alt="프로필이미지"
             className={S.userAvatar}
           />

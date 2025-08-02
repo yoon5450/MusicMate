@@ -16,5 +16,27 @@
 
   h1 {
     white-space: nowrap;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--gray_09);
+  }
+
+  a {
+    color: var(--black);
+    background-color: var(--primary_default);
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    height: 32px;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      background-color: var(--primary_active);
+    }
   }
 }
