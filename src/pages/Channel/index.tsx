@@ -51,12 +51,12 @@ function Channel() {
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
+  const [hasInit, setHasInit ] = useState(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const topLIRef = useRef<HTMLLIElement>(null);
   const bottomLIRef = useRef<HTMLLIElement>(null);
-  const hasInitializedRef = useRef(false);
 
   // Callback
   const onToggleLike = useCallback(
@@ -145,7 +145,6 @@ function Channel() {
     }
   };
 
-
   const handleChannelJoin = () => {
     if (!isMember) {
       if (channelInfo)
@@ -172,7 +171,6 @@ function Channel() {
         );
     }
   };
-
 
   // 마지막 요소에서 20개를 더 로드
   // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
@@ -201,7 +199,7 @@ function Channel() {
 
     const firstFeedId = feedData[0].feed_id!;
     const container = feedContainerRef.current;
-    const firstEl = feedRefs.current[firstFeedId]
+    const firstEl = feedRefs.current[firstFeedId];
     const prevOffset = firstEl?.getBoundingClientRect().top ?? 0;
 
     const beforeTime = feedData[0].created_at;
@@ -223,10 +221,10 @@ function Channel() {
       const newFirstEl = feedRefs.current[firstFeedId];
       const newOffset = newFirstEl?.getBoundingClientRect().top ?? 0;
 
-      if(container) {
-        container.scrollTop += newOffset - prevOffset
+      if (container) {
+        container.scrollTop += newOffset - prevOffset;
       }
-    })
+    });
   }, [feedData, id]);
 
   const scrollToBottom = useCallback(() => {
@@ -237,12 +235,23 @@ function Channel() {
 
   // useEffect
   useEffect(() => {
-    if (hasInitializedRef.current) return;
+    if (hasInit) return;
     if (!feedData || feedData.length === 0) return;
 
-    scrollToBottom();
-    hasInitializedRef.current = true;
+    if(!paramsFeedId) scrollToBottom();
+
+    setHasInit(true);
   }, [feedData, scrollToBottom]);
+
+  useEffect(() => {
+    if (paramsFeedId && feedData) {
+      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
+      setSelectedFeed(updatedFeed ?? null);
+    }
+
+    // feedData가 계속 바뀔 수 있으므로 의도적으로 deps에서 제외함
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsFeedId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -302,14 +311,7 @@ function Channel() {
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
 
-  // Params에 feedId가 들어오면 자동으로 선택하기
-  useEffect(() => {
-    if(hasInitializedRef) return
-    if (feedData && paramsFeedId) {
-      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      setSelectedFeed(updatedFeed ?? null);
-    }
-  }, [paramsFeedId, feedData]);
+
 
   // 선택된 피드 바뀔때마다 스크롤이동하기
   useEffect(() => {
