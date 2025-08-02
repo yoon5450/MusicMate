@@ -3,7 +3,7 @@ import supabase from "@/utils/supabase";
 import { useEffect, useId, useState } from "react";
 import S from "./ChannelCreateForm.module.css";
 import { getGenres } from "@/api/genres";
-import { alert, alertNewLine } from "../common/CustomAlert";
+import { alert } from "../common/CustomAlert";
 
 type GenreType = {
   code: number;
@@ -54,7 +54,7 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
       });
       if (!data) {
         console.error("채널 생성 실패!");
-        alertNewLine(
+        alert(
           "채널을 생성할 수 없습니다. <br/>중복된 채널 이름이 존재할 수 있습니다"
         );
       } else {

@@ -17,19 +17,21 @@ export const alert = (text: string, title = `MusicMate🎵`) => {
     ...baseConfig,
     icon: undefined,
     title,
-    text: text,
+    html: text,
     customClass: {
       htmlContainer: "htmlContainer",
     },
   });
 };
 
-export const alertNewLine = (text: string, title = `MusicMate🎵`) => {
+export const confirmAlert = (text: string, title = `MusicMate🎵`) => {
   return Swal.fire({
     ...baseConfig,
     icon: undefined,
     title,
     html: text,
+    showDenyButton: true,
+    denyButtonText: "취소",
     customClass: {
       htmlContainer: "htmlContainer",
     },

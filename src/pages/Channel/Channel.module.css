@@ -1,7 +1,7 @@
 .contentArea {
   height: 100%;
   padding: var(--spacing-12);
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-12);
@@ -79,17 +79,49 @@
 }
 
 .channelInfo {
+  position: relative;
   display: flex;
-  align-items: end;
-  gap: var(--spacing-8);
-  margin: 1rem;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5rem;
   color: white;
-  flex-wrap: wrap;
+  border-bottom: 1px solid var(--gray_09);
 
-  h3 {
-    font-size: 1.5rem;
+  details {
+    summary {
+      padding: 8px;
+      font-weight: bold;
+    }
+    p {
+      padding-block: var(--spacing-4);
+      padding-left: var(--spacing-24);
+    }
   }
-  p {
-    font-size: 1rem;
+
+  .channelJoinButton {
+    color: var(--black);
+    background-color: var(--primary_default);
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    height: 32px;
+    cursor: pointer;
+  }
+  .channelLeaveButton {
+    color: var(--gray_10);
+    background-color: var(--gray_01);
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    height: 32px;
+    cursor: pointer;
   }
 }
