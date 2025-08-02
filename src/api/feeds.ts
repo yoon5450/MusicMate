@@ -158,8 +158,9 @@ export const getFeedsByChannelAndBefore = async (
   curChannelId: string,
   lastTime: string
 ) => {
+  // 반대 순서로 받아옴 limit은 가장 오래된 것을 잘라버림
   const { data, error } = await supabase
-    .from("feeds")
+    .from("get_feeds_with_user_and_likes")
     .select("*")
     .eq("channel_id", curChannelId)
     .lt("created_at", lastTime)
@@ -170,7 +171,7 @@ export const getFeedsByChannelAndBefore = async (
     errorHandler(error, "getFeedsByChannelAndBefore");
     return null;
   } else {
-    return data;
+    return data.reverse();
   }
 };
 
@@ -185,18 +186,18 @@ export const getFeedsByChannelAndAfter = async (
   lastTime: string
 ) => {
   const { data, error } = await supabase
-    .from("feeds")
+    .from("get_feeds_with_user_and_likes")
     .select("*")
     .eq("channel_id", curChannelId)
     .gt("created_at", lastTime)
     .order("created_at", { ascending: true })
     .limit(20);
-
+    
   if (error) {
     errorHandler(error, "getFeedsByChannelAndAfter");
     return null;
   } else {
-    return data;
+    return data.reverse();
   }
 };
 

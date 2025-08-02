@@ -1,5 +1,5 @@
 import Channel from "@/pages/Channel";
-import Main from "@/pages/main";
+import Main from "@/pages/Main";
 import Mypage from "@/pages/Mypage/Mypage";
 import UserProfilePage from "@/pages/Users/UserProfilePage";
 

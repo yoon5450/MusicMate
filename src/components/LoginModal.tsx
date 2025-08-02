@@ -3,6 +3,7 @@ import { useLoginModal } from "@/context/LoginModalContext";
 import S from "@/styles/_modal.module.css";
 import { useState } from "react";
 import RegisterModal from "./RegisterModal";
+import { showToast } from "./common/CustomAlert";
 
 // 에러메세지
 function getKoreanErrorMessage(message: string): string {
@@ -44,7 +45,7 @@ function LoginModal() {
     } else {
       // 로그인 성공
       handleClose();
-      alert('로그인에 성공하였습니다!')
+      showToast("로그인에 성공하였습니다!");
     }
   };
 

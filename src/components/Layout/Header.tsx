@@ -1,11 +1,12 @@
 import S from "./Header.module.css";
 import bell from "@/assets/bell.svg";
-import propile from "@/assets/propile.svg";
+import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
+import { showToast } from "../common/CustomAlert";
 
 interface Props {
   currentPage: string;
@@ -20,7 +21,7 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   // document 단에서 키보드 이벤트로 탐지
   useEffect(() => {
-    const searchPop = (e: KeyboardEvent) => {    
+    const searchPop = (e: KeyboardEvent) => {
       if (e.key === "f" && e.ctrlKey) {
         e.preventDefault();
         setIsSearch((prev) => !prev);
@@ -58,7 +59,9 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   const handleLogout = () => {
     // 로그아웃 하기
-    logout();
+    logout().then(() => {
+      showToast("로그아웃 되었습니다");
+    });
   };
 
   return (
@@ -68,7 +71,9 @@ function Header({ currentPage, setHistoryRoute }: Props) {
         className={S.headerButton}
         onClick={handleClickLogo}
       >
-        <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        <div>
+          <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
+        </div>
       </button>
       {isSearch ? (
         <HeaderSearch setIsSearch={setIsSearch} />
@@ -82,16 +87,20 @@ function Header({ currentPage, setHistoryRoute }: Props) {
           onClick={() => setIsSearch(true)}
         >
           <div>
-            <img src={search} width={"36px"} alt="검색" />
+            <img src={search} width={"34px"} alt="검색" />
           </div>
         </button>
-        <button type="button" className={S.headerButton}>
+        <button
+          type="button"
+          className={S.headerButton}
+          style={{ paddingTop: "6px" }}
+        >
           <div>
-            <img src={bell} width={"44px"} alt="알림" />
+            <img src={bell} width={"46px"} alt="알림" />
           </div>
         </button>
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
-          <img src={propile} width={"44px"} alt="유저프로필" />
+          <img src={profile} width={"42px"} alt="유저프로필" />
         </button>
         {isAuth ? (
           <button type="button" className={S.authButton} onClick={handleLogout}>

@@ -94,6 +94,9 @@
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
+    background: var(--gray_03);
+    color : var(--white);
+    font-family: "Pretendard Variable", sans-serif;
   }
 
   .formControl textarea {
@@ -104,11 +107,11 @@
     font-size: 1rem;
     padding: 0.5rem;
     border-radius: 8px;
-    background-color: var(--gray_09);
+    background-color: var(--gray_08);
     cursor: pointer;
 
     &:hover {
-      background-color: var(--gray_08);
+      background-color: var(--gray_09);
     }
   }
 }
@@ -159,7 +162,11 @@
     font-size: 1rem;
     padding: 0.5rem;
     border-radius: 8px;
-    background-color: var(--gray_09);
+    background-color: var(--gray_08);
+
+    &:hover {
+      background-color: var(--gray_09);
+    }
   }
   .changedSubmitBtn {
     font-size: 1rem;
@@ -172,4 +179,30 @@
       background-color: var(--primary_default);
     }
   }
+}
+
+
+.profileReadOnly{
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  background:var(--gray_03);
+  min-height: 38px; 
+  white-space: pre-wrap; 
+  word-break: break-word;    
+  overflow-wrap: break-word;
+}
+.genreReadOnly{
+  background: var(--primary_default);
+  color: var(--black);
+  border: none;
+  border-radius: var(--spacing-8);
+  padding: var(--spacing-8) var(--spacing-16);
+  font-size: 1rem;
+  cursor : default;
 }
