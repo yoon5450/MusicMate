@@ -2,6 +2,7 @@ import type { Tables } from "@/@types/database.types";
 import S from "./DetailContents.module.css";
 import heartEmpty from "@/assets/heart_empty_white.svg";
 import heartFilled from "@/assets/heart_filled_white.svg";
+import { useRouter } from "@/router/RouterProvider";
 
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
@@ -12,12 +13,20 @@ interface Props {
 }
 
 function DetailFeeds({
-  feedItem: { feed_id, preview_url, author_nickname, like_count },
+  feedItem: { feed_id, preview_url, author_nickname, like_count, author_id },
   replies,
   onToggleLike,
   isUserLike,
   scrollToSelectedFeed,
 }: Props) {
+  const { setHistoryRoute } = useRouter();
+  
+  const handleClick = (userId: string | null) => {
+    if(!userId) return;
+    window.history.pushState(null, "", `/user/${userId}`);
+    setHistoryRoute(`/user/${userId}`);
+  };
+
   const handleLikeToggle = () => {
     onToggleLike(feed_id!);
   };
@@ -30,10 +39,17 @@ function DetailFeeds({
             className={S.userAvatar}
             src={preview_url ? preview_url : "/music_mate_symbol_fixed.svg"}
             alt="작성자프로필이미지"
+            onClick={()=> handleClick(author_id)}
+            style={{cursor: "pointer"}}
           />
         </div>
         <div className={S.messageFeed}>
-          <p>{author_nickname}</p>
+          <p
+            onClick={()=> handleClick(author_id)}
+            style={{cursor: "pointer"}}
+          >
+          {author_nickname}
+          </p>
           <button type="button" onClick={scrollToSelectedFeed}>
             현재 게시물로 돌아가기
           </button>

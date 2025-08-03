@@ -11,6 +11,7 @@ import {
   getLikesByUserId,
   getFeedsByChannelAndAfter,
   getFeedsByChannelAndBefore,
+  getFeedByTargetId,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -51,12 +52,14 @@ function Channel() {
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
-  const [hasInit, setHasInit] = useState(false);
+  const [hasMoreTailFeeds, setHasMoreTailFeeds] = useState(true);
+  const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
-  const topLIRef = useRef<HTMLLIElement>(null);
-  const bottomLIRef = useRef<HTMLLIElement>(null);
+  const topObserverRef = useRef<IntersectionObserver | null>(null);
+  const bottomObserverRef = useRef<IntersectionObserver | null>(null)
 
   // Callback
   const onToggleLike = useCallback(
@@ -173,7 +176,6 @@ function Channel() {
   };
 
   // 마지막 요소에서 20개를 더 로드
-  // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
   const renderTailFeeds = useCallback(async () => {
     if (!feedData || feedData.length === 0) return;
 
@@ -181,7 +183,10 @@ function Channel() {
     if (!lastTime) return;
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
-    if (!afterFeedData || afterFeedData.length === 0) return;
+    if (!afterFeedData || afterFeedData.length === 0) {
+      setHasMoreTailFeeds(false);
+      return;
+    }
 
     const updatedFeeds = await Promise.all(
       afterFeedData.map(async (feed) => {
@@ -190,7 +195,15 @@ function Channel() {
       })
     );
 
-    setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
+    // 중복 제거
+    setFeedData((prev) => {
+      const prevFeeds = prev ?? [];
+      const existingFeedIds = new Set(prevFeeds.map((f) => f.feed_id));
+      const uniqueNewFeeds = updatedFeeds.filter(
+        (f) => !existingFeedIds.has(f.feed_id)
+      );
+      return [...prevFeeds, ...uniqueNewFeeds];
+    });
   }, [feedData, id]);
 
   // 첫 요소에서 20개를 더 로드
@@ -206,7 +219,10 @@ function Channel() {
     if (!beforeTime) return;
 
     const beforeFeedData = await getFeedsByChannelAndBefore(id, beforeTime!);
-    if (!beforeFeedData || beforeFeedData.length === 0) return;
+    if (!beforeFeedData || beforeFeedData.length === 0) {
+      setHasMoreHeadFeeds(false);
+      return;
+    }
 
     const updatedFeeds = await Promise.all(
       beforeFeedData.map(async (feed) => {
@@ -215,7 +231,14 @@ function Channel() {
       })
     );
 
-    setFeedData((prev) => [...(updatedFeeds ?? []), ...(prev ?? [])]);
+    setFeedData((prev) => {
+      const prevFeeds = prev ?? [];
+      const existingFeedIds = new Set(prevFeeds.map((f) => f.feed_id));
+      const uniqueNewFeeds = updatedFeeds.filter(
+        (f) => !existingFeedIds.has(f.feed_id)
+      );
+      return [...uniqueNewFeeds, ...prevFeeds];
+    });
 
     requestAnimationFrame(() => {
       const newFirstEl = feedRefs.current[firstFeedId];
@@ -227,47 +250,122 @@ function Channel() {
     });
   }, [feedData, id]);
 
+  const observerStateRef = useRef({
+    hasMoreHeadFeeds,
+    hasMoreTailFeeds,
+    isFetching,
+  });
+  useEffect(() => {
+    observerStateRef.current = {
+      hasMoreHeadFeeds,
+      hasMoreTailFeeds,
+      isFetching,
+    };
+  });
+
+  const setTopLiRef = useCallback(
+    (node: HTMLLIElement | null) => {
+      if (topObserverRef.current) {
+        topObserverRef.current.disconnect();
+      }
+
+      topObserverRef.current = new IntersectionObserver(([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !observerStateRef.current.isFetching &&
+          observerStateRef.current.hasMoreHeadFeeds
+        ) {
+          setIsFetching(true);
+          renderHeadFeeds().finally(() => setIsFetching(false));
+        }
+      });
+
+      if (node) {
+        topObserverRef.current.observe(node);
+      }
+    },
+    [renderHeadFeeds]
+  );
+
+  const setBottomLiRef = useCallback(
+    (node: HTMLLIElement | null) => {
+      if (bottomObserverRef.current) {
+        bottomObserverRef.current.disconnect();
+      }
+
+      bottomObserverRef.current = new IntersectionObserver(([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !observerStateRef.current.isFetching &&
+          observerStateRef.current.hasMoreTailFeeds
+        ) {
+          setIsFetching(true);
+          renderTailFeeds().finally(() => setIsFetching(false));
+        }
+      });
+
+      if (node) {
+        bottomObserverRef.current.observe(node);
+      }
+    },
+    [renderTailFeeds]
+  );
+
   const scrollToBottom = useCallback(() => {
     const el = feedContainerRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, []);
 
-  // useEffect
+  const initLoadState = () => {
+    setHasMoreHeadFeeds(true);
+    setHasMoreTailFeeds(true);
+    setIsFetching(false);
+  };
+
+  // Effect 진입점
   useEffect(() => {
-    if (hasInit) return;
-    if (!feedData || feedData.length === 0) return;
-
-    scrollToBottom();
-
-    setHasInit(true);
-  }, [feedData, scrollToBottom]);
-
-  useEffect(() => {
-    if (paramsFeedId && feedData) {
-      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      setSelectedFeed(updatedFeed ?? null);
+    // 이미 target 데이터가 있다면 로드 중단
+    if (feedData) {
+      const target = feedData.find((f) => f.feed_id === paramsFeedId);
+      if (target) {
+        setSelectedFeed(target);
+        return;
+      }
     }
 
-    // feedData가 계속 바뀔 수 있으므로 의도적으로 deps에서 제외함
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramsFeedId]);
+    setSelectedFeed(null);
 
-  useEffect(() => {
     const fetchData = async () => {
-      setSelectedFeed(null);
-      const now = new Date(Date.now()).toISOString();
-      const feeds = await getFeedsByChannelAndBefore(id, now);
-      if (!feeds) return;
+      if (paramsFeedId) {
+        const centerFeeds = await getFeedByTargetId(paramsFeedId); // 새로운 API
+        if (!centerFeeds) return;
 
-      const updatedFeeds = await Promise.all(
-        feeds.map(async (feed) => {
-          const previewUrl = await getPreviewImage(feed);
-          return { ...feed, preview_url: previewUrl };
-        })
-      );
+        const updatedFeeds = await Promise.all(
+          centerFeeds.map(async (feed) => {
+            const previewUrl = await getPreviewImage(feed);
+            return { ...feed, preview_url: previewUrl };
+          })
+        );
 
-      setFeedData(updatedFeeds);
+        setFeedData(updatedFeeds);
+        setSelectedFeed(
+          updatedFeeds.find((f) => f.feed_id === paramsFeedId) ?? null
+        );
+      } else {
+        const now = new Date(Date.now()).toISOString();
+        const feeds = await getFeedsByChannelAndBefore(id, now);
+        if (!feeds) return;
+
+        const updatedFeeds = await Promise.all(
+          feeds.map(async (feed) => {
+            const previewUrl = await getPreviewImage(feed);
+            return { ...feed, preview_url: previewUrl };
+          })
+        );
+        setFeedData(updatedFeeds);
+        scrollToBottom();
+      }
 
       // 유저가 있는 경우에만 userLikes 호출
       if (user) {
@@ -277,7 +375,7 @@ function Channel() {
     };
 
     fetchData();
-  }, [id, user, lastUpdatedAt]);
+  }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
   useEffect(() => {
     async function check() {
@@ -297,6 +395,7 @@ function Channel() {
       setChannelInfo(data[0]);
     };
     getChannelInfo();
+    initLoadState();
   }, [id]);
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
@@ -310,8 +409,6 @@ function Channel() {
     if (!selectedFeed.feed_id) return;
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
-
-
 
   // 선택된 피드 바뀔때마다 스크롤이동하기
   useEffect(() => {
@@ -329,46 +426,6 @@ function Channel() {
     if (!previewUrl) return;
     return previewUrl;
   };
-
-  // 리로드 옵저버
-  // 아. 엄청 복잡한 것 같은데 훅으로 분리하고 싶음.
-  useEffect(() => {
-    const topLI = topLIRef.current;
-    const bottomLI = bottomLIRef.current;
-
-    if (!topLI || !bottomLI) return;
-
-    const topObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          console.log("상단 도착");
-          renderHeadFeeds();
-        }
-      },
-      {
-        threshold: 0.2,
-      }
-    );
-
-    const bottomObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          console.log("하단 도착 확인");
-        }
-      },
-      {
-        threshold: 0.2,
-      }
-    );
-
-    topObserver.observe(topLI);
-    bottomObserver.observe(bottomLI);
-
-    return () => {
-      if (topLI) topObserver.unobserve(topLI);
-      if (bottomLI) bottomObserver.unobserve(bottomLI);
-    };
-  }, [feedData]);
 
   return (
     <>
@@ -405,9 +462,9 @@ function Channel() {
           </div>
           <div className={S.feedArea}>
             <ul className={S.contentArea} ref={feedContainerRef}>
-              <li className={S.observerDiv} ref={topLIRef}></li>
+              <li className={S.observerDiv} ref={setTopLiRef}></li>
               {feedData?.map((data) => renderFeedComponent(data))}
-              <li className={S.observerDiv} ref={bottomLIRef}></li>
+              <li className={S.observerDiv} ref={setBottomLiRef}></li>
             </ul>
             <div
               className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}

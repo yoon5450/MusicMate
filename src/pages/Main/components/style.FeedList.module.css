@@ -1,23 +1,45 @@
-.title{
+.title {
   font-size: 24px;
-  margin-bottom: 20px;
+  color: var(--primary_active);
+  margin-bottom: 1rem;
 }
 
-.container{
-  display: flex;
-  width: 95%;
-  flex-direction: column;
-  gap: 10px;
-
-  .feed{
-    height: 20px;
-    display: flex;
-    justify-content: space-between;
-  }
+.feedGrid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 1rem;
 }
 
-.fcWrapper{
+.feedItem{
+  border-bottom: 1px solid var(--gray_05);
+  padding: 14px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+}
+
+.postContent {
+  flex-grow: 1; 
+  padding-right: 16px;
+}
+.postContent:hover .preview{
+  color: var(--primary_hover);
+}
+
+.preview {
+  font-size: 16px;
+  color: var(--gray_10);
+  line-height: 1.5;
+  transition: color 0.2s ease; 
+}
+
+.likeContainer{
+  display: flex;
   align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.likeCount{
+  font-size: 14px;
+  color: var(--gray_09);
 }

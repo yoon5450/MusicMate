@@ -16,7 +16,7 @@ function Main() {
   return (
     <div className={S.container}>
       <PlaylistSwiper/>
-      <FeedList title='인기 게시글'/>
+      <FeedList/>
       <ClipSwiper/>
     </div>
   );

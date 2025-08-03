@@ -49,7 +49,6 @@ export const checkUserInChannels = async (
     .select("*")
     .eq("channel_id", channel_id)
     .eq("user_id", user_id);
-  console.log(channel_id, user_id);
 
   if (error) {
     errorHandler(error, "checkUserInChannels");

@@ -192,9 +192,25 @@ export const getFeedsByChannelAndAfter = async (
     .gt("created_at", lastTime)
     .order("created_at", { ascending: true })
     .limit(20);
-    
+
   if (error) {
     errorHandler(error, "getFeedsByChannelAndAfter");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const getFeedByTargetId = async (
+  feedId: string,
+) => {
+  const { data, error } = await supabase.
+  from("get_feeds_with_user_and_likes")
+  .select("*")
+  .eq("feed_id", feedId)
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndNear");
     return null;
   } else {
     return data.reverse();
@@ -328,3 +344,24 @@ export const getPopularClips = async (): Promise<
   }
   return data;
 };
+
+/**
+ * @description 인기 피드(message_type이 default)
+ * @returns 인기 피드 리스트 
+ */
+export const getPopularFeeds = async ():Promise<
+  Tables<"get_feeds_with_user_and_likes">[]|null
+  > =>{
+  const {data,error} = await supabase
+  .from("get_feeds_with_user_and_likes")
+  .select("*")
+  .eq("message_type", "default")
+  .order("like_count",{ascending:false})
+  .limit(10);
+
+  if(error){
+    errorHandler(error,"getPopularFeeds");
+    return null;
+  }
+  return data;
+}
