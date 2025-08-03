@@ -22,16 +22,17 @@
   }
 
   a {
-    color: var(--black);
+    color: var(--gray_02);
     background-color: var(--primary_default);
     font-weight: bold;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 0 1rem;
+    border-radius: 20px;
+    margin: 6px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-4);
-    height: 32px;
+    height: 40px;
     cursor: pointer;
     text-decoration: none;
 

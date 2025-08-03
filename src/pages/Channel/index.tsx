@@ -18,6 +18,8 @@ import {
   getFeedsByChannelAndAfter,
   getFeedsByChannelAndBefore,
   getFeedByTargetId,
+  deleteFeed,
+  getChannelCreateUser,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -26,12 +28,16 @@ import FeedReplies from "./components/FeedReplies";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
 import { useAuth } from "@/auth/AuthProvider";
 import { handleToggleLike } from "@/utils/handleLikeToggle";
-import { getRepliesWithUserInfo } from "@/api/replies";
+import { deleteReply, getRepliesWithUserInfo } from "@/api/replies";
 import close from "@/assets/close.svg";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
-import { alert, confirmAlert } from "@/components/common/CustomAlert";
+import {
+  alert,
+  confirmAlert,
+  showToast,
+} from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
@@ -58,6 +64,7 @@ function Channel() {
   >(null);
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
+  const [isCreateMember, setIsCreateMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
   const [hasMoreTailFeeds, setHasMoreTailFeeds] = useState(true);
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
@@ -67,6 +74,7 @@ function Channel() {
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
+  const replyContainerRef = useRef<HTMLDivElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
   const bottomObserverRef = useRef<IntersectionObserver | null>(null);
 
@@ -99,7 +107,7 @@ function Channel() {
         }
       }
     },
-    [user, userLikes, feedData, selectedFeed]
+    [user, isMember, userLikes, feedData, selectedFeed]
   );
 
   const renderFeedComponent = useCallback(
@@ -111,6 +119,7 @@ function Channel() {
         isUserLike: userLikes?.includes(feed.feed_id!) ?? false,
         onReplyClicked: () => setSelectedFeed(feed),
         onToggleLike: () => onToggleLike(feed.feed_id!),
+        handleDelete: handleDelete,
       };
 
       if (feed.message_type === "clip")
@@ -161,27 +170,65 @@ function Channel() {
     if (!isMember) {
       if (channelInfo)
         confirmAlert(`${channelInfo.name} 채널에 가입하시겠습니까?`).then(
-          async () => {
-            const data = await addUserChannels(id);
-            if (data) {
-              alert(`${channelInfo.name} 채널에 가입하셨습니다`);
-              setIsMember(true);
+          async (result) => {
+            if (result.isConfirmed) {
+              const data = await addUserChannels(id);
+              if (data) {
+                alert(`${channelInfo.name} 채널에 가입하셨습니다`);
+                setIsMember(true);
+              }
             }
           }
         );
     } else {
+      if (isCreateMember) {
+        alert("채널 소유자는 채널에서 탈퇴할 수 없습니다");
+        return;
+      }
       if (channelInfo)
         confirmAlert(`${channelInfo.name} 채널에서 탈퇴하시겠습니까?`).then(
-          async () => {
-            if (!user) return;
-            const data = await deleteUserChannels(user?.id, id);
-            if (data) {
-              alert(`${channelInfo.name} 채널에서 탈퇴하셨습니다`);
-              setIsMember(false);
+          async (result) => {
+            if (result.isConfirmed) {
+              if (!user) return;
+              const data = await deleteUserChannels(user?.id, id);
+              if (data) {
+                alert(`${channelInfo.name} 채널에서 탈퇴하셨습니다`);
+                setIsMember(false);
+              }
             }
           }
         );
     }
+  };
+
+  const handleDelete = (feedId: string) => {
+    confirmAlert("피드를 삭제하시겠습니까?").then(async (result) => {
+      if (result.isConfirmed) {
+        const data = await deleteFeed(feedId);
+        if (data) {
+          showToast("피드가 삭제되었습니다");
+          setFeedData(
+            (prev) => prev?.filter((f) => f.feed_id !== feedId) ?? null
+          );
+          setSelectedFeed((prev) => (prev?.feed_id === feedId ? null : prev));
+        }
+      }
+    });
+  };
+
+  const handleDeleteReply = (feedReplyId: string) => {
+    confirmAlert("댓글을 삭제하시겠습니까?").then(async (result) => {
+      if (result.isConfirmed) {
+        const data = await deleteReply(feedReplyId);
+        if (data?.length !== 0) {
+          showToast("댓글이 삭제되었습니다");
+          setRepliesData(
+            (prev) =>
+              prev?.filter((f) => f.feed_reply_id !== feedReplyId) ?? null
+          );
+        }
+      }
+    });
   };
 
   // 마지막 요소에서 20개를 더 로드
@@ -329,7 +376,7 @@ function Channel() {
       bottomObserverRef.current = new IntersectionObserver(([entry]) => {
         // 최하단을 보고 있는 상태 (스크롬됨)
         setIsAtBottom(entry.isIntersecting);
-        
+
         if (
           entry.isIntersecting &&
           !observerStateRef.current.isFetching &&
@@ -352,14 +399,29 @@ function Channel() {
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, []);
+  const scrollToBottomReply = useCallback(
+    (containerRef: React.RefObject<HTMLDivElement | null>) => {
+      const el = containerRef.current;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    },
+    []
+  );
 
   const initLoadState = () => {
     setHasMoreHeadFeeds(true);
     setHasMoreTailFeeds(true);
     setIsFetching(false);
   };
+  // useEffect
 
-  // Effect 진입점
+  useEffect(() => {
+    if (!repliesData || repliesData.length === 0) {
+      return;
+    }
+    scrollToBottomReply(replyContainerRef);
+  }, [repliesData, scrollToBottomReply]);
+
   useEffect(() => {
     // 이미 target 데이터가 있다면 로드 중단
     if (feedData) {
@@ -425,6 +487,19 @@ function Channel() {
   }, [id, user]);
 
   useEffect(() => {
+    async function checkCreateMember() {
+      if (id && user) {
+        const data = await getChannelCreateUser(id);
+        if (!data) return;
+        console.log(data);
+        console.log(user.id);
+        setIsCreateMember(data[0].owner_id === user.id);
+      }
+    }
+    checkCreateMember();
+  }, [id, user]);
+
+  useEffect(() => {
     const getChannelInfo = async () => {
       const data = await getChannelInfoById(id);
       if (!data) return;
@@ -478,7 +553,7 @@ function Channel() {
                 <p>{channelInfo.description}</p>
               </details>
             ) : (
-              <p>채널정보를 가져올 수 없습니다</p>
+              <p>채널 정보 가져오는중 . . .</p>
             )}
             {user ? (
               isMember ? (
@@ -500,43 +575,56 @@ function Channel() {
               )
             ) : null}
           </div>
-          <div className={S.feedArea}>
-            <ul className={S.contentArea} ref={feedContainerRef}>
-              <li className={S.observerDiv} ref={setTopLiRef}></li>
-              {feedData?.map((data) => renderFeedComponent(data))}
-              <li className={S.observerDiv} ref={setBottomLiRef}></li>
-            </ul>
-            <div
-              className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
-            >
-              {selectedFeed ? (
-                <>
-                  <DetailFeeds
-                    feedItem={selectedFeed}
-                    replies={repliesData?.length}
-                    onToggleLike={onToggleLike}
-                    isUserLike={
-                      userLikes?.includes(selectedFeed.feed_id!) ?? false
-                    }
-                    scrollToSelectedFeed={scrollToSelectedFeed}
-                  />
-                  <FeedReplies replies={repliesData} />
-                  <InputReplies
-                    currentFeedId={selectedFeed.feed_id!}
-                    setUpdateReplies={setUpdateReplies}
-                  />
-                  <button
-                    type="button"
-                    className={S.closeButton}
-                    onClick={() => setSelectedFeed(null)}
-                  >
-                    <img src={close} alt="" />
-                  </button>
-                </>
-              ) : null}
-            </div>
-          </div>
-
+          {feedData?.length === 0 ? (
+            <div className={S.noFeed}>게시물이 없습니다</div>
+          ) : (
+            <>
+              <div className={S.feedArea}>
+                <ul className={S.contentArea} ref={feedContainerRef}>
+                  <li className={S.observerDiv} ref={setTopLiRef}></li>
+                  {feedData?.map((data) => renderFeedComponent(data))}
+                  <li className={S.observerDiv} ref={setBottomLiRef}></li>
+                </ul>
+                <div
+                  className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+                >
+                  {selectedFeed ? (
+                    <>
+                      <DetailFeeds
+                        feedItem={selectedFeed}
+                        replies={repliesData?.length}
+                        onToggleLike={onToggleLike}
+                        isUserLike={
+                          userLikes?.includes(selectedFeed.feed_id!) ?? false
+                        }
+                        scrollToSelectedFeed={scrollToSelectedFeed}
+                        handleDelete={handleDelete}
+                      />
+                      <FeedReplies
+                        replies={repliesData}
+                        handleDeleteReply={handleDeleteReply}
+                        replyContainerRef={replyContainerRef}
+                      />
+                      <InputReplies
+                        currentFeedId={selectedFeed.feed_id!}
+                        setUpdateReplies={setUpdateReplies}
+                        scrollToBottom={() =>
+                          scrollToBottomReply(replyContainerRef)
+                        }
+                      />
+                      <button
+                        type="button"
+                        className={S.closeButton}
+                        onClick={() => setSelectedFeed(null)}
+                      >
+                        <img src={close} alt="" />
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </>
+          )}
           <div
             className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
           >

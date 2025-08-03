@@ -29,7 +29,8 @@ export const getRepliesWithUserInfo = async (
   const { data, error } = await supabase
     .from("get_replies_with_user")
     .select("*")
-    .eq("feed_id", feedId);
+    .eq("feed_id", feedId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     errorHandler(error, "getRepliesWithUserInfo");
@@ -59,6 +60,20 @@ export const addReply = async ({
 
   if (error) {
     errorHandler(error, "addReply");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const deleteReply = async (feedReplyId: string) => {
+  const { data, error } = await supabase
+    .from("feed_replies")
+    .delete()
+    .eq("id", feedReplyId)
+    .select();
+  if (error) {
+    errorHandler(error, "deleteReply");
     return null;
   } else {
     return data;

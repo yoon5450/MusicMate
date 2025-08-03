@@ -5,12 +5,14 @@ import heartEmpty from "@/assets/heart_empty.svg";
 import heartFilled from "@/assets/heart_filled.svg";
 import { timeFormater } from "@/utils/timeFormatter";
 import { useRouter } from "@/router/RouterProvider";
+import { useAuth } from "@/auth/AuthProvider";
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
   onReplyClicked: () => void;
   isActive: boolean;
   isUserLike: boolean;
   onToggleLike: (feedId: string) => void;
+  handleDelete: (feedId: string) => void;
 }
 
 function ChannelFeedMessage({
@@ -28,24 +30,28 @@ function ChannelFeedMessage({
   isActive,
   isUserLike,
   onToggleLike,
+  handleDelete,
 }: Props) {
+  const { user } = useAuth();
   const { setHistoryRoute } = useRouter();
 
   const handleClick = (userId: string | null) => {
-    if(!userId) return;
+    if (!userId) return;
     window.history.pushState(null, "", `/user/${userId}`);
     setHistoryRoute(`/user/${userId}`);
   };
-  
 
   if (!feed_id) return;
   const handleReplyClicked = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onReplyClicked();
   };
+
+  const handleDeleteFeed = () => {
+    handleDelete(feed_id);
+  };
   const kst = timeFormater(created_at!);
-  const createdTime =
-    kst!.slice(0, 10) + " " + kst!.slice(11, 16);
+  const createdTime = kst!.slice(0, 10) + " " + kst!.slice(11, 16);
 
   return (
     <div
@@ -57,15 +63,12 @@ function ChannelFeedMessage({
           className={S.userAvatar}
           src={preview_url ? preview_url : "/music_mate_symbol_fixed.svg"}
           alt="작성자프로필이미지"
-          onClick={()=> handleClick(author_id)}
-          style={{cursor: "pointer"}}
+          onClick={() => handleClick(author_id)}
+          style={{ cursor: "pointer" }}
         />
       </div>
       <div className={S.messageFeed}>
-        <p
-          onClick={()=> handleClick(author_id)}
-          style={{cursor: "pointer"}}
-        >
+        <p onClick={() => handleClick(author_id)} style={{ cursor: "pointer" }}>
           {author_nickname} <small>{createdTime}</small>
         </p>
         {image_url ? (
@@ -93,6 +96,15 @@ function ChannelFeedMessage({
         <button type="button" onClick={handleReplyClicked}>
           댓글
         </button>
+        {author_id === user?.id ? (
+          <button
+            type="button"
+            className={S.deleteButton}
+            onClick={handleDeleteFeed}
+          >
+            삭제
+          </button>
+        ) : null}
       </div>
     </div>
   );

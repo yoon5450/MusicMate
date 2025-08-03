@@ -30,10 +30,27 @@
       gap: var(--spacing-12);
       justify-content: center;
 
-      button {
-        padding: 8px;
-        border-radius: 8px;
-        background-color: var(--primary_default);
+      .messageFeedButtons {
+        display: flex;
+        gap: var(--spacing-12);
+        button {
+          padding: 8px;
+          border-radius: 8px;
+          background-color: var(--primary_default);
+          cursor: pointer;
+
+          &:hover {
+            background-color: var(--primary_active);
+          }
+        }
+        .deleteButton {
+          background-color: var(--gray_04);
+          color: var(--gray_10);
+
+          &:hover {
+            background-color: var(--gray_03);
+          }
+        }
       }
     }
   }
@@ -52,6 +69,7 @@
       justify-content: center;
       align-items: center;
       gap: var(--spacing-4);
+      cursor: pointer;
     }
   }
 }
@@ -67,37 +85,71 @@
 
     .reply {
       display: flex;
+      justify-content: space-between;
       width: 100%;
       gap: var(--spacing-12);
       position: relative;
       color: var(--white);
       padding: 0.5rem;
 
-      .userAvatarContainer {
+      .replyContents {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        width: 100%;
+        gap: var(--spacing-12);
+        position: relative;
+        color: var(--white);
 
-        .userAvatar {
-          border-radius: 50%;
-          width: 50px;
-          height: 50px;
-          border: 1px solid var(--gray_08);
-          padding: 0.5rem;
+        .userAvatarContainer {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .userAvatar {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--gray_08);
+            padding: 0.5rem;
+          }
+        }
+        .messageFeed {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-12);
+          justify-content: center;
+
+          button {
+            padding: 8px;
+            border-radius: 8px;
+            background-color: var(--primary_default);
+          }
         }
       }
-      .messageFeed {
+      .deleteButton {
+        font-weight: bold;
+        padding: 8px;
+        border-radius: 8px;
         display: flex;
-        flex-direction: column;
-        gap: var(--spacing-12);
         justify-content: center;
+        align-items: center;
+        gap: var(--spacing-4);
+        height: 32px;
+        cursor: pointer;
+        background-color: var(--gray_04);
+        color: var(--gray_10);
 
-        button {
-          padding: 8px;
-          border-radius: 8px;
-          background-color: var(--primary_default);
+        &:hover {
+          background-color: var(--gray_03);
         }
       }
     }
   }
+}
+
+.noReply {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--gray_10);
+  flex: 1;
 }

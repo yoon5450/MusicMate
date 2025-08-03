@@ -3,6 +3,7 @@ import S from "./DetailContents.module.css";
 import heartEmpty from "@/assets/heart_empty_white.svg";
 import heartFilled from "@/assets/heart_filled_white.svg";
 import { useRouter } from "@/router/RouterProvider";
+import { useAuth } from "@/auth/AuthProvider";
 
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
@@ -10,6 +11,7 @@ interface Props {
   onToggleLike: (feedId: string) => void;
   isUserLike: boolean;
   scrollToSelectedFeed: () => void;
+  handleDelete: (feedId: string) => void;
 }
 
 function DetailFeeds({
@@ -18,17 +20,22 @@ function DetailFeeds({
   onToggleLike,
   isUserLike,
   scrollToSelectedFeed,
+  handleDelete,
 }: Props) {
   const { setHistoryRoute } = useRouter();
-  
+  const { user } = useAuth();
+
   const handleClick = (userId: string | null) => {
-    if(!userId) return;
+    if (!userId) return;
     window.history.pushState(null, "", `/user/${userId}`);
     setHistoryRoute(`/user/${userId}`);
   };
 
   const handleLikeToggle = () => {
     onToggleLike(feed_id!);
+  };
+  const handleDeleteFeed = () => {
+    handleDelete(feed_id!);
   };
 
   return (
@@ -39,20 +46,31 @@ function DetailFeeds({
             className={S.userAvatar}
             src={preview_url ? preview_url : "/music_mate_symbol_fixed.svg"}
             alt="작성자프로필이미지"
-            onClick={()=> handleClick(author_id)}
-            style={{cursor: "pointer"}}
+            onClick={() => handleClick(author_id)}
+            style={{ cursor: "pointer" }}
           />
         </div>
         <div className={S.messageFeed}>
           <p
-            onClick={()=> handleClick(author_id)}
-            style={{cursor: "pointer"}}
+            onClick={() => handleClick(author_id)}
+            style={{ cursor: "pointer" }}
           >
-          {author_nickname}
+            {author_nickname}
           </p>
-          <button type="button" onClick={scrollToSelectedFeed}>
-            현재 게시물로 돌아가기
-          </button>
+          <div className={S.messageFeedButtons}>
+            <button type="button" onClick={scrollToSelectedFeed}>
+              현재 게시물로 돌아가기
+            </button>
+            {author_id === user?.id ? (
+              <button
+                type="button"
+                className={S.deleteButton}
+                onClick={handleDeleteFeed}
+              >
+                삭제
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
       <div className={S.reactsInfo}>
