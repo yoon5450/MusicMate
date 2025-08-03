@@ -11,16 +11,25 @@ import { alert, showToast } from "@/components/common/CustomAlert";
 
 interface Props {
   curChannelId: string;
-  renderTailFeeds: () => Promise<void>;
-  scrollToBottom: () => void;
   isMember: boolean | null;
+  handleAddSubmitFeed: (data: {
+    audio_url: string | null;
+    author_id: string;
+    channel_id: string;
+    content: string | null;
+    created_at: string;
+    id: string;
+    image_url: string | null;
+    message_type: "default" | "clip" | "image";
+    title: string | null;
+  }) => void;
 }
 
 function InputFeed({
   curChannelId,
-  renderTailFeeds,
-  scrollToBottom,
+
   isMember,
+  handleAddSubmitFeed,
 }: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
@@ -57,10 +66,6 @@ function InputFeed({
     }
     setImage(undefined);
     setImagePreview(undefined);
-
-    requestAnimationFrame(() => {
-      scrollToBottom();
-    });
   };
 
   const handleClose = (e: MouseEvent) => {
@@ -90,14 +95,14 @@ function InputFeed({
         return;
       }
 
-      await addFeedsWithFiles({
+      const data = await addFeedsWithFiles({
         content: text.value,
         channel_id: curChannelId,
         message_type: "default",
         image_file: image,
       });
 
-      await renderTailFeeds();
+      handleAddSubmitFeed(data);
 
       initialize();
     }
@@ -153,6 +158,8 @@ function InputFeed({
         recordingData={recordingData}
         setRecordingData={setRecordingData}
         curChannelId={curChannelId}
+        handleAddSubmitFeed={handleAddSubmitFeed}
+        
       />
 
       {/* 이미지 프리뷰 영역 */}
