@@ -31,13 +31,14 @@ function ChannelLink({
   }
 
   return (
-    <button 
-      onClick={handleClick} 
-      className={S.linkButton}
+    <div
+      onClick={handleClick}
+      className={S.linkContainer}
+      role="link"
       aria-label={`채널 ${channelId}로 이동하기`}
     >
       {children}
-    </button>
+    </div>
   );
 }
 export default ChannelLink

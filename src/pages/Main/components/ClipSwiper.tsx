@@ -103,7 +103,7 @@ function ClipSwiper() {
 
         <div className={S.gotoChannelWrapper}>
           <ChannelLink channelId={selectedAudio.channel_id} feedId={selectedAudio.feed_id}>
-          채널로 이동
+            <button className={S.gotoChannelButton}>채널로 이동</button>
           </ChannelLink>
         </div>
         
