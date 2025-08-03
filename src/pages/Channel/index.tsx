@@ -456,24 +456,6 @@ function Channel() {
     scrollToBottom();
   }, [isSubmit, scrollToBottom]);
 
-  // useEffect(() => {
-  //   const container = feedContainerRef.current;
-  //   if (!container) return;
-  //   if (!isAtBottom) return
-
-  //   const handleScroll = throttle(() => {
-  //     const { scrollHeight, scrollTop, clientHeight } = container;
-  //     const isScrolledToBottom = scrollHeight - scrollTop - clientHeight < 100;
-  //     setIsAtBottom(isScrolledToBottom);
-  //   }, 200);
-
-  //   container.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     container.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, [isAtBottom]);
-
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
     feed: Tables<"get_feeds_with_user_and_likes">
