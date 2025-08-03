@@ -58,8 +58,8 @@ function Channel() {
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
-  const topLIRef = useRef<HTMLLIElement>(null);
-  const bottomLIRef = useRef<HTMLLIElement>(null);
+  const topObserverRef = useRef<IntersectionObserver | null>(null);
+  const bottomObserverRef = useRef<IntersectionObserver | null>(null)
 
   // Callback
   const onToggleLike = useCallback(
@@ -195,13 +195,19 @@ function Channel() {
       })
     );
 
-    console.log([...(feedData ?? []), ...(updatedFeeds ?? [])]);
-    setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
+    // 중복 제거
+    setFeedData((prev) => {
+      const prevFeeds = prev ?? [];
+      const existingFeedIds = new Set(prevFeeds.map((f) => f.feed_id));
+      const uniqueNewFeeds = updatedFeeds.filter(
+        (f) => !existingFeedIds.has(f.feed_id)
+      );
+      return [...prevFeeds, ...uniqueNewFeeds];
+    });
   }, [feedData, id]);
 
   // 첫 요소에서 20개를 더 로드
   const renderHeadFeeds = useCallback(async () => {
-    console.log("호출");
     if (!feedData || feedData.length === 0) return;
 
     const firstFeedId = feedData[0].feed_id!;
@@ -225,9 +231,14 @@ function Channel() {
       })
     );
 
-    console.log([...(feedData ?? []), ...(updatedFeeds ?? [])]);
-
-    setFeedData((prev) => [...(updatedFeeds ?? []), ...(prev ?? [])]);
+    setFeedData((prev) => {
+      const prevFeeds = prev ?? [];
+      const existingFeedIds = new Set(prevFeeds.map((f) => f.feed_id));
+      const uniqueNewFeeds = updatedFeeds.filter(
+        (f) => !existingFeedIds.has(f.feed_id)
+      );
+      return [...uniqueNewFeeds, ...prevFeeds];
+    });
 
     requestAnimationFrame(() => {
       const newFirstEl = feedRefs.current[firstFeedId];
@@ -238,6 +249,67 @@ function Channel() {
       }
     });
   }, [feedData, id]);
+
+  const observerStateRef = useRef({
+    hasMoreHeadFeeds,
+    hasMoreTailFeeds,
+    isFetching,
+  });
+  useEffect(() => {
+    observerStateRef.current = {
+      hasMoreHeadFeeds,
+      hasMoreTailFeeds,
+      isFetching,
+    };
+  });
+
+  const setTopLiRef = useCallback(
+    (node: HTMLLIElement | null) => {
+      if (topObserverRef.current) {
+        topObserverRef.current.disconnect();
+      }
+
+      topObserverRef.current = new IntersectionObserver(([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !observerStateRef.current.isFetching &&
+          observerStateRef.current.hasMoreHeadFeeds
+        ) {
+          setIsFetching(true);
+          renderHeadFeeds().finally(() => setIsFetching(false));
+        }
+      });
+
+      if (node) {
+        topObserverRef.current.observe(node);
+      }
+    },
+    [renderHeadFeeds]
+  );
+
+  const setBottomLiRef = useCallback(
+    (node: HTMLLIElement | null) => {
+      if (bottomObserverRef.current) {
+        bottomObserverRef.current.disconnect();
+      }
+
+      bottomObserverRef.current = new IntersectionObserver(([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !observerStateRef.current.isFetching &&
+          observerStateRef.current.hasMoreTailFeeds
+        ) {
+          setIsFetching(true);
+          renderTailFeeds().finally(() => setIsFetching(false));
+        }
+      });
+
+      if (node) {
+        bottomObserverRef.current.observe(node);
+      }
+    },
+    [renderTailFeeds]
+  );
 
   const scrollToBottom = useCallback(() => {
     const el = feedContainerRef.current;
@@ -355,51 +427,6 @@ function Channel() {
     return previewUrl;
   };
 
-  // 리로드 옵저버
-  // 아. 엄청 복잡한 것 같은데 훅으로 분리하고 싶음.
-  useEffect(() => {
-    const topLI = topLIRef.current;
-    const bottomLI = bottomLIRef.current;
-
-    const topObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isFetching && hasMoreHeadFeeds) {
-          setIsFetching(true);
-          renderHeadFeeds().finally(() => setIsFetching(false));
-        }
-      },
-      {
-        threshold: 0.2,
-      }
-    );
-
-    const bottomObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isFetching && hasMoreTailFeeds) {
-          setIsFetching(true);
-          renderTailFeeds().finally(() => setIsFetching(false));
-        }
-      },
-      {
-        threshold: 0.2,
-      }
-    );
-
-    if (topLI && hasMoreHeadFeeds) topObserver.observe(topLI);
-    if (bottomLI && hasMoreTailFeeds) bottomObserver.observe(bottomLI);
-
-    return () => {
-      if (topLI) topObserver.unobserve(topLI);
-      if (bottomLI) bottomObserver.unobserve(bottomLI);
-    };
-  }, [
-    hasMoreHeadFeeds,
-    hasMoreTailFeeds,
-    isFetching,
-    renderHeadFeeds,
-    renderTailFeeds,
-  ]);
-
   return (
     <>
       <div className={S.contentContainer}>
@@ -435,9 +462,9 @@ function Channel() {
           </div>
           <div className={S.feedArea}>
             <ul className={S.contentArea} ref={feedContainerRef}>
-              <li className={S.observerDiv} ref={topLIRef}></li>
+              <li className={S.observerDiv} ref={setTopLiRef}></li>
               {feedData?.map((data) => renderFeedComponent(data))}
-              <li className={S.observerDiv} ref={bottomLIRef}></li>
+              <li className={S.observerDiv} ref={setBottomLiRef}></li>
             </ul>
             <div
               className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}

@@ -197,7 +197,7 @@ export const getFeedsByChannelAndAfter = async (
     errorHandler(error, "getFeedsByChannelAndAfter");
     return null;
   } else {
-    return data.reverse();
+    return data;
   }
 };
 
