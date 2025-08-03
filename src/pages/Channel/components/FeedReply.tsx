@@ -2,12 +2,20 @@ import type { Tables } from "@/@types/database.types";
 import S from "./DetailContents.module.css";
 import { useEffect, useState } from "react";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
+import { useRouter } from "@/router/RouterProvider";
 interface Props {
   reply: Tables<"get_replies_with_user">;
 }
 
 function FeedReply({ reply }: Props) {
-  const { content, created_at, nickname, profile_url, feed_reply_id } = reply;
+  const { content, created_at, nickname, profile_url, feed_reply_id, author_id } = reply;
+  const { setHistoryRoute } = useRouter();
+  
+  const handleClick = (userId: string | null) => {
+    if(!userId) return;
+    window.history.pushState(null, "", `/user/${userId}`);
+    setHistoryRoute(`/user/${userId}`);
+  };
   const createdTime =
     created_at!.slice(0, 10) + " " + created_at!.slice(11, 16);
 
@@ -30,10 +38,15 @@ function FeedReply({ reply }: Props) {
               profilePreview ? profilePreview : "/music_mate_symbol_fixed.svg"
             }
             alt="작성자"
+            onClick={()=> handleClick(author_id)}
+            style={{cursor: "pointer"}} 
           />
         </div>
         <div className={S.messageFeed}>
-          <p>
+          <p
+            onClick={()=> handleClick(author_id)}
+            style={{cursor: "pointer"}}
+          >
             {nickname} <small>{createdTime}</small>
           </p>
           <p>{content}</p>
