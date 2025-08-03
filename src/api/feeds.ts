@@ -201,13 +201,11 @@ export const getFeedsByChannelAndAfter = async (
   }
 };
 
-export const getFeedByTargetId = async (
-  feedId: string,
-) => {
-  const { data, error } = await supabase.
-  from("get_feeds_with_user_and_likes")
-  .select("*")
-  .eq("feed_id", feedId)
+export const getFeedByTargetId = async (feedId: string) => {
+  const { data, error } = await supabase
+    .from("get_feeds_with_user_and_likes")
+    .select("*")
+    .eq("feed_id", feedId);
 
   if (error) {
     errorHandler(error, "getFeedsByChannelAndNear");
@@ -348,21 +346,33 @@ export const getPopularClips = async (): Promise<
 
 /**
  * @description 인기 피드(message_type이 default)
- * @returns 인기 피드 리스트 
+ * @returns 인기 피드 리스트
  */
-export const getPopularFeeds = async ():Promise<
-  Tables<"get_feeds_with_user_and_likes">[]|null
-  > =>{
-  const {data,error} = await supabase
-  .from("get_feeds_with_user_and_likes")
-  .select("*")
-  .eq("message_type", "default")
-  .order("like_count",{ascending:false})
-  .limit(10);
+export const getPopularFeeds = async (): Promise<
+  Tables<"get_feeds_with_user_and_likes">[] | null
+> => {
+  const { data, error } = await supabase
+    .from("get_feeds_with_user_and_likes")
+    .select("*")
+    .eq("message_type", "default")
+    .order("like_count", { ascending: false })
+    .limit(10);
 
-  if(error){
-    errorHandler(error,"getPopularFeeds");
+  if (error) {
+    errorHandler(error, "getPopularFeeds");
     return null;
   }
   return data;
-}
+};
+
+export const deleteFeed = async (feedId: string) => {
+  const { data, error } = await supabase.rpc("delete_feed", {
+    p_feed_id: feedId,
+  });
+
+  if (error) {
+    errorHandler(error, "deleteFeed");
+    return null;
+  }
+  return data;
+};

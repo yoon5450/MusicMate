@@ -63,6 +63,7 @@ function InputFeed({
     if (text) {
       text.value = "";
       text.focus();
+      text.style.height = "auto";
     }
     setImage(undefined);
     setImagePreview(undefined);
@@ -79,12 +80,12 @@ function InputFeed({
 
     const text = textareaRef.current;
     if (!isAuth) {
-      alert("채널에 메세지를 보내려면 로그인해야 합니다.");
+      alert("로그인 후에 글을 올릴 수 있습니다.");
       return;
     }
 
     if (!isMember) {
-      alert("채널에 메세지를 보내려면 멤버여야 합니다.");
+      alert("채널에 가입한 후에 글을 올릴 수 있습니다.");
       return;
     }
 
@@ -159,7 +160,6 @@ function InputFeed({
         setRecordingData={setRecordingData}
         curChannelId={curChannelId}
         handleAddSubmitFeed={handleAddSubmitFeed}
-        
       />
 
       {/* 이미지 프리뷰 영역 */}

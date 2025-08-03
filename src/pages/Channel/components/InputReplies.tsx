@@ -9,8 +9,13 @@ import { alert } from "@/components/common/CustomAlert";
 interface Props {
   currentFeedId: string;
   setUpdateReplies: (time: number) => void;
+  scrollToBottom: () => void;
 }
-function InputReplies({ currentFeedId, setUpdateReplies }: Props) {
+function InputReplies({
+  currentFeedId,
+  setUpdateReplies,
+  scrollToBottom,
+}: Props) {
   const { isAuth, user } = useAuth();
   const { id: channelId } = useParams();
   const [isMember, setIsMember] = useState<boolean | null>(false);
@@ -18,6 +23,10 @@ function InputReplies({ currentFeedId, setUpdateReplies }: Props) {
 
   // Id
   const submitBtnId = useId();
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     async function check() {
@@ -32,7 +41,14 @@ function InputReplies({ currentFeedId, setUpdateReplies }: Props) {
 
   const initialize = () => {
     const text = textareaRef.current;
-    if (text) text.value = "";
+    if (text) {
+      text.value = "";
+      text.focus();
+      text.style.height = "auto";
+      requestAnimationFrame(() => {
+        scrollToBottom();
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,13 +56,13 @@ function InputReplies({ currentFeedId, setUpdateReplies }: Props) {
     const text = textareaRef.current;
 
     if (!isAuth) {
-      alert("피드에 댓글을 작성하려면 로그인해야 합니다.");
+      alert("로그인 후에 댓글을 작성할 수 있습니다.");
       if (text) text.value = "";
       return;
     }
 
     if (!isMember) {
-      alert("채널에 메세지를 보내려면 멤버여야 합니다.");
+      alert("채널에 가입한 후에 댓글을 작성할 수 있습니다.");
       if (text) text.value = "";
       return;
     }

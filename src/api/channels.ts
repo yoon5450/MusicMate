@@ -69,3 +69,17 @@ export const addChannels = async ({
     return data;
   }
 };
+
+export const getChannelCreateUser = async (channel_id: string) => {
+  const { data, error } = await supabase
+    .from("channels")
+    .select("owner_id")
+    .eq("id", channel_id);
+
+  if (error) {
+    errorHandler(error, "getChannelCreateUser");
+    return null;
+  } else {
+    return data;
+  }
+};

@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: var(--spacing-12);
+  padding: 0 var(--spacing-12);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -126,6 +126,14 @@
   }
 }
 
-.observerDiv{
+.observerDiv {
   height: 10px;
+}
+
+.noFeed {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--gray_10);
+  flex: 1;
 }
