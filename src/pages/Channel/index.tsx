@@ -11,7 +11,7 @@ import {
   getLikesByUserId,
   getFeedsByChannelAndAfter,
   getFeedsByChannelAndBefore,
-  getFeedsByNear,
+  getFeedByTargetId,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -52,13 +52,14 @@ function Channel() {
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMoreTailFeeds, setHasMoreTailFeeds] = useState(true);
+  const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const topLIRef = useRef<HTMLLIElement>(null);
   const bottomLIRef = useRef<HTMLLIElement>(null);
-  const isFetchingRef = useRef<boolean>(false);
 
   // Callback
   const onToggleLike = useCallback(
@@ -183,7 +184,7 @@ function Channel() {
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
     if (!afterFeedData || afterFeedData.length === 0) {
-      setHasMore(false);
+      setHasMoreTailFeeds(false);
       return;
     }
 
@@ -194,6 +195,7 @@ function Channel() {
       })
     );
 
+    console.log([...(feedData ?? []), ...(updatedFeeds ?? [])]);
     setFeedData((prev) => [...(prev ?? []), ...(updatedFeeds ?? [])]);
   }, [feedData, id]);
 
@@ -212,6 +214,7 @@ function Channel() {
 
     const beforeFeedData = await getFeedsByChannelAndBefore(id, beforeTime!);
     if (!beforeFeedData || beforeFeedData.length === 0) {
+      setHasMoreHeadFeeds(false);
       return;
     }
 
@@ -221,6 +224,8 @@ function Channel() {
         return { ...feed, preview_url: previewUrl };
       })
     );
+
+    console.log([...(feedData ?? []), ...(updatedFeeds ?? [])]);
 
     setFeedData((prev) => [...(updatedFeeds ?? []), ...(prev ?? [])]);
 
@@ -240,24 +245,28 @@ function Channel() {
     el.scrollTop = el.scrollHeight;
   }, []);
 
-  useEffect(() => {
-    if (paramsFeedId && feedData) {
-      const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
-      setSelectedFeed(updatedFeed ?? null);
-    }
-
-    // feedData가 계속 바뀔 수 있으므로 의도적으로 deps에서 제외함
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramsFeedId]);
+  const initLoadState = () => {
+    setHasMoreHeadFeeds(true);
+    setHasMoreTailFeeds(true);
+    setIsFetching(false);
+  };
 
   // Effect 진입점
   useEffect(() => {
+    // 이미 target 데이터가 있다면 로드 중단
+    if (feedData) {
+      const target = feedData.find((f) => f.feed_id === paramsFeedId);
+      if (target) {
+        setSelectedFeed(target);
+        return;
+      }
+    }
+
     setSelectedFeed(null);
-    setHasMore(true);
 
     const fetchData = async () => {
       if (paramsFeedId) {
-        const centerFeeds = await getFeedsByNear(paramsFeedId); // 새로운 API
+        const centerFeeds = await getFeedByTargetId(paramsFeedId); // 새로운 API
         if (!centerFeeds) return;
 
         const updatedFeeds = await Promise.all(
@@ -314,6 +323,7 @@ function Channel() {
       setChannelInfo(data[0]);
     };
     getChannelInfo();
+    initLoadState();
   }, [id]);
 
   // 선택된피드 바뀔때마다 해당 피드의 댓글 가져오기
@@ -353,11 +363,9 @@ function Channel() {
 
     const topObserver = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isFetchingRef.current) {
-          console.log("상단 도착");
-          isFetchingRef.current = true;
-          renderHeadFeeds();
-          isFetchingRef.current = false;
+        if (entry.isIntersecting && !isFetching && hasMoreHeadFeeds) {
+          setIsFetching(true);
+          renderHeadFeeds().finally(() => setIsFetching(false));
         }
       },
       {
@@ -367,11 +375,9 @@ function Channel() {
 
     const bottomObserver = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          console.log("하단 도착");
-          isFetchingRef.current = true;
-          renderTailFeeds();
-          isFetchingRef.current = false;
+        if (entry.isIntersecting && !isFetching && hasMoreTailFeeds) {
+          setIsFetching(true);
+          renderTailFeeds().finally(() => setIsFetching(false));
         }
       },
       {
@@ -379,14 +385,20 @@ function Channel() {
       }
     );
 
-    if (topLI) topObserver.observe(topLI);
-    if (hasMore && bottomLI) bottomObserver.observe(bottomLI);
+    if (topLI && hasMoreHeadFeeds) topObserver.observe(topLI);
+    if (bottomLI && hasMoreTailFeeds) bottomObserver.observe(bottomLI);
 
     return () => {
       if (topLI) topObserver.unobserve(topLI);
       if (bottomLI) bottomObserver.unobserve(bottomLI);
     };
-  }, [hasMore, renderHeadFeeds, renderTailFeeds]);
+  }, [
+    hasMoreHeadFeeds,
+    hasMoreTailFeeds,
+    isFetching,
+    renderHeadFeeds,
+    renderTailFeeds,
+  ]);
 
   return (
     <>

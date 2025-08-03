@@ -201,14 +201,13 @@ export const getFeedsByChannelAndAfter = async (
   }
 };
 
-export const getFeedsByNear = async (
+export const getFeedByTargetId = async (
   feedId: string,
-  range: number = 10
 ) => {
-  const { data, error } = await supabase.rpc("get_feeds_near_view", {
-    target_feed_id: feedId,
-    offset_count: range,
-  });
+  const { data, error } = await supabase.
+  from("get_feeds_with_user_and_likes")
+  .select("*")
+  .eq("feed_id", feedId)
 
   if (error) {
     errorHandler(error, "getFeedsByChannelAndNear");
