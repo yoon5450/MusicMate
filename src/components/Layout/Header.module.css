@@ -14,6 +14,7 @@
 
 .btnGroup {
   display: flex;
+  align-items: center;
 }
 
 .content {
@@ -39,6 +40,7 @@
   margin: 6px 10px;
   padding: 0 1rem;
   min-width: 80px;
+  height: 40px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.18s;

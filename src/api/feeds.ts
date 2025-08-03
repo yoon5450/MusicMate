@@ -192,9 +192,25 @@ export const getFeedsByChannelAndAfter = async (
     .gt("created_at", lastTime)
     .order("created_at", { ascending: true })
     .limit(20);
-    
+
   if (error) {
     errorHandler(error, "getFeedsByChannelAndAfter");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const getFeedByTargetId = async (
+  feedId: string,
+) => {
+  const { data, error } = await supabase.
+  from("get_feeds_with_user_and_likes")
+  .select("*")
+  .eq("feed_id", feedId)
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndNear");
     return null;
   } else {
     return data.reverse();
