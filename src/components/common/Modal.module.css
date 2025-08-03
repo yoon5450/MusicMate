@@ -15,36 +15,39 @@
 
 .modalContent{
   background-color: var(--gray_02);
-  padding: 3rem 4rem;
-  border-radius: 12px;
+  padding: 2rem 4rem;
+  border-radius: var(--spacing-12);
   box-sizing: border-box;
   width: 100%;
   max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  overflow: auto;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  /* max-height: 90vh; */
+  /* overflow-y: auto; */
+  /* overflow: auto; */
+  box-shadow: 0 var(--spacing-4) var(--spacing-20) rgba(0,0,0,0.25);
   position: relative;
+  overflow: visible;
+  max-height: none;
 }
 
 .exitButton{
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: var(--spacing-12);
+  right: var(--spacing-12);
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
   color: var(--primary_default);
   cursor: pointer;
+
+  &:hover {
+    color: var(--primary_hover);
+  }
+
+  &:active {
+    color: var(--primary_active);
+  }
 }
-.exitButton:hover{
-  color: var(--primary_hover);
-  transform: scale(1.1);
-}
-
-
-
 
 .title {
   margin-top: 0;
