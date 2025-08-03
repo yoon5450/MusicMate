@@ -33,7 +33,6 @@ import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
 import { alert, confirmAlert } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
-import { throttle } from "@/utils/Throttle";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
