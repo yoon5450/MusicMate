@@ -53,6 +53,7 @@ function ClipSwiper() {
                 src={image_url ?? "/music_mate_symbol_fixed.svg"} 
                 alt={title ?? "thumbnail"} 
                 className={S.thumbnail} 
+                title="오디오 클립 듣기"
                 role="button"
                 tabIndex={0}
                 aria-label={`${title ?? "클립"}재생`}
@@ -94,7 +95,11 @@ function ClipSwiper() {
 
 
     {selectedAudio && (
-      <div className={S.audioPopup}>
+      <div
+        className={S.audioOverlay}
+        onClick={()=> setSelectedAudio(null)}
+      >
+      <div className={S.audioPopup} onClick={(e) => e.stopPropagation()}>
         <button 
           className={S.closeButton} 
           onClick={()=> setSelectedAudio(null)}
@@ -106,7 +111,7 @@ function ClipSwiper() {
             <button className={S.gotoChannelButton}>채널로 이동</button>
           </ChannelLink>
         </div>
-        
+        </div>
       </div>
     )}
     </>
