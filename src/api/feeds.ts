@@ -265,7 +265,6 @@ export const addFeedsWithFiles = async ({
   image_file,
 }: InsertAllType) => {
   const { data: userData } = await supabase.auth.getUser();
-  if (!userData) alert("로그인 후에 글을 올릴 수 있습니다.");
 
   const pathArr = [];
   const now = Date.now();
@@ -287,14 +286,14 @@ export const addFeedsWithFiles = async ({
     audio_url = await uploadAndGetUrl(audio_path, audio_file, "feed-audio");
   }
 
-  const { error: dbError } = await supabase.from("feeds").insert({
+  const { data, error: dbError } = await supabase.from("feeds").insert({
     title,
     content,
     audio_url,
     image_url,
     channel_id,
     message_type,
-  });
+  }).select('*')
 
   // DB에 에러가 있으면 업로드 취소
   if (dbError) {
@@ -303,6 +302,8 @@ export const addFeedsWithFiles = async ({
     });
     throw dbError;
   }
+
+  return data?.[0] ?? null
 };
 
 /**

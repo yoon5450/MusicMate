@@ -12,12 +12,24 @@ interface Props {
   setRecordingData: React.Dispatch<
     React.SetStateAction<RecordingData | undefined>
   >;
+    handleAddSubmitFeed: (data: {
+    audio_url: string | null;
+    author_id: string;
+    channel_id: string;
+    content: string | null;
+    created_at: string;
+    id: string;
+    image_url: string | null;
+    message_type: "default" | "clip" | "image";
+    title: string | null;
+  }) => void;
 }
 
 function SubmitClipForm({
   recordingData,
   setRecordingData,
   curChannelId,
+  handleAddSubmitFeed,
 }: Props) {
   const [imagePreview, setImagePreview] = useState<string | undefined | null>("");
   const [feedImage, setFeedImage] = useState<File | undefined | null>();
@@ -37,11 +49,11 @@ function SubmitClipForm({
     if(file) setFilePreview(file, setImagePreview);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log("전송");
 
-    addFeedsWithFiles({
+    const data = await addFeedsWithFiles({
       title,
       content,
       message_type: "clip",
@@ -49,6 +61,8 @@ function SubmitClipForm({
       image_file: feedImage,
       audio_file: recordingData?.file,
     });
+
+    handleAddSubmitFeed(data);
 
     handleDelete();
   }

@@ -2,7 +2,13 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   addUserChannels,
   checkUserInChannels,
@@ -26,6 +32,7 @@ import { useUserProfile } from "@/context/UserProfileContext";
 import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
 import { alert, confirmAlert } from "@/components/common/CustomAlert";
+import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -39,7 +46,7 @@ type channelInfoType = {
 function Channel() {
   const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
-  const { lastUpdatedAt } = useUserProfile();
+  const { lastUpdatedAt, userProfile } = useUserProfile();
 
   const [selectedFeed, setSelectedFeed] = useState<FeedWithPreview | null>(
     null
@@ -55,11 +62,13 @@ function Channel() {
   const [hasMoreTailFeeds, setHasMoreTailFeeds] = useState(true);
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
   const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
-  const bottomObserverRef = useRef<IntersectionObserver | null>(null)
+  const bottomObserverRef = useRef<IntersectionObserver | null>(null);
 
   // Callback
   const onToggleLike = useCallback(
@@ -206,6 +215,27 @@ function Channel() {
     });
   }, [feedData, id]);
 
+  const handleAddSubmitFeed = useCallback(
+    (data: Tables<"feeds">) => {
+      if (!userProfile?.nickname && !userProfile?.nickname) return;
+      const newFeed = convertNewFeedToFeedData(
+        data,
+        userProfile?.nickname,
+        userProfile?.profile_url
+      );
+
+      setFeedData((prev: FeedWithPreview[] | null) => [
+        ...(prev ?? []),
+        newFeed,
+      ]);
+
+      if (isAtBottom) {
+        setIsSubmit((prev) => !prev);
+      }
+    },
+    [isAtBottom, userProfile?.nickname, userProfile?.profile_url]
+  );
+
   // 첫 요소에서 20개를 더 로드
   const renderHeadFeeds = useCallback(async () => {
     if (!feedData || feedData.length === 0) return;
@@ -250,11 +280,13 @@ function Channel() {
     });
   }, [feedData, id]);
 
+  // 옵저버 상태 업데이트
   const observerStateRef = useRef({
     hasMoreHeadFeeds,
     hasMoreTailFeeds,
     isFetching,
   });
+
   useEffect(() => {
     observerStateRef.current = {
       hasMoreHeadFeeds,
@@ -263,6 +295,7 @@ function Channel() {
     };
   });
 
+  // 옵저버 콜백 Ref
   const setTopLiRef = useCallback(
     (node: HTMLLIElement | null) => {
       if (topObserverRef.current) {
@@ -294,6 +327,9 @@ function Channel() {
       }
 
       bottomObserverRef.current = new IntersectionObserver(([entry]) => {
+        // 최하단을 보고 있는 상태 (스크롬됨)
+        setIsAtBottom(entry.isIntersecting);
+        
         if (
           entry.isIntersecting &&
           !observerStateRef.current.isFetching &&
@@ -416,6 +452,10 @@ function Channel() {
     scrollToSelectedFeed();
   }, [selectedFeed]);
 
+  useLayoutEffect(() => {
+    scrollToBottom();
+  }, [isSubmit, scrollToBottom]);
+
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
     feed: Tables<"get_feeds_with_user_and_likes">
@@ -502,8 +542,7 @@ function Channel() {
           >
             <InputFeed
               curChannelId={id}
-              renderTailFeeds={renderTailFeeds}
-              scrollToBottom={scrollToBottom}
+              handleAddSubmitFeed={handleAddSubmitFeed}
               isMember={isMember}
             />
           </div>
