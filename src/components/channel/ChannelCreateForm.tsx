@@ -1,9 +1,9 @@
+import { useEffect, useId, useRef, useState } from "react";
 import { addChannels } from "@/api/channels";
-import supabase from "@/utils/supabase";
-import { useEffect, useId, useState } from "react";
-import S from "./ChannelCreateForm.module.css";
 import { getGenres } from "@/api/genres";
+import supabase from "@/utils/supabase";
 import { alert } from "../common/CustomAlert";
+import S from "./ChannelCreateForm.module.css";
 
 type GenreType = {
   code: number;
@@ -20,49 +20,58 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
+  const selectRef = useRef<HTMLDivElement>(null);
   const nameId = useId();
   const descriptionId = useId();
   const genre_codeId = useId();
 
   useEffect(() => {
-    const fetchGenres = async () => {
+    (async () => {
       const data = await getGenres();
       if (data) setGenres(data);
-    };
-    fetchGenres();
+    })();
   }, []);
+
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!selectRef.current?.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedGenre = genres.find((g) => String(g.code) === genre);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!name.trim() || !description.trim() || !genre) {
       alert("채널 이름, 설명, 장르를 모두 입력해주세요.");
       return;
     }
-    setIsLoading(true);
 
-    const user = await supabase.auth.getUser();
-    const owner_id = user.data.user?.id;
+    setIsLoading(true);
+    const { data: userData } = await supabase.auth.getUser();
 
     try {
-      const data = await addChannels({
+      const result = await addChannels({
         name,
         description,
         genre_code: Number(genre),
-        owner_id: owner_id!,
+        owner_id: userData.user!.id,
       });
-      if (!data) {
-        console.error("채널 생성 실패!");
-        alert(
-          "채널을 생성할 수 없습니다. <br/>중복된 채널 이름이 존재할 수 있습니다"
-        );
+
+      if (!result) {
+        alert("채널을 생성할 수 없습니다. <br/>중복된 채널 이름이 존재할 수 있습니다.");
       } else {
-        console.log("채널 생성 성공!", data);
         onSuccess?.();
+        alert("채널이 생성되었습니다.");
       }
-    } catch (error) {
-      console.error("채널 생성 중 오류 발생 : ", error);
+    } catch {
       alert("채널 생성 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
@@ -77,7 +86,6 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
           id={nameId}
           className={S.input}
           value={name}
-          type="text"
           onChange={(e) => setName(e.target.value)}
           required
         />
@@ -94,24 +102,35 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
         />
       </div>
 
-      <div className={S.formGroup}>
-        <label htmlFor={genre_codeId}>장르 코드 </label>
-        <select
+      <div className={S.formGroup} ref={selectRef}>
+        <label htmlFor={genre_codeId}>장르 코드</label>
+        <div
           id={genre_codeId}
-          className={S.genre_code}
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-          required
+          className={S.customSelectBox}
+          onClick={() => setIsOpen((prev) => !prev)}
         >
-          <option value="" disabled>
-            장르를 선택하세요.
-          </option>
-          {genres.map((genres) => (
-            <option key={genres.code} value={genres.code}>
-              {genres.name}
-            </option>
-          ))}
-        </select>
+          <span className={S.selectedText}>
+            {selectedGenre ? selectedGenre.name : "장르를 선택하세요."}
+          </span>
+          <span className={S.arrow}>&#9662;</span>
+        </div>
+
+        {isOpen && (
+          <ul className={`${S.optionsList} `}>
+            {genres.map((g) => (
+              <li
+                key={g.code}
+                className={`${S.optionItem} ${String(g.code) === genre ? S.selected : ""}`}
+                onClick={() => {
+                  setGenre(String(g.code));
+                  setIsOpen(false);
+                }}
+              >
+                {g.name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <button type="submit" className={S.createButton} disabled={isLoading}>
@@ -120,4 +139,5 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
     </form>
   );
 }
+
 export default ChannelCreateForm;

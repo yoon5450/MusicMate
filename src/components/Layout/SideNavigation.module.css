@@ -9,13 +9,12 @@
   height: 100%;
 }
 
-.active{
-  color:rgb(12, 62, 213);
+.active {
+  color: rgb(12, 62, 213);
   font-weight: bold;
 }
 
 @keyframes movingHat {
-
   0%,
   45% {
     translate: 0 0;
@@ -36,24 +35,25 @@
 .createChannelButton {
   width: 100%;
   padding: 0.75rem 1.5rem;
-  background-color: var(--primary_default); 
-  color: var(--gray_01); 
+  background-color: var(--primary_default);
+  color: var(--gray_01);
   font-weight: 600;
   font-size: 1rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); 
-}
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
-.createChannelButton:hover {
-  background-color: var(--primary_hover); 
-  transform: translateY(-1px);
-}
+  &:hover {
+    background-color: var(--primary_hover);
+  }
 
-.createChannelButton:active {
-  transform: translateY(0); 
+  &:active {
+    background-color: var(--primary_active);
+  }
 }
 
 .channelItem {
@@ -66,11 +66,13 @@
   font-weight: 400;
   text-decoration: none;
   border-bottom: 2px solid transparent;
-  transition: border-color 0.2s ease, color 0.1s ease;
-}
+  transition:
+    border-color 0.2s ease,
+    color 0.1s ease;
 
-.channelItem:hover {
-  border-bottom: 2px solid var(--gray_04);
+  &:hover {
+    border-bottom: 2px solid var(--gray_04);
+  }
 }
 
 .channelItem.active {

@@ -1,90 +1,154 @@
-
-
-.formContainer{
+.formContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: auto;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: visible;
   min-width: 320px;
-  gap: 2rem;
+  gap: var(--spacing-24);
   color: var(--gray_10);
 }
 
-.formGroup{
+.formGroup {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--spacing-12);
   width: 100%;
+  overflow: visible;
+  z-index: 1;
 }
 
 .input,
 .description,
-.genre_code{
-  padding: 10px 12px;
-  border-radius: 8px;
+.genre_code {
+  padding: var(--spacing-12);
+  border-radius: var(--spacing-8);
   background-color: var(--gray_02);
   color: var(--white);
   border: 1px solid var(--gray_04);
   font-size: 1rem;
   width: 100%;
-  box-sizing: border-box;
   font-family: "Pretendard Variable", sans-serif;
+  box-sizing: border-box;
 }
 
 .input:focus,
 .description:focus,
-.genre_code:focus{
+.genre_code:focus {
   outline: none;
   border: 2px solid var(--primary_active);
 }
 
-.genre_code {
-  max-height: 200px;
+.customSelectBox {
+  padding: var(--spacing-12);
+  border-radius: var(--spacing-8);
+  background-color: var(--gray_02);
+  color: var(--white);
+  border: 1px solid var(--gray_04);
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--spacing-40);
 }
 
-.createButton{
-  padding: 12px;
+.customSelectBox:focus {
+  outline: none;
+  border: 2px solid var(--primary_active);
+}
+
+.selectedText {
+  font-family: "Pretendard Variable", sans-serif;
+}
+
+.arrow {
+  margin-left: var(--spacing-16);
+  pointer-events: none;
+}
+
+.optionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  max-height: 200px;
+  width: 100%;
+  background-color: var(--gray_02);
+  border: 1px solid var(--gray_04);
+  border-radius: var(--spacing-8);
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-8) 0 0 0;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.optionItem {
+  padding: var(--spacing-12);
+  cursor: pointer;
+}
+
+.optionItem:hover {
+  background-color: var(--gray_03);
+}
+
+.optionItem.selected {
+  background-color: var(--primary_default);
+  color: var(--gray_01);
+}
+
+.optionsList::-webkit-scrollbar {
+  width: var(--spacing-8);
+}
+
+.optionsList::-webkit-scrollbar-thumb {
+  background-color: var(--primary_default);
+  border-radius: var(--spacing-4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.optionsList::-webkit-scrollbar-track {
+  background-color: var(--gray_02);
+  border-radius: var(--spacing-4);
+}
+
+.createButton {
+  padding: var(--spacing-12) var(--spacing-24);
   border: none;
-  border-radius: 8px;
-  background: var(--primary_default);
+  border-radius: var(--spacing-8);
+  background-color: var(--primary_default);
   color: var(--gray_02);
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
-  margin-top: auto;
+  margin-top: var(--spacing-24);
+
+  &:hover {
+    background-color: var(--primary_hover);
+  }
+
+  &:active {
+    background-color: var(--primary_active);
+  }
+
+    &:disabled {
+    background-color: var(--primary_disabled);
+    color: var(--gray_10);
+    cursor: not-allowed;
+  }
 }
 
-.createButton:hover{
-  background: var(--primary_hover);
-}
-
-.createButton:disabled{
-  background :var(--primary_default);
-  color: var(--gray_05);
-  cursor: not-allowed;
-}
-
-.genre_code {
-  height: 40px;
-  overflow-y: auto; /* 스크롤이 나올 수 있게 해줘야 작동함 */
-}
-
-genre_code::-webkit-scrollbar {
-  width: 8px;
-}
-
-.genre_code::-webkit-scrollbar-thumb {
-  background-color: var(--primary_default);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-.genre_code::-webkit-scrollbar-track {
-  background-color: var(--gray_02);
-  border-radius: 4px;
+/* 자동완성 관련 css */
+input:-webkit-autofill,
+textarea:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px var(--gray_02) inset;
+  -webkit-text-fill-color: var(--white);
+  transition: background-color 5000s ease-in-out 0s;
 }
