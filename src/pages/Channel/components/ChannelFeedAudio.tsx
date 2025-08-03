@@ -5,6 +5,7 @@ import type React from "react";
 import heartEmpty from "@/assets/heart_empty.svg";
 import heartFilled from "@/assets/heart_filled.svg";
 import { timeFormater } from "@/utils/timeFormatter";
+import { useRouter } from "@/router/RouterProvider";
 interface Props {
   feedItem: Tables<"get_feeds_with_all"> & { preview_url?: string };
   onReplyClicked: () => void;
@@ -24,12 +25,21 @@ function ChannelFeedAudio({
     author_nickname,
     preview_url,
     like_count,
+    author_id,
   },
   onReplyClicked,
   isActive,
   isUserLike,
   onToggleLike,
 }: Props) {
+  const { setHistoryRoute } = useRouter();
+
+  const handleClick = (userId: string | null) => {
+    if(!userId) return;
+    window.history.pushState(null, "", `/user/${userId}`);
+    setHistoryRoute(`/user/${userId}`);
+  };
+
   if (!feed_id) return;
   const handleReplyClicked = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -48,10 +58,15 @@ function ChannelFeedAudio({
           className={S.userAvatar}
           src={preview_url ? preview_url : "/music_mate_symbol_fixed.svg"}
           alt="작성자프로필이미지"
+          onClick={()=> handleClick(author_id)}
+          style={{cursor: "pointer"}}
         />
       </div>
       <div className={S.messageFeed}>
-        <p>
+        <p
+          onClick={()=> handleClick(author_id)}
+          style={{cursor: "pointer"}}
+        >
           {author_nickname} <small>{createdTime}</small>
         </p>
         {title ? <h3>{title}</h3> : null}
