@@ -11,6 +11,7 @@ import {
   getLikesByUserId,
   getFeedsByChannelAndAfter,
   getFeedsByChannelAndBefore,
+  getFeedsByNear,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -51,12 +52,13 @@ function Channel() {
   const [updateReplies, setUpdateReplies] = useState<number>(Date.now);
   const [isMember, setIsMember] = useState<boolean | null>(false);
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
-  const [hasInit, setHasInit] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const topLIRef = useRef<HTMLLIElement>(null);
   const bottomLIRef = useRef<HTMLLIElement>(null);
+  const isFetchingRef = useRef<boolean>(false);
 
   // Callback
   const onToggleLike = useCallback(
@@ -173,7 +175,6 @@ function Channel() {
   };
 
   // 마지막 요소에서 20개를 더 로드
-  // TODO : 상태기반으로 변경해서 옵저빙(IntersectionObserver) 추가
   const renderTailFeeds = useCallback(async () => {
     if (!feedData || feedData.length === 0) return;
 
@@ -181,7 +182,10 @@ function Channel() {
     if (!lastTime) return;
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
-    if (!afterFeedData || afterFeedData.length === 0) return;
+    if (!afterFeedData || afterFeedData.length === 0) {
+      setHasMore(false);
+      return;
+    }
 
     const updatedFeeds = await Promise.all(
       afterFeedData.map(async (feed) => {
@@ -195,6 +199,7 @@ function Channel() {
 
   // 첫 요소에서 20개를 더 로드
   const renderHeadFeeds = useCallback(async () => {
+    console.log("호출");
     if (!feedData || feedData.length === 0) return;
 
     const firstFeedId = feedData[0].feed_id!;
@@ -206,7 +211,9 @@ function Channel() {
     if (!beforeTime) return;
 
     const beforeFeedData = await getFeedsByChannelAndBefore(id, beforeTime!);
-    if (!beforeFeedData || beforeFeedData.length === 0) return;
+    if (!beforeFeedData || beforeFeedData.length === 0) {
+      return;
+    }
 
     const updatedFeeds = await Promise.all(
       beforeFeedData.map(async (feed) => {
@@ -233,16 +240,6 @@ function Channel() {
     el.scrollTop = el.scrollHeight;
   }, []);
 
-  // useEffect
-  useEffect(() => {
-    if (hasInit) return;
-    if (!feedData || feedData.length === 0) return;
-
-    scrollToBottom();
-
-    setHasInit(true);
-  }, [feedData, scrollToBottom]);
-
   useEffect(() => {
     if (paramsFeedId && feedData) {
       const updatedFeed = feedData.find((f) => f.feed_id === paramsFeedId);
@@ -253,21 +250,41 @@ function Channel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsFeedId]);
 
+  // Effect 진입점
   useEffect(() => {
+    setSelectedFeed(null);
+    setHasMore(true);
+
     const fetchData = async () => {
-      setSelectedFeed(null);
-      const now = new Date(Date.now()).toISOString();
-      const feeds = await getFeedsByChannelAndBefore(id, now);
-      if (!feeds) return;
+      if (paramsFeedId) {
+        const centerFeeds = await getFeedsByNear(paramsFeedId); // 새로운 API
+        if (!centerFeeds) return;
 
-      const updatedFeeds = await Promise.all(
-        feeds.map(async (feed) => {
-          const previewUrl = await getPreviewImage(feed);
-          return { ...feed, preview_url: previewUrl };
-        })
-      );
+        const updatedFeeds = await Promise.all(
+          centerFeeds.map(async (feed) => {
+            const previewUrl = await getPreviewImage(feed);
+            return { ...feed, preview_url: previewUrl };
+          })
+        );
 
-      setFeedData(updatedFeeds);
+        setFeedData(updatedFeeds);
+        setSelectedFeed(
+          updatedFeeds.find((f) => f.feed_id === paramsFeedId) ?? null
+        );
+      } else {
+        const now = new Date(Date.now()).toISOString();
+        const feeds = await getFeedsByChannelAndBefore(id, now);
+        if (!feeds) return;
+
+        const updatedFeeds = await Promise.all(
+          feeds.map(async (feed) => {
+            const previewUrl = await getPreviewImage(feed);
+            return { ...feed, preview_url: previewUrl };
+          })
+        );
+        setFeedData(updatedFeeds);
+        scrollToBottom();
+      }
 
       // 유저가 있는 경우에만 userLikes 호출
       if (user) {
@@ -277,7 +294,7 @@ function Channel() {
     };
 
     fetchData();
-  }, [id, user, lastUpdatedAt]);
+  }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
   useEffect(() => {
     async function check() {
@@ -311,8 +328,6 @@ function Channel() {
     getReplies(selectedFeed.feed_id);
   }, [selectedFeed, updateReplies]);
 
-
-
   // 선택된 피드 바뀔때마다 스크롤이동하기
   useEffect(() => {
     if (!selectedFeed?.feed_id) return;
@@ -336,13 +351,13 @@ function Channel() {
     const topLI = topLIRef.current;
     const bottomLI = bottomLIRef.current;
 
-    if (!topLI || !bottomLI) return;
-
     const topObserver = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !isFetchingRef.current) {
           console.log("상단 도착");
+          isFetchingRef.current = true;
           renderHeadFeeds();
+          isFetchingRef.current = false;
         }
       },
       {
@@ -353,7 +368,10 @@ function Channel() {
     const bottomObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          console.log("하단 도착 확인");
+          console.log("하단 도착");
+          isFetchingRef.current = true;
+          renderTailFeeds();
+          isFetchingRef.current = false;
         }
       },
       {
@@ -361,14 +379,14 @@ function Channel() {
       }
     );
 
-    topObserver.observe(topLI);
-    bottomObserver.observe(bottomLI);
+    if (topLI) topObserver.observe(topLI);
+    if (hasMore && bottomLI) bottomObserver.observe(bottomLI);
 
     return () => {
       if (topLI) topObserver.unobserve(topLI);
       if (bottomLI) bottomObserver.unobserve(bottomLI);
     };
-  }, [feedData]);
+  }, [hasMore, renderHeadFeeds, renderTailFeeds]);
 
   return (
     <>

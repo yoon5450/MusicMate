@@ -813,6 +813,23 @@ export type Database = {
         Args: { name: string; description?: string; genre_code?: number }
         Returns: string
       }
+      get_feeds_near_view: {
+        Args: { target_feed_id: string; offset_count?: number }
+        Returns: {
+          audio_url: string | null
+          author_id: string | null
+          author_nickname: string | null
+          author_profile_url: string | null
+          channel_id: string | null
+          content: string | null
+          created_at: string | null
+          feed_id: string | null
+          image_url: string | null
+          like_count: number | null
+          message_type: Database["public"]["Enums"]["message_type"] | null
+          title: string | null
+        }[]
+      }
       update_user_genres: {
         Args: { user_id: string; selected_genres: number[] }
         Returns: {

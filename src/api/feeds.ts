@@ -192,9 +192,26 @@ export const getFeedsByChannelAndAfter = async (
     .gt("created_at", lastTime)
     .order("created_at", { ascending: true })
     .limit(20);
-    
+
   if (error) {
     errorHandler(error, "getFeedsByChannelAndAfter");
+    return null;
+  } else {
+    return data.reverse();
+  }
+};
+
+export const getFeedsByNear = async (
+  feedId: string,
+  range: number = 10
+) => {
+  const { data, error } = await supabase.rpc("get_feeds_near_view", {
+    target_feed_id: feedId,
+    offset_count: range,
+  });
+
+  if (error) {
+    errorHandler(error, "getFeedsByChannelAndNear");
     return null;
   } else {
     return data.reverse();
