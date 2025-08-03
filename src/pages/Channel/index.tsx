@@ -2,7 +2,13 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   addUserChannels,
   checkUserInChannels,
@@ -27,6 +33,7 @@ import { UserList } from "./components/UserList";
 import InputReplies from "./components/InputReplies";
 import { alert, confirmAlert } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
+import { throttle } from "@/utils/Throttle";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -57,11 +64,12 @@ function Channel() {
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
-  const bottomObserverRef = useRef<IntersectionObserver | null>(null)
+  const bottomObserverRef = useRef<IntersectionObserver | null>(null);
 
   // Callback
   const onToggleLike = useCallback(
@@ -208,14 +216,26 @@ function Channel() {
     });
   }, [feedData, id]);
 
-  const handleAddSubmitFeed = useCallback((data:Tables<"feeds">) => { 
-    if(!userProfile?.nickname && !userProfile?.nickname) return;
-    const newFeed = convertNewFeedToFeedData(data, userProfile?.nickname, userProfile?.profile_url)
+  const handleAddSubmitFeed = useCallback(
+    (data: Tables<"feeds">) => {
+      if (!userProfile?.nickname && !userProfile?.nickname) return;
+      const newFeed = convertNewFeedToFeedData(
+        data,
+        userProfile?.nickname,
+        userProfile?.profile_url
+      );
 
-    setFeedData((prev: FeedWithPreview[] | null) => [...(prev ?? []), newFeed])
-    
-    setIsSubmit((prev) => !prev);
-  }, [userProfile?.nickname, userProfile?.profile_url])
+      setFeedData((prev: FeedWithPreview[] | null) => [
+        ...(prev ?? []),
+        newFeed,
+      ]);
+
+      if (isAtBottom) {
+        setIsSubmit((prev) => !prev);
+      }
+    },
+    [isAtBottom, userProfile?.nickname, userProfile?.profile_url]
+  );
 
   // 첫 요소에서 20개를 더 로드
   const renderHeadFeeds = useCallback(async () => {
@@ -308,6 +328,9 @@ function Channel() {
       }
 
       bottomObserverRef.current = new IntersectionObserver(([entry]) => {
+        // 최하단을 보고 있는 상태 (스크롬됨)
+        setIsAtBottom(entry.isIntersecting);
+        
         if (
           entry.isIntersecting &&
           !observerStateRef.current.isFetching &&
@@ -431,8 +454,26 @@ function Channel() {
   }, [selectedFeed]);
 
   useLayoutEffect(() => {
-    scrollToBottom()
-  }, [isSubmit])
+    scrollToBottom();
+  }, [isSubmit, scrollToBottom]);
+
+  // useEffect(() => {
+  //   const container = feedContainerRef.current;
+  //   if (!container) return;
+  //   if (!isAtBottom) return
+
+  //   const handleScroll = throttle(() => {
+  //     const { scrollHeight, scrollTop, clientHeight } = container;
+  //     const isScrolledToBottom = scrollHeight - scrollTop - clientHeight < 100;
+  //     setIsAtBottom(isScrolledToBottom);
+  //   }, 200);
+
+  //   container.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     container.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [isAtBottom]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -444,7 +485,6 @@ function Channel() {
     if (!previewUrl) return;
     return previewUrl;
   };
-
 
   return (
     <>
