@@ -111,6 +111,10 @@ function Channel() {
     [user, isMember, userLikes, feedData, selectedFeed]
   );
 
+  useEffect(() => {
+    console.log("isAtBottom 상태:", isAtBottom)
+  }, [isAtBottom])
+
   const renderFeedComponent = useCallback(
     (feed: FeedWithPreview) => {
       if (!feed.feed_id) return;
@@ -491,7 +495,6 @@ function Channel() {
       }
     }
     check();
-    console.log(isMember);
   }, [id, user]);
 
   useEffect(() => {
