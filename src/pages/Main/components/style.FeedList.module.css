@@ -1,19 +1,19 @@
 @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
 .title {
   font-size: 22px;
-  color: var(--primary_active);
-  margin-bottom: 1rem;
   font-family: 'SpoqaHanSansNeo-Bold';
+  color: var(--primary_default);
+  margin-top: 30px;
 }
 
-.feedGrid{
+.feedGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 1rem;
 }
 
-.feedItem{
+.feedItem {
   border-bottom: 1px solid var(--gray_05);
   padding: 14px;
   display: flex;
@@ -21,10 +21,13 @@
 }
 
 .postContent {
-  flex-grow: 1; 
+  flex-grow: 1;
   padding-right: 16px;
+  display: flex;
+  align-items: center;
 }
-.postContent:hover .preview{
+
+.postContent:hover .preview {
   color: var(--primary_hover);
 }
 
@@ -32,16 +35,22 @@
   font-size: 16px;
   color: var(--gray_10);
   line-height: 1.5;
-  transition: color 0.2s ease; 
+  transition: color 0.2s ease;
 }
 
-.likeContainer{
+.likeContainer {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
-.likeCount{
+.likeCount {
   font-size: 14px;
   color: var(--gray_09);
+}
+
+@media (max-width: 1024px) {
+  .feedGrid {
+    grid-template-columns: 1fr;
+  }
 }
