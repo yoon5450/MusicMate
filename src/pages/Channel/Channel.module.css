@@ -128,6 +128,7 @@
 
 .observerDiv {
   height: 10px;
+  min-height: 1px;
 }
 
 .noFeed {
