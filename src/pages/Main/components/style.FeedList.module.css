@@ -1,5 +1,7 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
 .title {
-  font-size: 24px;
+  font-size: 22px;
+  font-family: 'SpoqaHanSansNeo-Bold';
   color: var(--primary_default);
   margin-top: 30px;
 }

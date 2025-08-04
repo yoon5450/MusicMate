@@ -7,6 +7,10 @@ import heartFilled from "@/assets/heart_filled.svg";
 import { useAuth } from "@/auth/AuthProvider";
 import { timeFormater } from "@/utils/timeFormatter";
 import { useRouter } from "@/router/RouterProvider";
+import buttonImg from "@/assets/more_button.svg";
+import { useEffect, useRef, useState } from "react";
+import { alert } from "@/components/common/CustomAlert";
+
 interface Props {
   feedItem: Tables<"get_feeds_with_all"> & { preview_url?: string };
   onReplyClicked: () => void;
@@ -14,6 +18,10 @@ interface Props {
   isUserLike: boolean;
   onToggleLike: (feedId: string) => void;
   handleDelete: (feedId: string) => void;
+  scrollForDropdown: (
+    open: boolean,
+    dropdownRef: React.RefObject<HTMLUListElement | null>
+  ) => void;
 }
 
 function ChannelFeedAudio({
@@ -34,9 +42,30 @@ function ChannelFeedAudio({
   isUserLike,
   onToggleLike,
   handleDelete,
+  scrollForDropdown,
 }: Props) {
   const { user } = useAuth();
   const { setHistoryRoute } = useRouter();
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClose);
+    return () => {
+      document.removeEventListener("mousedown", handleClose);
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollForDropdown(open, dropdownRef);
+  }, [open]);
+
+  const handleClose = (e: MouseEvent) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  };
 
   const handleClick = (userId: string | null) => {
     if (!userId) return;
@@ -52,7 +81,9 @@ function ChannelFeedAudio({
   const kst = timeFormater(created_at!);
   const createdTime = kst!.slice(0, 10) + " " + kst!.slice(11, 16);
   const handleDeleteFeed = () => {
-    handleDelete(feed_id);
+    setOpen(false);
+    if (author_id !== user?.id) alert("피드 작성자만 삭제할 수 있습니다");
+    else handleDelete(feed_id);
   };
   return (
     <div
@@ -70,10 +101,13 @@ function ChannelFeedAudio({
       </div>
       <div className={S.messageFeed}>
         <p>
-          <span onClick={() => handleClick(author_id)} style={{ cursor: "pointer" }}>
+          <span
+            onClick={() => handleClick(author_id)}
+            style={{ cursor: "pointer" }}
+          >
             {author_nickname}
           </span>
-           <small style={{ marginLeft: "4px" }}>{createdTime}</small>
+          <small style={{ marginLeft: "4px" }}>{createdTime}</small>
         </p>
         {title ? <h3>{title}</h3> : null}
         <div className={S.audioPlayerAndImg}>
@@ -113,15 +147,31 @@ function ChannelFeedAudio({
         <button type="button" onClick={handleReplyClicked}>
           댓글
         </button>
-        {author_id === user?.id ? (
-          <button
-            type="button"
-            className={S.deleteButton}
-            onClick={handleDeleteFeed}
-          >
-            삭제
+        <div ref={wrapperRef} className={S.dropdownWrapper}>
+          <button type="button" onClick={() => setOpen(!open)}>
+            <img height={"28px"} src={buttonImg} alt="더보기 버튼" />
           </button>
-        ) : null}
+          {open && (
+            <ul className={S.dropdownList} ref={dropdownRef}>
+              <li>
+                <button
+                  type="button"
+                  className={
+                    author_id === user?.id
+                      ? `${S.deleteButton}`
+                      : `${S.deleteButton} ${S.disabled}`
+                  }
+                  onClick={handleDeleteFeed}
+                >
+                  삭제
+                </button>
+              </li>
+              <li>
+                <button type="button">공유</button>
+              </li>
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
