@@ -68,7 +68,8 @@ function Channel() {
   const [channelInfo, setChannelInfo] = useState<channelInfoType>();
   const [hasMoreTailFeeds, setHasMoreTailFeeds] = useState(true);
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isTopFetching, setIsTopFetching] = useState<boolean>(false);
+  const [isBottomFetching, setIsBottomFetching] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
@@ -331,14 +332,16 @@ function Channel() {
   const observerStateRef = useRef({
     hasMoreHeadFeeds,
     hasMoreTailFeeds,
-    isFetching,
+    isTopFetching,
+    isBottomFetching,
   });
 
   useEffect(() => {
     observerStateRef.current = {
       hasMoreHeadFeeds,
       hasMoreTailFeeds,
-      isFetching,
+      isTopFetching,
+      isBottomFetching,
     };
   });
 
@@ -352,11 +355,11 @@ function Channel() {
       topObserverRef.current = new IntersectionObserver(([entry]) => {
         if (
           entry.isIntersecting &&
-          !observerStateRef.current.isFetching &&
+          !observerStateRef.current.isTopFetching &&
           observerStateRef.current.hasMoreHeadFeeds
         ) {
-          setIsFetching(true);
-          renderHeadFeeds().finally(() => setIsFetching(false));
+          setIsTopFetching(true);
+          renderHeadFeeds().finally(() => setIsTopFetching(false));
         }
       });
 
@@ -379,11 +382,11 @@ function Channel() {
 
         if (
           entry.isIntersecting &&
-          !observerStateRef.current.isFetching &&
+          !observerStateRef.current.isBottomFetching &&
           observerStateRef.current.hasMoreTailFeeds
         ) {
-          setIsFetching(true);
-          renderTailFeeds().finally(() => setIsFetching(false));
+          setIsBottomFetching(true);
+          renderTailFeeds().finally(() => setIsBottomFetching(false));
         }
       });
 
@@ -411,7 +414,8 @@ function Channel() {
   const initLoadState = () => {
     setHasMoreHeadFeeds(true);
     setHasMoreTailFeeds(true);
-    setIsFetching(false);
+    setIsTopFetching(false);
+    setIsBottomFetching(false);
   };
   // useEffect
 
