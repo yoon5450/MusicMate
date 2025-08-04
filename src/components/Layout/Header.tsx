@@ -6,7 +6,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useLoginModal } from "@/context/LoginModalContext";
 import { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
-import { showToast } from "../common/CustomAlert";
+import { confirmAlert, showToast } from "../common/CustomAlert";
 
 interface Props {
   currentPage: string;
@@ -59,8 +59,12 @@ function Header({ currentPage, setHistoryRoute }: Props) {
 
   const handleLogout = () => {
     // 로그아웃 하기
-    logout().then(() => {
-      showToast("로그아웃 되었습니다");
+    confirmAlert("로그아웃 하시겠습니까?").then((result) => {
+      if (result.isConfirmed) {
+        logout().then(() => {
+          showToast("로그아웃 되었습니다");
+        });
+      }
     });
   };
 
