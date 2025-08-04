@@ -29,6 +29,12 @@
   gap: var(--spacing-12);
 }
 
+@media screen and (max-width:768px){
+  .modalBox{
+    min-width: 300px;
+  }
+}
+
 .closeBtn {
   position: absolute;
   top: var(--spacing-16);
