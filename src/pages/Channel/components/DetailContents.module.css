@@ -153,3 +153,10 @@
   color: var(--gray_10);
   flex: 1;
 }
+
+@media (max-width: 1024px) {
+  .container .feedInfo .userAvatarContainer .userAvatar {
+    width: 60px;
+    height: 60px;
+  }
+}
