@@ -5,7 +5,6 @@ import ChannelFeedMessage from "./components/ChannelFeedMessage";
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -71,7 +70,6 @@ function Channel() {
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
   const [isTopFetching, setIsTopFetching] = useState<boolean>(false);
   const [isBottomFetching, setIsBottomFetching] = useState<boolean>(false);
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
@@ -308,12 +306,8 @@ function Channel() {
         ...(prev ?? []),
         newFeed,
       ]);
-
-      if (isAtBottom) {
-        setIsSubmit((prev) => !prev);
-      }
     },
-    [isAtBottom, userProfile?.nickname, userProfile?.profile_url]
+    [userProfile?.nickname, userProfile?.profile_url]
   );
 
   // 첫 요소에서 20개를 더 로드
@@ -351,7 +345,9 @@ function Channel() {
     });
 
     requestAnimationFrame(() => {
-      const newFirstEl = feedRefs.current[firstFeedId];
+      // 선택된 피드가 있다면 해당 피드로 스크롤
+      const selectedFeed = paramsFeedId ? paramsFeedId : firstFeedId
+      const newFirstEl = feedRefs.current[selectedFeed];
       const newOffset = newFirstEl?.getBoundingClientRect().top ?? 0;
 
       if (container) {
