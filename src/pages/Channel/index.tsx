@@ -346,8 +346,7 @@ function Channel() {
 
     requestAnimationFrame(() => {
       // 선택된 피드가 있다면 해당 피드로 스크롤
-      const selectedFeed = paramsFeedId ? paramsFeedId : firstFeedId
-      const newFirstEl = feedRefs.current[selectedFeed];
+      const newFirstEl = feedRefs.current[firstFeedId];
       const newOffset = newFirstEl?.getBoundingClientRect().top ?? 0;
 
       if (container) {
@@ -677,7 +676,10 @@ function Channel() {
                       <button
                         type="button"
                         className={S.closeButton}
-                        onClick={() => setSelectedFeed(null)}
+                        onClick={() => {
+                          // 뒤로가기 시에도 피드 상세를 남기지 않음.
+                          window.history.replaceState({}, "", `/Channel/${id}`)
+                          setSelectedFeed(null)}}
                       >
                         <img src={close} alt="" />
                       </button>
