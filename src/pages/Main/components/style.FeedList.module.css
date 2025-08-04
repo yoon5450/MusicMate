@@ -1,7 +1,9 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
 .title {
-  font-size: 24px;
+  font-size: 22px;
   color: var(--primary_active);
   margin-bottom: 1rem;
+  font-family: 'SpoqaHanSansNeo-Bold';
 }
 
 .feedGrid{
