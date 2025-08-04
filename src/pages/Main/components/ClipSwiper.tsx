@@ -94,7 +94,7 @@ function ClipSwiper() {
                 }}
               />
 
-              <h3 className={S.clipTitle}>{title}</h3>
+              <h3 className={S.clipTitle}>{title || '제목 없음'}</h3>
 
               <UserProfileLink 
                 userId={author_id!} 
