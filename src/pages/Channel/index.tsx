@@ -39,6 +39,7 @@ import {
   showToast,
 } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
+import supabase from "@/utils/supabase";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -514,6 +515,32 @@ function Channel() {
     fetchData();
   }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
+  // realtime 구독 처리
+  useEffect(() => {
+    // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
+    if (!id || hasMoreTailFeeds) return;
+
+    const channel = supabase
+      .channel(`channel_${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "feeds",
+          filter: `channel_id=eq.${id}`,
+        },
+        () => {
+          renderTailFeeds();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [hasMoreTailFeeds, id, renderTailFeeds]);
+
   useEffect(() => {
     async function check() {
       if (id && user) {
@@ -523,6 +550,12 @@ function Channel() {
     }
     check();
   }, [id, user]);
+
+  // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
+  useEffect(() => {
+    if (!isAtBottom || !feedData || feedData.length === 0) return;
+    scrollToBottom();
+  }, [feedData, isAtBottom, scrollToBottom]);
 
   useEffect(() => {
     async function checkCreateMember() {
@@ -564,10 +597,6 @@ function Channel() {
     if (!selectedFeed?.feed_id) return;
     scrollToSelectedFeed();
   }, [selectedFeed]);
-
-  useLayoutEffect(() => {
-    scrollToBottom();
-  }, [isSubmit, scrollToBottom]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
