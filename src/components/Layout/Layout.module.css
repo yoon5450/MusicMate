@@ -18,7 +18,7 @@
   height: calc(100vh - 51px);
   background-color: var(--gray_02);
   border-right: 1px solid var(--primary_default);
-  overflow-y: auto;
+  overflow-y: hidden;
   transition: transform 0.3s ease;
   transform: translateX(0);
 }

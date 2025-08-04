@@ -159,6 +159,11 @@
   outline: 2px solid var(--primary_active);
 }
 
+p {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 p small,
 h3 small {
   font-size: 0.8rem;
