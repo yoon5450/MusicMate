@@ -1,68 +1,74 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
 .title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: var(--primary_active);
+  font-size: 22px;
+  font-family: 'SpoqaHanSansNeo-Bold';
+  color: var(--primary_default);
 }
 
 .content {
-  padding: 1rem;
-  height: 240px;
+  min-height: 240px;
   overflow: hidden;
 }
 
-.swiperContainer{
+.swiperContainer {
   position: relative;
-  margin: 0 50px;
 }
 
-.swiper{
+.swiper {
   overflow: visible;
 }
 
 .swiper :global(.swiper-button-prev),
-.swiper :global(.swiper-button-next){
+.swiper :global(.swiper-button-next) {
   color: var(--primary_active);
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
 }
-.swiper :global(.swiper-button-prev){
+.swiper :global(.swiper-button-prev) {
   right: 8px;
 }
-.swiper :global(.swiper-button-next){
-  right:8px;
+.swiper :global(.swiper-button-next) {
+  right: 8px;
 }
 .swiper :global(.swiper-button-prev):hover,
 .swiper :global(.swiper-button-next):hover {
   color: var(--primary_hover);
 }
+.swiper :global(.swiper-button-prev):active,
+.swiper :global(.swiper-button-next):active {
+  color: var(--primary_active);
+}
 
-.swiperSlide{
+.swiperSlide {
   height: 100%;
 }
 
 .card {
+  padding: 10px;
   border-radius: 12px;
-  color:var(--gray_10);
+  color: var(--gray_10);
   width: 100%;
-  height : 100%;
+  height: 100%;
   text-align: center;
-  display : flex;
+  display: flex;
   flex-direction: column;
   text-decoration: none;
   border: 1px solid transparent;
 }
-.card:hover{
+.card:hover {
   cursor: pointer;
-  border: 1px solid var(--primary_hover);
+  /* border: 1px solid var(--primary_hover); */
+  background-color: var(--gray_04);
+   /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.267); */
 }
-
 
 .image {
   width: 100%;
   height: 160px;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: var(--spacing-12);
   margin-bottom: 5px;
 }
 

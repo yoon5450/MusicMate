@@ -1,21 +1,28 @@
 import Header from "./Header";
 import SideNavigation from "./SideNavigation";
 import S from "./Layout.module.css";
-import { type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useRouter } from "@/router/RouterProvider";
 
 function Layout({ children }: { children: ReactNode }) {
-  const {title, setHistoryRoute} = useRouter()
+  const { title, setHistoryRoute } = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <>
       <div className={S.container}>
-        <Header setHistoryRoute={setHistoryRoute} currentPage={title}/>
+        <header className={S.header}>
+          <Header
+            setHistoryRoute={setHistoryRoute}
+            currentPage={title}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        </header>
         <main className={S.main}>
-          <aside>
+          <aside className={`${S.sidebar} ${isSidebarOpen ? S.open : S.closed}`}>
             <SideNavigation />
           </aside>
-          {children}
+          <section className={S.pageContent}>{children}</section>
         </main>
       </div>
     </>

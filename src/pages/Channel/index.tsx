@@ -112,8 +112,8 @@ function Channel() {
   );
 
   useEffect(() => {
-    console.log("isAtBottom 상태:", isAtBottom)
-  }, [isAtBottom])
+    console.log("isAtBottom 상태:", isAtBottom);
+  }, [isAtBottom]);
 
   const renderFeedComponent = useCallback(
     (feed: FeedWithPreview) => {
@@ -125,6 +125,7 @@ function Channel() {
         onReplyClicked: () => setSelectedFeed(feed),
         onToggleLike: () => onToggleLike(feed.feed_id!),
         handleDelete: handleDelete,
+        scrollForDropdown: scrollForDropdown,
       };
 
       if (feed.message_type === "clip")
@@ -167,6 +168,32 @@ function Channel() {
           top: offset,
           behavior: "smooth",
         });
+      }
+    }
+  };
+
+  const scrollForDropdown = (
+    open: boolean,
+    dropdownRef: React.RefObject<HTMLUListElement | null>
+  ) => {
+    if (open && dropdownRef.current && feedContainerRef.current) {
+      const dropdownEl = dropdownRef.current;
+      const containerEl = feedContainerRef.current;
+
+      const dropdownRect = dropdownEl.getBoundingClientRect();
+      const containerRect = containerEl.getBoundingClientRect();
+
+      const isDropdownVisible =
+        dropdownRect.bottom <= containerRect.bottom &&
+        dropdownRect.top >= containerRect.top;
+
+      if (!isDropdownVisible) {
+        const offset = dropdownRect.top - containerRect.top - 12;
+        if (containerEl.scrollTop > 0) {
+          containerEl.scrollBy({ top: offset, behavior: "smooth" });
+        } else if (dropdownRect.top < containerRect.top) {
+          dropdownEl.style.top = "40px"; // fallback 위치 조정
+        }
       }
     }
   };
@@ -471,7 +498,7 @@ function Channel() {
           })
         );
         setFeedData(updatedFeeds);
-        
+
         requestAnimationFrame(() => {
           scrollToBottom();
         });
@@ -609,7 +636,6 @@ function Channel() {
                           userLikes?.includes(selectedFeed.feed_id!) ?? false
                         }
                         scrollToSelectedFeed={scrollToSelectedFeed}
-                        handleDelete={handleDelete}
                       />
                       <FeedReplies
                         replies={repliesData}
