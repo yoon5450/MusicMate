@@ -33,6 +33,21 @@ function ClipSwiper() {
     fetchClips();
   },[]);
 
+  useEffect(()=>{
+    const handlekeyDown = (e:KeyboardEvent) => {
+      if(e.key === "Escape"){
+        setSelectedAudio(null);
+      }
+    };
+
+    if(selectedAudio){
+      document.addEventListener("keydown",handlekeyDown);
+    }
+    return () => {
+      document.removeEventListener("keydown",handlekeyDown);
+    };
+  },[selectedAudio]);
+
 
   return (
     <>
@@ -95,10 +110,6 @@ function ClipSwiper() {
 
 
     {selectedAudio && (
-      <div
-        className={S.audioOverlay}
-        onClick={()=> setSelectedAudio(null)}
-      >
       <div className={S.audioPopup} onClick={(e) => e.stopPropagation()}>
         <button 
           className={S.closeButton} 
@@ -112,7 +123,7 @@ function ClipSwiper() {
           </ChannelLink>
         </div>
         </div>
-      </div>
+
     )}
     </>
   )
