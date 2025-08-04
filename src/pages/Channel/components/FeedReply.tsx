@@ -60,12 +60,12 @@ function FeedReply({ reply, handleDeleteReply }: Props) {
             />
           </div>
           <div className={S.messageFeed}>
-            <p
-              onClick={() => handleClick(author_id)}
-              style={{ cursor: "pointer" }}
-            >
-              {nickname} <small>{createdTime}</small>
-            </p>
+          <p>
+            <span onClick={() => handleClick(author_id)} style={{ cursor: "pointer" }}>
+              {nickname}
+            </span>
+            <small style={{ marginLeft: "4px" }}>{createdTime}</small>
+          </p>
             <p>{content}</p>
           </div>
         </div>

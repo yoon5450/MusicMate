@@ -68,8 +68,11 @@ function ChannelFeedMessage({
         />
       </div>
       <div className={S.messageFeed}>
-        <p onClick={() => handleClick(author_id)} style={{ cursor: "pointer" }}>
-          {author_nickname} <small>{createdTime}</small>
+        <p>
+          <span onClick={() => handleClick(author_id)} style={{ cursor: "pointer" }}>
+            {author_nickname}
+          </span>
+           <small style={{ marginLeft: "4px" }}>{createdTime}</small>
         </p>
         {image_url ? (
           <div className={S.imgContainer}>
