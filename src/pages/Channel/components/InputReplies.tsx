@@ -62,7 +62,7 @@ function InputReplies({
     }
 
     if (!isMember) {
-      alert("채널에 가입한 후에 댓글을 작성할 수 있습니다.");
+      alert("채널에 가입한 후에 <br/>댓글을 작성할 수 있습니다.");
       if (text) text.value = "";
       return;
     }
