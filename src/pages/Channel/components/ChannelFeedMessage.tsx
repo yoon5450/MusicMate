@@ -9,6 +9,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import buttonImg from "@/assets/more_button.svg";
 import { useEffect, useRef, useState } from "react";
 import { alert } from "@/components/common/CustomAlert";
+import { copyFeedLinkToClipboard } from "@/utils/copyFeedLinkToClipboard";
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
   onReplyClicked: () => void;
@@ -32,6 +33,7 @@ function ChannelFeedMessage({
     preview_url,
     like_count,
     author_id,
+    channel_id,
   },
   onReplyClicked,
   isActive,
@@ -82,6 +84,10 @@ function ChannelFeedMessage({
   };
   const kst = timeFormater(created_at!);
   const createdTime = kst!.slice(0, 10) + " " + kst!.slice(11, 16);
+
+  const handleCopyFeedLink = () => {
+    copyFeedLinkToClipboard(channel_id ?? "", feed_id);
+  };
 
   return (
     <div
@@ -152,7 +158,9 @@ function ChannelFeedMessage({
                 </button>
               </li>
               <li>
-                <button type="button">공유</button>
+                <button type="button" onClick={handleCopyFeedLink}>
+                  공유
+                </button>
               </li>
             </ul>
           )}
