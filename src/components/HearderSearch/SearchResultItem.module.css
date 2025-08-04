@@ -33,6 +33,11 @@
   }
 }
 
-.resultItemContainer:hover{
-  background-color: var(--gray_04);
+.resultItemContainer{
+  &:hover{
+    background-color: var(--gray_04);
+  }
+  &:active{
+    background-color: var(--gray_04);
+  }
 }

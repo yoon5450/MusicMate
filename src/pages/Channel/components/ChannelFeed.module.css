@@ -85,6 +85,9 @@
       cursor: pointer;
 
       &:hover {
+        background-color: var(--primary_hover);
+      }
+      &:active{
         background-color: var(--primary_active);
       }
     }
@@ -94,6 +97,9 @@
 
       &:hover {
         background-color: var(--gray_03);
+      }
+      &:active{
+        background-color: var(--primary_active);
       }
     }
   }

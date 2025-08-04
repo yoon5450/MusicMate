@@ -62,6 +62,9 @@
     &:hover {
       background-color: var(--primary_active);
     }
+    &:active{
+      background-color: var(--primary_active);
+    }
   }
 
   .userAvatar {
@@ -111,6 +114,9 @@
     cursor: pointer;
 
     &:hover {
+      background-color: var(--gray_09);
+    }
+    &:active{
       background-color: var(--gray_09);
     }
   }
@@ -167,6 +173,9 @@
     &:hover {
       background-color: var(--gray_09);
     }
+    &:active{
+      background-color: var(--gray_09);
+    }
   }
   .changedSubmitBtn {
     font-size: 1rem;
@@ -176,6 +185,9 @@
     cursor: pointer;
 
     &:hover {
+      background-color: var(--primary_default);
+    }
+    &:active{
       background-color: var(--primary_default);
     }
   }

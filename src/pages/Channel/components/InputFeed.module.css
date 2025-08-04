@@ -111,4 +111,9 @@
     background-color: var(--primary_active);
     color: black;
   }
+  
+  li:active{
+    background-color: var(--primary_active);
+    color: black;
+  }
 }
