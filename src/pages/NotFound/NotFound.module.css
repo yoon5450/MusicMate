@@ -39,5 +39,8 @@
     &:hover {
       background-color: var(--primary_active);
     }
+    &:active{
+      background-color: var(--primary_active);
+    }
   }
 }

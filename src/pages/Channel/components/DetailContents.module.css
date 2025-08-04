@@ -42,12 +42,18 @@
           &:hover {
             background-color: var(--primary_active);
           }
+           &:active{
+            background-color: var(--primary_active);
+          }
         }
         .deleteButton {
           background-color: var(--gray_04);
           color: var(--gray_10);
 
           &:hover {
+            background-color: var(--gray_03);
+          }
+           &:active{
             background-color: var(--gray_03);
           }
         }
@@ -139,6 +145,9 @@
         color: var(--gray_10);
 
         &:hover {
+          background-color: var(--gray_03);
+        }
+        &:active{
           background-color: var(--gray_03);
         }
       }

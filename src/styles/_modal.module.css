@@ -43,6 +43,9 @@
   &:hover {
     color: var(--gray_09);
   }
+  &:active{
+    color: var(--gray_09);
+  }
 }
 
 .title {
@@ -104,6 +107,9 @@
   cursor: pointer;
 
   &:hover {
+    color: var(--gray_09);
+  }
+  &:active{
     color: var(--gray_09);
   }
 }
