@@ -7,14 +7,16 @@ import { useLoginModal } from "@/context/LoginModalContext";
 import { useEffect, useState } from "react";
 import HeaderSearch from "@/components/HearderSearch/HeaderSearch";
 import { showToast } from "../common/CustomAlert";
+import hambergerIcon from "@/assets/hamburger_icon.svg";
 
 interface Props {
   currentPage: string;
   setHistoryRoute: (to: string) => void;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // 상위 요소에서 useRoute를 받아오도록 수정
-function Header({ currentPage, setHistoryRoute }: Props) {
+function Header({ currentPage, setHistoryRoute, setIsSidebarOpen }: Props) {
   const { openLogin } = useLoginModal();
   const { isAuth, logout } = useAuth();
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -65,7 +67,15 @@ function Header({ currentPage, setHistoryRoute }: Props) {
   };
 
   return (
-    <header className={S.topHeader}>
+    <div className={S.topHeader}>
+      <button
+        className={`${S.hambergerBtn}`}
+        type="button"
+        onClick={() => setIsSidebarOpen((prev) => !prev)}
+      >
+        <img src={hambergerIcon} alt="" />
+      </button>
+
       <button
         type="button"
         className={S.headerButton}
@@ -116,7 +126,7 @@ function Header({ currentPage, setHistoryRoute }: Props) {
           </button>
         )}
       </div>
-    </header>
+    </div>
   );
 }
 
