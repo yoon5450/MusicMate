@@ -1,27 +1,32 @@
-.wrapper{
+.wrapper {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.wrapper:hover{
+.wrapper:hover,
+.wrapper:active {
   border-radius: 8px;
-  cursor: pointer;
-  border: 1px solid var(--primary_hover);
   background-color: var(--gray_04);
+
+  span {
+    color: var(--primary_hover);
+    font-weight: 600;
+  }
 }
-.avatar{
+
+.avatar {
   border-radius: 50%;
   border: 1px solid var(--gray_06);
   width: 20px;
   height: 20px;
   object-fit: cover;
-  
 }
 
-.nickname{
+.nickname {
   font-size: 14px;
   color: var(--gray_10);
   text-align: center;
