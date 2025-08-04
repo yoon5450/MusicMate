@@ -402,6 +402,7 @@ function Channel() {
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, []);
+
   const scrollToBottomReply = useCallback(
     (containerRef: React.RefObject<HTMLDivElement | null>) => {
       const el = containerRef.current;
@@ -466,7 +467,10 @@ function Channel() {
           })
         );
         setFeedData(updatedFeeds);
-        scrollToBottom();
+        
+        requestAnimationFrame(() => {
+          scrollToBottom();
+        });
       }
 
       // 유저가 있는 경우에만 userLikes 호출
