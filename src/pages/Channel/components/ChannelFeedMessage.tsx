@@ -112,6 +112,7 @@ function ChannelFeedMessage({
           >
             {author_nickname}
           </span>
+          <br></br>
           <small style={{ marginLeft: "4px" }}>{createdTime}</small>
         </p>
         {image_url ? (

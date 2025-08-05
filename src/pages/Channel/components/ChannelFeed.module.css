@@ -90,7 +90,7 @@
       &:hover {
         background-color: var(--primary_hover);
       }
-      &:active{
+      &:active {
         background-color: var(--primary_active);
       }
     }
@@ -153,7 +153,7 @@
           }
         }
       }
-      &:active{
+      &:active {
         background-color: var(--primary_active);
       }
     }
@@ -190,8 +190,8 @@ h3 small {
 .feedImage {
   width: 100%;
   max-width: 300px;
-   height: auto;
-   display: block;
+  height: auto;
+  display: block;
 }
 
 .skeleton {
@@ -233,5 +233,20 @@ h3 small {
   .container .userAvatarContainer .userAvatar {
     width: 60px;
     height: 60px;
+  }
+
+  .messageReactButton {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    top: 10px;
+  }
+
+  p{
+    display: block;
+    padding-bottom: 10px;
+  }
+
+  .container .messageFeed{
+    padding: 0;
   }
 }
