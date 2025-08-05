@@ -97,6 +97,7 @@
     summary {
       padding: 8px;
       font-weight: bold;
+      cursor: pointer;
     }
     p {
       padding-block: var(--spacing-4);

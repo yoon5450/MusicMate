@@ -1,5 +1,4 @@
 import S from "./Header.module.css";
-import bell from "@/assets/bell.svg";
 import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
@@ -99,17 +98,7 @@ function Header({ setHistoryRoute, setIsSidebarOpen, isMobile }: Props) {
             <img src={search} width={"34px"} alt="검색" />
           </div>
         </button>
-        {isMobile ? null : (
-          <button
-            type="button"
-            className={S.headerButton}
-            style={{ paddingTop: "6px" }}
-          >
-            <div>
-              <img src={bell} width={"46px"} alt="알림" />
-            </div>
-          </button>
-        )}
+        
 
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
           <img src={profile} width={"42px"} alt="유저프로필" />

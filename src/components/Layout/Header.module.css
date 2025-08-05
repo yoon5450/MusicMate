@@ -38,9 +38,8 @@
   border: none;
   border-radius: 20px;
   margin: 6px 10px;
-  padding: 0 1rem;
+  padding: 12px 16px;
   min-width: 80px;
-  height: 40px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.18s;
@@ -65,6 +64,7 @@
 }
 
 .logoBtn {
+  height: 50px;
   position: absolute;
   left: 50%;
   top: 50%;

@@ -26,6 +26,7 @@
     flex-direction: column;
     gap: var(--spacing-12);
     padding: var(--spacing-8) 0px;
+    width: 70%;
 
     h3 {
       font-size: 1.2rem;
@@ -33,7 +34,6 @@
     }
 
     iframe {
-      max-width: 300px;
       aspect-ratio: 16/9;
       padding: var(--spacing-12) 0px;
     }
