@@ -14,6 +14,18 @@
     gap: 30px;
   }
 
+  button {
+    cursor: pointer;
+  }
+
+  .btnGroup img {
+    width: 40px;
+  }
+
+  .btnGroup .playBtnImg {
+    width: 50px;
+  }
+
   .progress {
     width: 300px;
   }
@@ -27,6 +39,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 
   .progress {
     width: 200px;
@@ -37,12 +50,30 @@
     gap: 5px;
   }
 
+  button {
+    cursor: pointer;
+  }
+
   .playBtnImg {
     width: 29px;
   }
 }
 
+.miniWrapper {
+  .btnGroup {
+    display: flex;
+
+    .playBtnImg {
+      width: 50px;
+    }
+  }
+
+  .progress {
+    width: 100%;
+  }
+
+}
 
 .progress {
-  accent-color: var(--primary_active);
+  accent-color: var(--primary_default);
 }
