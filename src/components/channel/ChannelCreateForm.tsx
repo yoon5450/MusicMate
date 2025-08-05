@@ -11,7 +11,7 @@ type GenreType = {
 };
 
 type CreatedChannelType = {
-  onSuccess?: () => void;
+  onSuccess?: (id: string) => void;
 };
 
 function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
@@ -33,7 +33,6 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
       if (data) setGenres(data);
     })();
   }, []);
-
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -65,10 +64,13 @@ function ChannelCreateForm({ onSuccess }: CreatedChannelType) {
         owner_id: userData.user!.id,
       });
 
+      console.log(result);
       if (!result) {
-        alert("채널을 생성할 수 없습니다. <br/>중복된 채널 이름이 존재할 수 있습니다.");
+        alert(
+          "채널을 생성할 수 없습니다. <br/>중복된 채널 이름이 존재할 수 있습니다."
+        );
       } else {
-        onSuccess?.();
+        onSuccess?.(result);
         alert("채널이 생성되었습니다.");
       }
     } catch {
