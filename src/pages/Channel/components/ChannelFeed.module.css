@@ -46,7 +46,8 @@
       width: 100%;
 
       .audioPlayer {
-        width: 100%;
+        /* width: 100%; */
+        width: 300px;
       }
     }
 
