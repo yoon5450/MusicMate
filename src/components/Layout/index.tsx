@@ -3,7 +3,7 @@ import SideNavigation from "./SideNavigation";
 import S from "./Layout.module.css";
 import { useState, type ReactNode } from "react";
 import { useRouter } from "@/router/RouterProvider";
-import { useMediaQuery } from "@/hook/useIsMobile";
+import { useMediaQuery } from "@/hook/useMediaQuery";
 
 function Layout({ children }: { children: ReactNode }) {
   const { setHistoryRoute } = useRouter();

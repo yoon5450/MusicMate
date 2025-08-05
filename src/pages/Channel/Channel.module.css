@@ -6,12 +6,21 @@
   flex-direction: column;
   gap: var(--spacing-12);
   flex: 1;
+  transition: flex 0.3s ease;
+}
+
+.contentArea.mobileHidden {
+  position:absolute;
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .feedArea {
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 .contentContainer {
@@ -20,6 +29,7 @@
   overflow: hidden;
   flex: 1;
   min-height: 0;
+  position: relative;
 }
 
 .contentWrapper {
@@ -34,8 +44,8 @@
   height: 100%;
 }
 
-@media screen and (max-width:768px) {
-  .userListArea{
+@media screen and (max-width: 768px) {
+  .userListArea {
     display: none;
   }
 }
@@ -49,11 +59,29 @@
   height: 100%;
   transition: flex 0.3s ease;
   background-color: var(--gray_01);
+  pointer-events: auto;
 }
 
 .detailContentArea.open {
   transition-delay: 0.2s;
   flex: 0.7;
+}
+
+/* 모바일용 */
+.detailContentArea.mobile {
+  flex: 0;
+  transition: all 0.4s ease;
+  max-width: 0;
+  transform: translateX(100%);
+  opacity: 0;
+  overflow: hidden;
+}
+
+.detailContentArea.mobile.open {
+  flex: 1;
+  max-width: 100%;
+  transform: translateX(0);
+  opacity: 1;
 }
 
 .closeButton {
@@ -75,6 +103,7 @@
   max-height: 500px;
   transition-delay: 0.3s;
 }
+
 .inputFeedContainer.hide {
   transform: translateY(100%);
   transition:
@@ -99,6 +128,7 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     p {
       padding-block: var(--spacing-4);
       padding-left: var(--spacing-24);
