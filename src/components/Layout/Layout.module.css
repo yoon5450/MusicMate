@@ -17,8 +17,9 @@
   width: 240px;
   height: calc(100vh - 51px);
   background-color: var(--gray_02);
+  position:relative;
   border-right: 1px solid var(--primary_default);
-  overflow-y: auto;
+  overflow-y: hidden;
   transition: transform 0.3s ease;
   transform: translateX(0);
 }
@@ -44,7 +45,7 @@
     position: fixed;
     top: 51px;
     left: 0;
-    height: 100vh;
+    height: calc(100vh - 51px);
     background-color: white;
     z-index: 1000;
     transform: translateX(-100%);
@@ -53,4 +54,5 @@
   .sidebar.open {
     transform: translateX(0);
   }
+
 }

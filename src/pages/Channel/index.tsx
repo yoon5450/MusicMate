@@ -5,7 +5,6 @@ import ChannelFeedMessage from "./components/ChannelFeedMessage";
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -39,6 +38,8 @@ import {
   showToast,
 } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
+import supabase from "@/utils/supabase";
+import {profileBucketUrl} from '@/constant/supabase.urls';
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -50,7 +51,7 @@ type channelInfoType = {
 };
 
 function Channel() {
-  const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
+  const { id, feedId: paramsFeedId = null } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt, userProfile } = useUserProfile();
 
@@ -70,7 +71,6 @@ function Channel() {
   const [hasMoreHeadFeeds, setHasMoreHeadFeeds] = useState(true);
   const [isTopFetching, setIsTopFetching] = useState<boolean>(false);
   const [isBottomFetching, setIsBottomFetching] = useState<boolean>(false);
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
@@ -300,19 +300,15 @@ function Channel() {
       const newFeed = convertNewFeedToFeedData(
         data,
         userProfile?.nickname,
-        userProfile?.profile_url
+        `${profileBucketUrl}/${userProfile?.profile_url}`
       );
 
       setFeedData((prev: FeedWithPreview[] | null) => [
         ...(prev ?? []),
         newFeed,
       ]);
-
-      if (isAtBottom) {
-        setIsSubmit((prev) => !prev);
-      }
     },
-    [isAtBottom, userProfile?.nickname, userProfile?.profile_url]
+    [userProfile?.nickname, userProfile?.profile_url]
   );
 
   // 첫 요소에서 20개를 더 로드
@@ -350,6 +346,7 @@ function Channel() {
     });
 
     requestAnimationFrame(() => {
+      // 선택된 피드가 있다면 해당 피드로 스크롤
       const newFirstEl = feedRefs.current[firstFeedId];
       const newOffset = newFirstEl?.getBoundingClientRect().top ?? 0;
 
@@ -514,6 +511,32 @@ function Channel() {
     fetchData();
   }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
+  // realtime 구독 처리
+  useEffect(() => {
+    // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
+    if (!id || hasMoreTailFeeds) return;
+
+    const channel = supabase
+      .channel(`channel_${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "feeds",
+          filter: `channel_id=eq.${id}`,
+        },
+        () => {
+          renderTailFeeds();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [hasMoreTailFeeds, id, renderTailFeeds]);
+
   useEffect(() => {
     async function check() {
       if (id && user) {
@@ -523,6 +546,12 @@ function Channel() {
     }
     check();
   }, [id, user]);
+
+  // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
+  useEffect(() => {
+    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds) return;
+    scrollToBottom();
+  }, [feedData, isAtBottom, scrollToBottom]);
 
   useEffect(() => {
     async function checkCreateMember() {
@@ -564,10 +593,6 @@ function Channel() {
     if (!selectedFeed?.feed_id) return;
     scrollToSelectedFeed();
   }, [selectedFeed]);
-
-  useLayoutEffect(() => {
-    scrollToBottom();
-  }, [isSubmit, scrollToBottom]);
 
   // 유저아바타프리뷰 url 가져오기
   const getPreviewImage = async (
@@ -652,7 +677,10 @@ function Channel() {
                       <button
                         type="button"
                         className={S.closeButton}
-                        onClick={() => setSelectedFeed(null)}
+                        onClick={() => {
+                          // 뒤로가기 시에도 피드 상세를 남기지 않음.
+                          window.history.replaceState({}, "", `/Channel/${id}`)
+                          setSelectedFeed(null)}}
                       >
                         <img src={close} alt="" />
                       </button>

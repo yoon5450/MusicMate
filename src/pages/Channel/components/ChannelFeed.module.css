@@ -44,6 +44,10 @@
       align-items: flex-start;
       gap: var(--spacing-12);
       width: 100%;
+
+      .audioPlayer {
+        width: 100%;
+      }
     }
 
     .audioPlayerWithNoImage {
@@ -84,6 +88,9 @@
       cursor: pointer;
 
       &:hover {
+        background-color: var(--primary_hover);
+      }
+      &:active{
         background-color: var(--primary_active);
       }
     }
@@ -146,6 +153,9 @@
           }
         }
       }
+      &:active{
+        background-color: var(--primary_active);
+      }
     }
   }
 
@@ -156,6 +166,11 @@
 }
 .active {
   outline: 2px solid var(--primary_active);
+}
+
+p {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 p small,
@@ -175,6 +190,8 @@ h3 small {
 .feedImage {
   width: 100%;
   max-width: 300px;
+   height: auto;
+   display: block;
 }
 
 .skeleton {
@@ -205,5 +222,16 @@ h3 small {
   }
   100% {
     left: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .feedImage {
+    max-width: 200px;
+  }
+
+  .container .userAvatarContainer .userAvatar {
+    width: 60px;
+    height: 60px;
   }
 }

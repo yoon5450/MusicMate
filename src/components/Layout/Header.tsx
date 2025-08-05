@@ -10,13 +10,13 @@ import { confirmAlert, showToast } from "../common/CustomAlert";
 import hambergerIcon from "@/assets/hamburger_icon.svg";
 
 interface Props {
-  currentPage: string;
   setHistoryRoute: (to: string) => void;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isMobile: boolean;
 }
 
 // 상위 요소에서 useRoute를 받아오도록 수정
-function Header({ currentPage, setHistoryRoute, setIsSidebarOpen }: Props) {
+function Header({ setHistoryRoute, setIsSidebarOpen, isMobile }: Props) {
   const { openLogin } = useLoginModal();
   const { isAuth, logout } = useAuth();
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -73,27 +73,22 @@ function Header({ currentPage, setHistoryRoute, setIsSidebarOpen }: Props) {
   return (
     <div className={S.topHeader}>
       <button
-        className={`${S.hambergerBtn}`}
+        className={`${S.headerButton}`}
         type="button"
         onClick={() => setIsSidebarOpen((prev) => !prev)}
       >
         <img src={hambergerIcon} alt="" />
       </button>
 
-      <button
-        type="button"
-        className={S.headerButton}
-        onClick={handleClickLogo}
-      >
+      <button type="button" className={S.logoBtn} onClick={handleClickLogo}>
         <div>
           <img src="/music_mate_symbol_fixed.svg" className={S.logo} />
         </div>
+        {isMobile ? null : <div>MusicMate</div>}
       </button>
-      {isSearch ? (
-        <HeaderSearch setIsSearch={setIsSearch} />
-      ) : (
-        <div className={S.content}>{currentPage}</div>
-      )}
+
+      {isSearch ? <HeaderSearch setIsSearch={setIsSearch} /> : ""}
+
       <div className={S.btnGroup}>
         <button
           type="button"
@@ -104,19 +99,23 @@ function Header({ currentPage, setHistoryRoute, setIsSidebarOpen }: Props) {
             <img src={search} width={"34px"} alt="검색" />
           </div>
         </button>
-        <button
-          type="button"
-          className={S.headerButton}
-          style={{ paddingTop: "6px" }}
-        >
-          <div>
-            <img src={bell} width={"46px"} alt="알림" />
-          </div>
-        </button>
+        {isMobile ? null : (
+          <button
+            type="button"
+            className={S.headerButton}
+            style={{ paddingTop: "6px" }}
+          >
+            <div>
+              <img src={bell} width={"46px"} alt="알림" />
+            </div>
+          </button>
+        )}
+
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
           <img src={profile} width={"42px"} alt="유저프로필" />
         </button>
-        {isAuth ? (
+
+        {isMobile ? null : isAuth ? (
           <button type="button" className={S.authButton} onClick={handleLogout}>
             LogOut
           </button>

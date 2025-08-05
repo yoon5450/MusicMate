@@ -1,3 +1,5 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
 .topHeader {
   position: absolute;
   top: 0;
@@ -62,7 +64,23 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.logoBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  cursor: pointer;
+  margin: 0 4px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 20px;
+  font-family: "SpoqaHanSansNeo-Bold";
+  color: var(--primary_default);
+}
+
 .btnGroup .headerButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-

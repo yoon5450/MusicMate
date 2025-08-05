@@ -42,12 +42,18 @@
           &:hover {
             background-color: var(--primary_active);
           }
+           &:active{
+            background-color: var(--primary_active);
+          }
         }
         .deleteButton {
           background-color: var(--gray_04);
           color: var(--gray_10);
 
           &:hover {
+            background-color: var(--gray_03);
+          }
+           &:active{
             background-color: var(--gray_03);
           }
         }
@@ -141,6 +147,9 @@
         &:hover {
           background-color: var(--gray_03);
         }
+        &:active{
+          background-color: var(--gray_03);
+        }
       }
     }
   }
@@ -152,4 +161,11 @@
   padding: 2rem;
   color: var(--gray_10);
   flex: 1;
+}
+
+@media (max-width: 1024px) {
+  .container .feedInfo .userAvatarContainer .userAvatar {
+    width: 60px;
+    height: 60px;
+  }
 }

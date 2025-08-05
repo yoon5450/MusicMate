@@ -67,6 +67,9 @@
   &:hover {
     background-color: var(--gray_04);
   }
+  &:active{
+    background-color: var(--gray_04);
+  }
 }
 
 .userItem .avatar {
