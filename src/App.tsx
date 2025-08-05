@@ -13,6 +13,7 @@ import "@/App.css";
 import { AuthProvider } from "./auth/AuthProvider";
 import { UserProfileProvider } from "./context/UserProfileContext";
 import { UserGenreProvider } from "./context/UserGenreContext";
+import { ChannelProvier } from "./context/ChannelContext";
 
 function App() {
   return (
@@ -21,14 +22,18 @@ function App() {
         <AuthProvider>
           <UserProfileProvider>
             <UserGenreProvider>
-              <RouterProvider
-                navigation={(routeElement) => (
-                  <Layout>
-                    <section className={S.pageContent}>{routeElement}</section>
-                  </Layout>
-                )}
-                routes={routes}
-              />
+              <ChannelProvier>
+                <RouterProvider
+                  navigation={(routeElement) => (
+                    <Layout>
+                      <section className={S.pageContent}>
+                        {routeElement}
+                      </section>
+                    </Layout>
+                  )}
+                  routes={routes}
+                />
+              </ChannelProvier>
             </UserGenreProvider>
           </UserProfileProvider>
         </AuthProvider>
