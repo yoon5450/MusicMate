@@ -5,31 +5,37 @@ import { getFeedsByKeyword } from "@/api";
 import { debounce } from "@/utils/debounce";
 import type { Tables } from "@/@types/database.types";
 import SearchResultItem from "./SearchResultItem";
+import { useParams } from "@/router/RouterProvider";
 
 interface Props {
   setIsSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 //TODO: 채널 내부에서 검색
-// TODO: 엔터를 눌렀을 때 
+// TODO: 엔터를 눌렀을 때
 function HeaderSearch({ setIsSearch }: Props) {
   const [searchResult, setSearchResult] = useState<
     Tables<"view_feed_search">[]
   >([]);
-  const [searchInput, setSearchInput] = useState<string>("")
+  const [searchInput, setSearchInput] = useState<string>("");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const [chanMode, setChanMode] = useState<boolean>(false);
+  const { id } = useParams();
 
   const initFunc = () => {
     setSearchResult([]);
-    setSearchKeyword("")
-    setSearchInput("")
-  }
+    setSearchKeyword("");
+    setSearchInput("");
+  };
 
-  const searchAction = async (k: string) => {
+  const searchAction = async (
+    k: string,
+    channelId: string | undefined = undefined
+  ) => {
     if (!k) return;
 
-    const data = await getFeedsByKeyword(k);
+    const data = await getFeedsByKeyword(k, channelId);
     return data;
   };
 
@@ -46,9 +52,10 @@ function HeaderSearch({ setIsSearch }: Props) {
   };
 
   useEffect(() => {
-    const inputText = inputRef.current
-    if(inputText) inputText.focus();
-  }, [])
+    const inputText = inputRef.current;
+    if (inputText) inputText.focus();
+    if (id) setChanMode(true);
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -61,10 +68,18 @@ function HeaderSearch({ setIsSearch }: Props) {
     e.preventDefault();
   };
 
+  const chanModeRef = useRef(chanMode);
+
+  useEffect(() => {
+    chanModeRef.current = chanMode;
+  }, [chanMode]);
+
   const debounceSearch = useRef(
     debounce(async (k: string) => {
+      const curMode = chanModeRef.current;
       setSearchKeyword(k);
-      const data = await searchAction(k);
+      const channelId = curMode ? id : undefined;
+      const data = await searchAction(k, channelId);
       if (data) setSearchResult(data);
     }, 300)
   );
@@ -72,6 +87,16 @@ function HeaderSearch({ setIsSearch }: Props) {
   return (
     <div className={S.headerSearchWrapper}>
       <form onSubmit={handleSubmit} className={S.searchForm}>
+        {
+          <button
+            className={`${S.targetChannelBtn} ${chanMode ? S.chanMode : S.allMode}`}
+            type="button"
+            onClick={() => id && setChanMode((prev) => !prev)}
+          >
+            {chanMode ? `채널에서 검색` : `전체에서 검색`}
+          </button>
+        }
+
         <input
           className={S.searchInput}
           type="text"
@@ -93,7 +118,13 @@ function HeaderSearch({ setIsSearch }: Props) {
         {searchResult.length > 0 ? (
           <div className={S.searchResultContainer}>
             {searchResult.slice(0, 5).map((item) => (
-              <SearchResultItem item={item} initFunc={initFunc} keyword={searchKeyword} key={item.id} setIsSearch={setIsSearch}/>
+              <SearchResultItem
+                item={item}
+                initFunc={initFunc}
+                keyword={searchKeyword}
+                key={item.id}
+                setIsSearch={setIsSearch}
+              />
             ))}
           </div>
         ) : undefined}
