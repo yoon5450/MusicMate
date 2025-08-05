@@ -21,7 +21,7 @@ export function getAvatarUrlPreview(userAvatarPath: string): string | null {
     .from("user-avatar")
     .getPublicUrl(userAvatarPath);
   if (!data) return null;
-  return `${data.publicUrl}?t=${Date.now()}`;
+  return `${data.publicUrl}`;
 }
 
 type UserAvatarInfo = {
