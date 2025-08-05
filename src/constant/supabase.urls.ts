@@ -1,1 +1,1 @@
-export const profileBucketUrl = `https://whbwjepooojxjoufcift.supabase.co/storage/v1/object/public/user-avatar/`
+export const profileBucketUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/user-avatar/`

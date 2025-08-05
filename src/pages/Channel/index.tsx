@@ -17,7 +17,6 @@ import {
   deleteChannel,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
-import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
 import FeedReplies from "./components/FeedReplies";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
@@ -37,7 +36,7 @@ import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
 import { useChannel } from "@/context/ChannelContext";
 import NoChannel from "../NotFound/NoChannel";
-import {profileBucketUrl} from '@/constant/supabase.urls';
+import { profileBucketUrl } from "@/constant/supabase.urls";
 import { useMediaQuery } from "@/hook/useMediaQuery";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
@@ -79,7 +78,8 @@ function Channel() {
   const replyContainerRef = useRef<HTMLDivElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
   const bottomObserverRef = useRef<IntersectionObserver | null>(null);
-  
+  const feedDataRef = useRef(feedData);
+
   const isMobile = useMediaQuery("(max-width:768px)");
 
   // Callback
@@ -284,11 +284,17 @@ function Channel() {
     });
   };
 
-  // 마지막 요소에서 20개를 더 로드
-  const renderTailFeeds = useCallback(async () => {
-    if (!feedData || feedData.length === 0) return;
+  useEffect(() => {
+    feedDataRef.current = feedData;
+  }, [feedData]);
 
-    const lastTime = feedData[feedData.length - 1].created_at;
+  // 마지막 요소에서 20개를 더 로드
+  // FeedData 종속성을 제거하고 feedData를 이용해
+  const renderTailFeeds = useCallback(async () => {
+    const currentFeedData = feedDataRef.current;
+    if (!currentFeedData || currentFeedData.length === 0) return;
+
+    const lastTime = currentFeedData[currentFeedData.length - 1].created_at;
     if (!lastTime) return;
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
@@ -297,12 +303,10 @@ function Channel() {
       return;
     }
 
-    const updatedFeeds = await Promise.all(
-      afterFeedData.map(async (feed) => {
-        const previewUrl = await getPreviewImage(feed);
-        return { ...feed, preview_url: previewUrl };
-      })
-    );
+    const updatedFeeds = afterFeedData.map((feed) => {
+      const previewUrl = getPreviewImage(feed);
+      return { ...feed, preview_url: previewUrl };
+    });
 
     // 중복 제거
     setFeedData((prev) => {
@@ -313,7 +317,7 @@ function Channel() {
       );
       return [...prevFeeds, ...uniqueNewFeeds];
     });
-  }, [feedData, id]);
+  }, [id]);
 
   const handleAddSubmitFeed = useCallback(
     (data: Tables<"feeds">) => {
@@ -321,7 +325,9 @@ function Channel() {
       const newFeed = convertNewFeedToFeedData(
         data,
         userProfile?.nickname,
-        userProfile?.profile_url ? `${profileBucketUrl}/${userProfile?.profile_url}` : null,
+        userProfile?.profile_url
+          ? `${profileBucketUrl}/${userProfile?.profile_url}`
+          : null
       );
 
       setFeedData((prev: FeedWithPreview[] | null) => [
@@ -350,12 +356,10 @@ function Channel() {
       return;
     }
 
-    const updatedFeeds = await Promise.all(
-      beforeFeedData.map(async (feed) => {
-        const previewUrl = await getPreviewImage(feed);
-        return { ...feed, preview_url: previewUrl };
-      })
-    );
+    const updatedFeeds = beforeFeedData.map((feed) => {
+      const previewUrl = getPreviewImage(feed);
+      return { ...feed, preview_url: previewUrl };
+    });
 
     setFeedData((prev) => {
       const prevFeeds = prev ?? [];
@@ -493,12 +497,10 @@ function Channel() {
         const centerFeeds = await getFeedByTargetId(paramsFeedId); // 새로운 API
         if (!centerFeeds) return;
 
-        const updatedFeeds = await Promise.all(
-          centerFeeds.map(async (feed) => {
-            const previewUrl = await getPreviewImage(feed);
-            return { ...feed, preview_url: previewUrl };
-          })
-        );
+        const updatedFeeds = centerFeeds.map((feed) => {
+          const previewUrl = getPreviewImage(feed);
+          return { ...feed, preview_url: previewUrl };
+        });
 
         setFeedData(updatedFeeds);
         setSelectedFeed(
@@ -509,12 +511,10 @@ function Channel() {
         const feeds = await getFeedsByChannelAndBefore(id, now);
         if (!feeds) return;
 
-        const updatedFeeds = await Promise.all(
-          feeds.map(async (feed) => {
-            const previewUrl = await getPreviewImage(feed);
-            return { ...feed, preview_url: previewUrl };
-          })
-        );
+        const updatedFeeds = feeds.map((feed) => {
+          const previewUrl = getPreviewImage(feed);
+          return { ...feed, preview_url: previewUrl };
+        });
         setFeedData(updatedFeeds);
 
         requestAnimationFrame(() => {
@@ -622,14 +622,11 @@ function Channel() {
   }, [selectedFeed]);
 
   // 유저아바타프리뷰 url 가져오기
-  const getPreviewImage = async (
+  const getPreviewImage = (
     feed: Tables<"get_feeds_with_user_and_likes">
-  ): Promise<string | undefined> => {
+  ): string | undefined => {
     if (!feed.author_profile_url) return;
-
-    const previewUrl = await getAvatarUrlPreview(feed.author_profile_url);
-    if (!previewUrl) return;
-    return previewUrl;
+    return `${profileBucketUrl}/${feed.author_profile_url}`;
   };
 
   return (
@@ -684,21 +681,26 @@ function Channel() {
             ) : (
               <>
                 <div className={S.feedArea}>
-                  <ul className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`} ref={feedContainerRef}>
+                  <ul
+                    className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
+                    ref={feedContainerRef}
+                  >
                     <li className={S.observerDiv} ref={setTopLiRef}></li>
                     {feedData?.map((data) => renderFeedComponent(data))}
                     <li className={S.observerDiv} ref={setBottomLiRef}></li>
                   </ul>
                   <div
-                    className={isMobile 
-                    ? `${S.detailContentArea} ${selectedFeed ? `${S.open} ${S.mobile}` : `${S.mobile}`}`
-                    : `${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+                    className={
+                      isMobile
+                        ? `${S.detailContentArea} ${selectedFeed ? `${S.open} ${S.mobile}` : `${S.mobile}`}`
+                        : `${S.detailContentArea} ${selectedFeed ? S.open : ""}`
+                    }
                   >
                     {selectedFeed ? (
                       <>
                         <DetailFeeds
-                          type={isMobile ? 'detail' : 'default'}
-                        feedItem={selectedFeed}
+                          type={isMobile ? "detail" : "default"}
+                          feedItem={selectedFeed}
                           replies={repliesData?.length}
                           onToggleLike={onToggleLike}
                           isUserLike={
