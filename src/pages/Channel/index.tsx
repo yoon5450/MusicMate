@@ -2,7 +2,7 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import {
   checkUserInChannels,
   getChannelInfoById,
@@ -78,7 +78,6 @@ function Channel() {
   const replyContainerRef = useRef<HTMLDivElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
   const bottomObserverRef = useRef<IntersectionObserver | null>(null);
-  const feedDataRef = useRef(feedData);
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
@@ -284,17 +283,11 @@ function Channel() {
     });
   };
 
-  useEffect(() => {
-    feedDataRef.current = feedData;
-  }, [feedData]);
-
   // 마지막 요소에서 20개를 더 로드
-  // FeedData 종속성을 제거하고 feedData를 이용해
   const renderTailFeeds = useCallback(async () => {
-    const currentFeedData = feedDataRef.current;
-    if (!currentFeedData || currentFeedData.length === 0) return;
+    if (!feedData || feedData.length === 0) return;
 
-    const lastTime = currentFeedData[currentFeedData.length - 1].created_at;
+    const lastTime = feedData[feedData.length - 1].created_at;
     if (!lastTime) return;
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
@@ -317,7 +310,7 @@ function Channel() {
       );
       return [...prevFeeds, ...uniqueNewFeeds];
     });
-  }, [id]);
+  }, [feedData, id]);
 
   const handleAddSubmitFeed = useCallback(
     (data: Tables<"feeds">) => {
@@ -414,7 +407,7 @@ function Channel() {
           setIsTopFetching(true);
           renderHeadFeeds().finally(() => setIsTopFetching(false));
         }
-      });
+      }, {threshold:0.1});
 
       if (node) {
         topObserverRef.current.observe(node);
@@ -439,9 +432,10 @@ function Channel() {
           observerStateRef.current.hasMoreTailFeeds
         ) {
           setIsBottomFetching(true);
+
           renderTailFeeds().finally(() => setIsBottomFetching(false));
         }
-      });
+      }, {threshold: 0.1});
 
       if (node) {
         bottomObserverRef.current.observe(node);
@@ -494,7 +488,7 @@ function Channel() {
 
     const fetchData = async () => {
       if (paramsFeedId) {
-        const centerFeeds = await getFeedByTargetId(paramsFeedId); // 새로운 API
+        const centerFeeds = await getFeedByTargetId(paramsFeedId);
         if (!centerFeeds) return;
 
         const updatedFeeds = centerFeeds.map((feed) => {
@@ -532,6 +526,11 @@ function Channel() {
     fetchData();
   }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
+  const renderTailFeedsRef = useRef(renderTailFeeds);
+  useEffect(() => {
+    renderTailFeedsRef.current = renderTailFeeds;
+  });
+
   // realtime 구독 처리
   useEffect(() => {
     // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
@@ -548,7 +547,7 @@ function Channel() {
           filter: `channel_id=eq.${id}`,
         },
         () => {
-          renderTailFeeds();
+          renderTailFeedsRef.current();
         }
       )
       .subscribe();
@@ -556,7 +555,7 @@ function Channel() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [hasMoreTailFeeds, id, renderTailFeeds]);
+  }, [hasMoreTailFeeds, id]);
 
   useEffect(() => {
     async function check() {
@@ -685,9 +684,17 @@ function Channel() {
                     className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
                     ref={feedContainerRef}
                   >
-                    <li className={S.observerDiv} ref={setTopLiRef}></li>
-                    {feedData?.map((data) => renderFeedComponent(data))}
-                    <li className={S.observerDiv} ref={setBottomLiRef}></li>
+                    {feedData?.map((data, i) => (
+                      <Fragment key={data.feed_id}>
+                        {i === 0 && (
+                          <li ref={setTopLiRef} className={S.observerTopDiv} />
+                        )}
+                        {i === feedData.length - 1 && (
+                          <li ref={setBottomLiRef} className={S.observerBottomDiv}/>
+                        )}
+                        {renderFeedComponent(data)}
+                      </Fragment>
+                    ))}
                   </ul>
                   <div
                     className={
