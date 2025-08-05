@@ -41,9 +41,6 @@ export function filterChannels(
     return false;
   });
 
-  console.log(preferred);
-  console.log(myChannels);
-
   const remainingChannels = channelList.filter(
     (channel) => !selectedChannels[channel.id]
   );

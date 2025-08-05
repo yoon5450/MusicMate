@@ -70,6 +70,11 @@ export const addChannels = async ({
   }
 };
 
+/**
+ * @description 채널소유자를 가져옵니다
+ * @param channel_id
+ * @returns
+ */
 export const getChannelCreateUser = async (channel_id: string) => {
   const { data, error } = await supabase
     .from("channels")
@@ -78,6 +83,23 @@ export const getChannelCreateUser = async (channel_id: string) => {
 
   if (error) {
     errorHandler(error, "getChannelCreateUser");
+    return null;
+  } else {
+    return data;
+  }
+};
+
+export const deleteChannel = async (channelId: string) => {
+  const { data, error } = await supabase
+    .from("channels")
+    .delete()
+    .eq("id", channelId)
+    .select();
+
+  console.log(channelId, data, error);
+
+  if (error) {
+    errorHandler(error, "deleteChannel");
     return null;
   } else {
     return data;

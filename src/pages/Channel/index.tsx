@@ -2,16 +2,9 @@ import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  addUserChannels,
   checkUserInChannels,
-  deleteUserChannels,
   getChannelInfoById,
   getLikesByUserId,
   getFeedsByChannelAndAfter,
@@ -19,6 +12,9 @@ import {
   getFeedByTargetId,
   deleteFeed,
   getChannelCreateUser,
+  addUserInChannels,
+  deleteUserInChannels,
+  deleteChannel,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
 import { getAvatarUrlPreview } from "@/api/user_avatar";
@@ -39,7 +35,9 @@ import {
 } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
-import {profileBucketUrl} from '@/constant/supabase.urls';
+import { profileBucketUrl } from "@/constant/supabase.urls";
+import { useChannel } from "@/context/ChannelContext";
+import NoChannel from "../NotFound/NoChannel";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -54,6 +52,7 @@ function Channel() {
   const { id, feedId: paramsFeedId = null } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt, userProfile } = useUserProfile();
+  const { setIsChannelChanged } = useChannel();
 
   const [selectedFeed, setSelectedFeed] = useState<FeedWithPreview | null>(
     null
@@ -72,6 +71,7 @@ function Channel() {
   const [isTopFetching, setIsTopFetching] = useState<boolean>(false);
   const [isBottomFetching, setIsBottomFetching] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [noChannel, setNochannel] = useState(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
@@ -114,6 +114,10 @@ function Channel() {
   useEffect(() => {
     console.log("isAtBottom 상태:", isAtBottom);
   }, [isAtBottom]);
+
+  useEffect(() => {
+    setNochannel(false);
+  }, [id]);
 
   const renderFeedComponent = useCallback(
     (feed: FeedWithPreview) => {
@@ -204,7 +208,7 @@ function Channel() {
         confirmAlert(`${channelInfo.name} 채널에 가입하시겠습니까?`).then(
           async (result) => {
             if (result.isConfirmed) {
-              const data = await addUserChannels(id);
+              const data = await addUserInChannels(id);
               if (data) {
                 alert(`${channelInfo.name} 채널에 가입하셨습니다`);
                 setIsMember(true);
@@ -213,16 +217,12 @@ function Channel() {
           }
         );
     } else {
-      if (isCreateMember) {
-        alert("채널 소유자는 채널에서 탈퇴할 수 없습니다");
-        return;
-      }
       if (channelInfo)
         confirmAlert(`${channelInfo.name} 채널에서 탈퇴하시겠습니까?`).then(
           async (result) => {
             if (result.isConfirmed) {
               if (!user) return;
-              const data = await deleteUserChannels(user?.id, id);
+              const data = await deleteUserInChannels(user?.id, id);
               if (data) {
                 alert(`${channelInfo.name} 채널에서 탈퇴하셨습니다`);
                 setIsMember(false);
@@ -231,6 +231,24 @@ function Channel() {
           }
         );
     }
+  };
+
+  const handleChannelDelete = () => {
+    if (channelInfo)
+      confirmAlert(`${channelInfo.name} 채널을 삭제하시겠습니까?`).then(
+        async (result) => {
+          if (result.isConfirmed) {
+            const data = await deleteChannel(id);
+            if (data) {
+              alert(`${channelInfo.name} 채널이 삭제되었습니다`);
+              setIsChannelChanged();
+              setNochannel(true);
+            } else {
+              alert(`${channelInfo.name} 채널 삭제에 실패했습니다`);
+            }
+          }
+        }
+      );
   };
 
   const handleDelete = (feedId: string) => {
@@ -258,7 +276,7 @@ function Channel() {
             (prev) =>
               prev?.filter((f) => f.feed_reply_id !== feedReplyId) ?? null
           );
-        }
+        } else showToast("댓글이 삭제되지 않았습니다");
       }
     });
   };
@@ -549,7 +567,8 @@ function Channel() {
 
   // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
   useEffect(() => {
-    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds) return;
+    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds)
+      return;
     scrollToBottom();
   }, [feedData, isAtBottom, scrollToBottom]);
 
@@ -558,8 +577,10 @@ function Channel() {
       if (id && user) {
         const data = await getChannelCreateUser(id);
         if (!data) return;
-        console.log(data);
-        console.log(user.id);
+        if (data?.length === 0) {
+          setNochannel(true);
+          return;
+        }
         setIsCreateMember(data[0].owner_id === user.id);
       }
     }
@@ -569,7 +590,10 @@ function Channel() {
   useEffect(() => {
     const getChannelInfo = async () => {
       const data = await getChannelInfoById(id);
-      if (!data) return;
+      if (!data) {
+        setChannelInfo({ name: "삭제된 채널입니다", description: null });
+        return;
+      }
       setChannelInfo(data[0]);
     };
     getChannelInfo();
@@ -607,103 +631,123 @@ function Channel() {
 
   return (
     <>
-      <div className={S.contentContainer}>
-        <div className={S.contentWrapper}>
-          <div className={S.channelInfo}>
-            {channelInfo ? (
-              <details className={S.channelDescription}>
-                <summary>{channelInfo.name}</summary>
-                <p>{channelInfo.description}</p>
-              </details>
-            ) : (
-              <p>채널 정보 가져오는중 . . .</p>
-            )}
-            {user ? (
-              isMember ? (
-                <button
-                  type="button"
-                  className={S.channelLeaveButton}
-                  onClick={handleChannelJoin}
-                >
-                  채널탈퇴하기
-                </button>
+      {noChannel ? (
+        <NoChannel />
+      ) : (
+        <div className={S.contentContainer}>
+          <div className={S.contentWrapper}>
+            <div className={S.channelInfo}>
+              {channelInfo ? (
+                <details className={S.channelDescription}>
+                  <summary>{channelInfo.name}</summary>
+                  <p>{channelInfo.description}</p>
+                </details>
               ) : (
-                <button
-                  type="button"
-                  className={S.channelJoinButton}
-                  onClick={handleChannelJoin}
-                >
-                  채널가입하기
-                </button>
-              )
-            ) : null}
-          </div>
-          {feedData?.length === 0 ? (
-            <div className={S.noFeed}>게시물이 없습니다</div>
-          ) : (
-            <>
-              <div className={S.feedArea}>
-                <ul className={S.contentArea} ref={feedContainerRef}>
-                  <li className={S.observerDiv} ref={setTopLiRef}></li>
-                  {feedData?.map((data) => renderFeedComponent(data))}
-                  <li className={S.observerDiv} ref={setBottomLiRef}></li>
-                </ul>
-                <div
-                  className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
-                >
-                  {selectedFeed ? (
-                    <>
-                      <DetailFeeds
-                        feedItem={selectedFeed}
-                        replies={repliesData?.length}
-                        onToggleLike={onToggleLike}
-                        isUserLike={
-                          userLikes?.includes(selectedFeed.feed_id!) ?? false
-                        }
-                        scrollToSelectedFeed={scrollToSelectedFeed}
-                      />
-                      <FeedReplies
-                        replies={repliesData}
-                        handleDeleteReply={handleDeleteReply}
-                        replyContainerRef={replyContainerRef}
-                      />
-                      <InputReplies
-                        currentFeedId={selectedFeed.feed_id!}
-                        setUpdateReplies={setUpdateReplies}
-                        scrollToBottom={() =>
-                          scrollToBottomReply(replyContainerRef)
-                        }
-                      />
-                      <button
-                        type="button"
-                        className={S.closeButton}
-                        onClick={() => {
-                          // 뒤로가기 시에도 피드 상세를 남기지 않음.
-                          window.history.replaceState({}, "", `/Channel/${id}`)
-                          setSelectedFeed(null)}}
-                      >
-                        <img src={close} alt="" />
-                      </button>
-                    </>
-                  ) : null}
+                <p>채널 정보 가져오는중 . . .</p>
+              )}
+              {user ? (
+                isMember ? (
+                  isCreateMember ? (
+                    <button
+                      type="button"
+                      className={S.channelLeaveButton}
+                      onClick={handleChannelDelete}
+                      style={{ backgroundColor: `red` }}
+                    >
+                      채널삭제하기
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={S.channelLeaveButton}
+                      onClick={handleChannelJoin}
+                    >
+                      채널탈퇴하기
+                    </button>
+                  )
+                ) : (
+                  <button
+                    type="button"
+                    className={S.channelJoinButton}
+                    onClick={handleChannelJoin}
+                  >
+                    채널가입하기
+                  </button>
+                )
+              ) : null}
+            </div>
+            {feedData?.length === 0 ? (
+              <div className={S.noFeed}>게시물이 없습니다</div>
+            ) : (
+              <>
+                <div className={S.feedArea}>
+                  <ul className={S.contentArea} ref={feedContainerRef}>
+                    <li className={S.observerDiv} ref={setTopLiRef}></li>
+                    {feedData?.map((data) => renderFeedComponent(data))}
+                    <li className={S.observerDiv} ref={setBottomLiRef}></li>
+                  </ul>
+                  <div
+                    className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+                  >
+                    {selectedFeed ? (
+                      <>
+                        <DetailFeeds
+                          feedItem={selectedFeed}
+                          replies={repliesData?.length}
+                          onToggleLike={onToggleLike}
+                          isUserLike={
+                            userLikes?.includes(selectedFeed.feed_id!) ?? false
+                          }
+                          scrollToSelectedFeed={scrollToSelectedFeed}
+                        />
+                        <FeedReplies
+                          replies={repliesData}
+                          handleDeleteReply={handleDeleteReply}
+                          replyContainerRef={replyContainerRef}
+                        />
+                        <InputReplies
+                          currentFeedId={selectedFeed.feed_id!}
+                          setUpdateReplies={setUpdateReplies}
+                          scrollToBottom={() =>
+                            scrollToBottomReply(replyContainerRef)
+                          }
+                        />
+                        <button
+                          type="button"
+                          className={S.closeButton}
+                          onClick={() => {
+                            // 뒤로가기 시에도 피드 상세를 남기지 않음.
+                            window.history.replaceState(
+                              {},
+                              "",
+                              `/Channel/${id}`
+                            );
+                            setSelectedFeed(null);
+                          }}
+                        >
+                          <img src={close} alt="" />
+                        </button>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-          <div
-            className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
-          >
-            <InputFeed
-              curChannelId={id}
-              handleAddSubmitFeed={handleAddSubmitFeed}
-              isMember={isMember}
-            />
+              </>
+            )}
+            <div
+              className={`${S.inputFeedContainer} ${selectedFeed ? S.hide : ""}`}
+            >
+              <InputFeed
+                curChannelId={id}
+                handleAddSubmitFeed={handleAddSubmitFeed}
+                isMember={isMember}
+              />
+            </div>
+          </div>
+          <div className={S.userListArea}>
+            <UserList channelId={id} isMember={isMember} />
           </div>
         </div>
-        <div className={S.userListArea}>
-          <UserList channelId={id} isMember={isMember} />
-        </div>
-      </div>
+      )}
     </>
   );
 }

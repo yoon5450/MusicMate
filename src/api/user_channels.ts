@@ -62,7 +62,7 @@ export const checkUserInChannels = async (
 /**
  * @description 파라미터에 주어진 channel_id에 가입합니다. 로그인한 userId로 자동 바인딩됩니다.
  */
-export const addUserChannels = async (channel_id: string) => {
+export const addUserInChannels = async (channel_id: string) => {
   const { data, error } = await supabase
     .from("user_channels")
     .insert({ channel_id })
@@ -79,7 +79,7 @@ export const addUserChannels = async (channel_id: string) => {
 /**
  * @description 파라미터에 주어진 channel_id에서 탈퇴합니다. 로그인한 userId로 자동 바인딩됩니다.
  */
-export const deleteUserChannels = async (
+export const deleteUserInChannels = async (
   user_id: string,
   channel_id: string
 ) => {
