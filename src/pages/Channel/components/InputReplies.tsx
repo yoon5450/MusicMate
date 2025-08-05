@@ -2,23 +2,25 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import S from "./InputReplies.module.css";
 import sendImg from "@/assets/send_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
-import { useParams } from "@/router/RouterProvider";
-import { checkUserInChannels } from "@/api";
+// import { useParams } from "@/router/RouterProvider";
+// import { checkUserInChannels } from "@/api";
 import { addReply } from "@/api/replies";
 import { alert } from "@/components/common/CustomAlert";
 interface Props {
   currentFeedId: string;
   setUpdateReplies: (time: number) => void;
   scrollToBottom: () => void;
+  isMember: boolean | null;
 }
 function InputReplies({
   currentFeedId,
   setUpdateReplies,
   scrollToBottom,
+  isMember,
 }: Props) {
   const { isAuth, user } = useAuth();
-  const { id: channelId } = useParams();
-  const [isMember, setIsMember] = useState<boolean | null>(false);
+  // const { id: channelId } = useParams();
+  const [userIsMember, setUserIsMember] = useState<boolean | null>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Id
@@ -29,15 +31,19 @@ function InputReplies({
   }, []);
 
   useEffect(() => {
-    async function check() {
-      if (channelId && user) {
-        const flag = await checkUserInChannels(channelId, user?.id);
-        setIsMember(flag);
-      }
-    }
-    check();
-    console.log(isMember);
-  }, [channelId, user]);
+    setUserIsMember(isMember);
+  }, [isMember]);
+
+  // useEffect(() => {
+  //   async function check() {
+  //     if (channelId && user) {
+  //       const flag = await checkUserInChannels(channelId, user?.id);
+  //       setUserIsMember(flag);
+  //     }
+  //   }
+  //   check();
+  //   console.log(userIsMember);
+  // }, [channelId, user]);
 
   const initialize = () => {
     const text = textareaRef.current;
@@ -56,13 +62,15 @@ function InputReplies({
     const text = textareaRef.current;
 
     if (!isAuth) {
-      alert("로그인 후에 댓글을 작성할 수 있습니다.");
+      alert("댓글을 작성하려면 로그인해야 합니다.");
       if (text) text.value = "";
       return;
     }
 
-    if (!isMember) {
-      alert("채널에 가입한 후에 <br/>댓글을 작성할 수 있습니다.");
+    if (!userIsMember) {
+      alert(
+        "댓글을 작성하려면 멤버여야 합니다.<br/>채널가입하기 버튼을 클릭하여 채널 가입을<br/>진행해주세요!"
+      );
       if (text) text.value = "";
       return;
     }
