@@ -573,6 +573,29 @@ export type Database = {
           },
         ]
       }
+      user_genre_details: {
+        Row: {
+          genre_code: number | null
+          genre_name: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_genres_genre_code_fkey"
+            columns: ["genre_code"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "user_genres_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "get_feeds_with_all"
+            referencedColumns: ["author_id"]
+          },
+        ]
+      }
       view_channel_user_profiles: {
         Row: {
           channel_id: string | null
