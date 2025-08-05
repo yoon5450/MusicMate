@@ -35,7 +35,6 @@ import {
 } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
-import { profileBucketUrl } from "@/constant/supabase.urls";
 import { useChannel } from "@/context/ChannelContext";
 import NoChannel from "../NotFound/NoChannel";
 import {profileBucketUrl} from '@/constant/supabase.urls';
