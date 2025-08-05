@@ -21,7 +21,7 @@
 
 .swiper :global(.swiper-button-prev),
 .swiper :global(.swiper-button-next) {
-  color: var(--primary_active);
+  color: var(--primary_default);
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
