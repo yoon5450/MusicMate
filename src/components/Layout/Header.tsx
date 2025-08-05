@@ -1,5 +1,4 @@
 import S from "./Header.module.css";
-import bell from "@/assets/bell.svg";
 import profile from "@/assets/propile.svg";
 import search from "@/assets/search_icon.svg";
 import { useAuth } from "@/auth/AuthProvider";
