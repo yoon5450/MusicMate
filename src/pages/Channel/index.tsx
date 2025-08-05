@@ -40,6 +40,7 @@ import {
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
 import {profileBucketUrl} from '@/constant/supabase.urls';
+import { useMediaQuery } from "@/hook/useMediaQuery";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -78,6 +79,8 @@ function Channel() {
   const replyContainerRef = useRef<HTMLDivElement>(null);
   const topObserverRef = useRef<IntersectionObserver | null>(null);
   const bottomObserverRef = useRef<IntersectionObserver | null>(null);
+  
+  const isMobile = useMediaQuery("(max-width:768px)");
 
   // Callback
   const onToggleLike = useCallback(
@@ -300,7 +303,7 @@ function Channel() {
       const newFeed = convertNewFeedToFeedData(
         data,
         userProfile?.nickname,
-        `${profileBucketUrl}/${userProfile?.profile_url}`
+        userProfile?.profile_url ? `${profileBucketUrl}/${userProfile?.profile_url}` : null,
       );
 
       setFeedData((prev: FeedWithPreview[] | null) => [
@@ -643,17 +646,20 @@ function Channel() {
           ) : (
             <>
               <div className={S.feedArea}>
-                <ul className={S.contentArea} ref={feedContainerRef}>
+                <ul className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`} ref={feedContainerRef}>
                   <li className={S.observerDiv} ref={setTopLiRef}></li>
                   {feedData?.map((data) => renderFeedComponent(data))}
                   <li className={S.observerDiv} ref={setBottomLiRef}></li>
                 </ul>
                 <div
-                  className={`${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
+                  className={isMobile 
+                    ? `${S.detailContentArea} ${selectedFeed ? `${S.open} ${S.mobile}` : `${S.mobile}`}`
+                    : `${S.detailContentArea} ${selectedFeed ? S.open : ""}`}
                 >
                   {selectedFeed ? (
                     <>
                       <DetailFeeds
+                        type={isMobile ? 'detail' : 'default'}
                         feedItem={selectedFeed}
                         replies={repliesData?.length}
                         onToggleLike={onToggleLike}

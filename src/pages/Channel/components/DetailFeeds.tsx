@@ -3,6 +3,7 @@ import S from "./DetailContents.module.css";
 import heartEmpty from "@/assets/heart_empty_white.svg";
 import heartFilled from "@/assets/heart_filled_white.svg";
 import { useRouter } from "@/router/RouterProvider";
+import CustomAudioPlayer from "@/components/CustomAudioPlayer";
 
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
@@ -10,14 +11,26 @@ interface Props {
   onToggleLike: (feedId: string) => void;
   isUserLike: boolean;
   scrollToSelectedFeed: () => void;
+  type?: "default" | "detail";
 }
 
 function DetailFeeds({
-  feedItem: { feed_id, preview_url, author_nickname, like_count, author_id },
+  feedItem: {
+    feed_id,
+    preview_url,
+    author_nickname,
+    like_count,
+    author_id,
+    title,
+    content,
+    audio_url,
+    image_url,
+  },
   replies,
   onToggleLike,
   isUserLike,
   scrollToSelectedFeed,
+  type = "default",
 }: Props) {
   const { setHistoryRoute } = useRouter();
 
@@ -31,6 +44,8 @@ function DetailFeeds({
     onToggleLike(feed_id!);
   };
 
+  console.log(type, "type");
+
   return (
     <div className={S.container}>
       <div className={S.feedInfo}>
@@ -40,7 +55,9 @@ function DetailFeeds({
             src={preview_url ? preview_url : "/music_mate_symbol_fixed.svg"}
             alt="작성자프로필이미지"
             onClick={() => handleClick(author_id)}
-            style={{ cursor: "pointer" }}
+            style={
+              type === "default" ? { cursor: "pointer" } : { cursor: "pointer" }
+            }
           />
         </div>
         <div className={S.messageFeed}>
@@ -50,13 +67,32 @@ function DetailFeeds({
           >
             {author_nickname}
           </p>
-          <div className={S.messageFeedButtons}>
-            <button type="button" onClick={scrollToSelectedFeed}>
-              현재 게시물로 돌아가기
-            </button>
-          </div>
+          {type === "default" ? (
+            <div className={S.messageFeedButtons}>
+              <button type="button" onClick={scrollToSelectedFeed}>
+                현재 게시물로 돌아가기
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
+
+
+      {type === "detail" && (
+        <>
+          {image_url && (
+            <div>
+              <img style={{ width: "80%" }} src={image_url} alt="" />
+            </div>
+          )}
+          {audio_url && (
+            <CustomAudioPlayer recordingData={{ url: audio_url }} />
+          )}
+          {title && <div>{title}</div>}
+          {content && <div>{content}</div>}
+        </>
+      )}
+
       <div className={S.reactsInfo}>
         <button type="button" onClick={handleLikeToggle}>
           <img
