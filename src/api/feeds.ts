@@ -284,14 +284,17 @@ export const addFeedsWithFiles = async ({
     audio_url = await uploadAndGetUrl(audio_path, audio_file, "feed-audio");
   }
 
-  const { data, error: dbError } = await supabase.from("feeds").insert({
-    title,
-    content,
-    audio_url,
-    image_url,
-    channel_id,
-    message_type,
-  }).select('*')
+  const { data, error: dbError } = await supabase
+    .from("feeds")
+    .insert({
+      title,
+      content,
+      audio_url,
+      image_url,
+      channel_id,
+      message_type,
+    })
+    .select("*");
 
   // DB에 에러가 있으면 업로드 취소
   if (dbError) {
@@ -301,7 +304,7 @@ export const addFeedsWithFiles = async ({
     throw dbError;
   }
 
-  return data?.[0] ?? null
+  return data?.[0] ?? null;
 };
 
 /**
@@ -365,10 +368,26 @@ export const getPopularFeeds = async (): Promise<
   return data;
 };
 
+// export const deleteFeed = async (feedId: string) => {
+//   const { data, error } = await supabase.rpc("delete_feed", {
+//     p_feed_id: feedId,
+//   });
+
+//   if (error) {
+//     errorHandler(error, "deleteFeed");
+//     return null;
+//   }
+//   return data;
+// };
+
 export const deleteFeed = async (feedId: string) => {
-  const { data, error } = await supabase.rpc("delete_feed", {
-    p_feed_id: feedId,
-  });
+  const { data, error } = await supabase
+    .from("feeds")
+    .delete()
+    .eq("id", feedId)
+    .select();
+
+  console.log(data, error);
 
   if (error) {
     errorHandler(error, "deleteFeed");
