@@ -39,6 +39,7 @@ import {
 } from "@/components/common/CustomAlert";
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
+import {profileBucketUrl} from '@/constant/supabase.urls';
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -50,7 +51,7 @@ type channelInfoType = {
 };
 
 function Channel() {
-  const { id, feedId: paramsFeedId } = useParams(); // 채널아이디
+  const { id, feedId: paramsFeedId = null } = useParams(); // 채널아이디
   const { user } = useAuth(); // 유저정보(id, 이메일)
   const { lastUpdatedAt, userProfile } = useUserProfile();
 
@@ -299,7 +300,7 @@ function Channel() {
       const newFeed = convertNewFeedToFeedData(
         data,
         userProfile?.nickname,
-        userProfile?.profile_url
+        `${profileBucketUrl}/${userProfile?.profile_url}`
       );
 
       setFeedData((prev: FeedWithPreview[] | null) => [
@@ -548,7 +549,7 @@ function Channel() {
 
   // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
   useEffect(() => {
-    if (!isAtBottom || !feedData || feedData.length === 0) return;
+    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds) return;
     scrollToBottom();
   }, [feedData, isAtBottom, scrollToBottom]);
 

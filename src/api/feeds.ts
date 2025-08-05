@@ -133,7 +133,7 @@ export const getFeedsByKeyword = async (
     .from("view_feed_search")
     .select("*")
     .or(
-      `title.ilike.%${safeKeyword}%, content.ilike.%${safeKeyword}%, nickname.ilike.%${safeKeyword}%`
+      `title.ilike.*${safeKeyword}*, content.ilike.*${safeKeyword}*, nickname.ilike.*${safeKeyword}*`
     );
 
   if (channel_id) query = query.eq("channel_id", channel_id);
