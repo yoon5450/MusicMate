@@ -8,7 +8,7 @@ import { useRouter } from "@/router/RouterProvider";
 import { useAuth } from "@/auth/AuthProvider";
 import buttonImg from "@/assets/more_button.svg";
 import { useEffect, useRef, useState } from "react";
-import { alert } from "@/components/common/CustomAlert";
+import { alert, showToast } from "@/components/common/CustomAlert";
 import { copyFeedLinkToClipboard } from "@/utils/copyFeedLinkToClipboard";
 interface Props {
   feedItem: Tables<"get_feeds_with_user_and_likes"> & { preview_url?: string };
@@ -87,6 +87,7 @@ function ChannelFeedMessage({
 
   const handleCopyFeedLink = () => {
     copyFeedLinkToClipboard(channel_id ?? "", feed_id);
+    showToast("클립보드에 피드 링크를 복사했습니다")
   };
 
   return (

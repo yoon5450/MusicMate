@@ -27,7 +27,6 @@ interface Props {
 
 function InputFeed({
   curChannelId,
-
   isMember,
   handleAddSubmitFeed,
 }: Props) {
@@ -35,7 +34,6 @@ function InputFeed({
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
   const { isAuth } = useAuth();
-  // const [isMember, setIsMember] = useState<boolean | null>(false);
 
   // Node Ref
   const textareaRef = useRef<HTMLTextAreaElement>(null);

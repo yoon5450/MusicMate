@@ -1,0 +1,1 @@
+export const profileBucketUrl = `https://whbwjepooojxjoufcift.supabase.co/storage/v1/object/public/user-avatar/`
