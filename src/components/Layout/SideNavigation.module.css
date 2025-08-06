@@ -9,29 +9,6 @@
   height: 100%;
 }
 
-.active {
-  color: rgb(12, 62, 213);
-  font-weight: bold;
-}
-
-@keyframes movingHat {
-  0%,
-  45% {
-    translate: 0 0;
-    rotate: 25deg;
-  }
-
-  70% {
-    translate: 1px -15px;
-    rotate: 0.7turn;
-  }
-
-  100% {
-    translate: 0 0;
-    rotate: 1.07turn;
-  }
-}
-
 .createChannelButton {
   width: 100%;
   padding: 0.75rem 1.5rem;
