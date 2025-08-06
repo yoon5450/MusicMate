@@ -200,7 +200,7 @@ h3 small {
   display: flex;
   justify-content: start;
   align-items: center;
-  padding: 1rem;
+  padding: 0;
 }
 
 .feedImage {
