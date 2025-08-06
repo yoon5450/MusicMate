@@ -14,9 +14,7 @@ import { useChannel } from "@/context/ChannelContext";
 
 function SideNavigation() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [displayedChannels, setDisplayedChannels] = useState<ChannelsType[]>(
-    []
-  ); //최종 보여줄 채널
+  const [displayedChannels, setDisplayedChannels] = useState<ChannelsType[]>([]); //최종 보여줄 채널
 
   const { isAuth, user } = useAuth();
   const { openLogin } = useLoginModal();
