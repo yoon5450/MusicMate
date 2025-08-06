@@ -582,7 +582,7 @@ function Channel() {
   useEffect(() => {
     renderTailFeedsRef.current = renderTailFeeds;
   });
-  
+
   // realtime 구독 처리
   useEffect(() => {
     // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
@@ -739,9 +739,20 @@ function Channel() {
                     className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
                     ref={feedContainerRef}
                   >
-                    <li className={S.observerDiv} ref={setTopLiRef}></li>
-                    {feedData?.map((data) => renderFeedComponent(data))}
-                    <li className={S.observerDiv} ref={setBottomLiRef}></li>
+                    {feedData?.map((data, i) => (
+                      <Fragment key={data.feed_id}>
+                        {i === 0 && (
+                          <li ref={setTopLiRef} className={S.observerTopDiv} />
+                        )}
+                        {i === feedData.length - 1 && (
+                          <li
+                            ref={setBottomLiRef}
+                            className={S.observerBottomDiv}
+                          />
+                        )}
+                        {renderFeedComponent(data)}
+                      </Fragment>
+                    ))}
                   </ul>
                   <div
                     className={
