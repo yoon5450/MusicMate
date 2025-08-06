@@ -19,6 +19,7 @@ function HeaderSearch({ setIsSearch }: Props) {
   >([]);
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [fullSearchMode, setFullSearchMode] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [chanMode, setChanMode] = useState<boolean>(false);
   const { id } = useParams();
@@ -27,6 +28,8 @@ function HeaderSearch({ setIsSearch }: Props) {
     setSearchResult([]);
     setSearchKeyword("");
     setSearchInput("");
+    setIsSearch(false);
+    setFullSearchMode(false);
   };
 
   const searchAction = async (
@@ -66,6 +69,9 @@ function HeaderSearch({ setIsSearch }: Props) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFullSearchMode(true);
+    const key = inputRef.current?.value;
+    if (key) debounceSearch.current(key);
   };
 
   const chanModeRef = useRef(chanMode);
@@ -92,9 +98,9 @@ function HeaderSearch({ setIsSearch }: Props) {
             className={`${S.targetChannelBtn} ${chanMode ? S.chanMode : S.allMode}`}
             type="button"
             onClick={() => {
-              if(id) setChanMode((prev) => !prev)
-              const key = inputRef.current?.value
-              if(key) debounceSearch.current(key)
+              if (id) setChanMode((prev) => !prev);
+              const key = inputRef.current?.value;
+              if (key) debounceSearch.current(key);
             }}
           >
             {chanMode ? `채널에서 검색` : `전체에서 검색`}
@@ -121,15 +127,25 @@ function HeaderSearch({ setIsSearch }: Props) {
 
         {searchResult.length > 0 ? (
           <div className={S.searchResultContainer}>
-            {searchResult.slice(0, 5).map((item) => (
-              <SearchResultItem
-                item={item}
-                initFunc={initFunc}
-                keyword={searchKeyword}
-                key={item.id}
-                setIsSearch={setIsSearch}
-              />
-            ))}
+            {fullSearchMode
+              ? searchResult.map((item) => (
+                  <SearchResultItem
+                    item={item}
+                    initFunc={initFunc}
+                    keyword={searchKeyword}
+                    key={item.id}
+                  />
+                ))
+              : searchResult
+                  .slice(0, 5)
+                  .map((item) => (
+                    <SearchResultItem
+                      item={item}
+                      initFunc={initFunc}
+                      keyword={searchKeyword}
+                      key={item.id}
+                    />
+                  ))}
           </div>
         ) : undefined}
       </form>

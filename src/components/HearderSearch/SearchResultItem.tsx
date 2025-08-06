@@ -8,11 +8,10 @@ interface Props {
   item: Tables<"view_feed_search">;
   initFunc: () => void;
   keyword?: string;
-  setIsSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // TODO: 키워드 기반 하이라이팅
-function SearchResultItem({ item, initFunc, setIsSearch }: Props) {
+function SearchResultItem({ item, initFunc }: Props) {
   const kst = timeFormater(item.created_at!);
   const createdTime = kst!.slice(0, 10) + " " + kst!.slice(11, 16);
 
@@ -20,13 +19,13 @@ function SearchResultItem({ item, initFunc, setIsSearch }: Props) {
 
   const handleClick = (e: React.PointerEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    initFunc();
+
     const feedId = item.id!;
     const targetChannel = item.channel_id;
     const newPath = `/Channel/${targetChannel}/feed/${feedId}`;
     setHistoryRoute(newPath);
     history.pushState(null, "", newPath);
-    setIsSearch(false);
+    initFunc();
   };
 
   return (
@@ -51,4 +50,5 @@ function SearchResultItem({ item, initFunc, setIsSearch }: Props) {
     </div>
   );
 }
+
 export default SearchResultItem;
