@@ -147,7 +147,7 @@ export default function SignUp({ onClose }: Props) {
             </div>
           </div>
           <button type="submit" className={S.submitBtn}>
-            회원가입
+            Sign up
           </button>
         </form>
         {errorMessage && <div className={S.errorMsg}>{errorMessage}</div>}

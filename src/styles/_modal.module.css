@@ -17,8 +17,8 @@
 .modalBox {
   background: var(--gray_02);
   color: var(--white);
-  min-width: 500px;
   max-width: 500px;
+  width: 80vw;
   padding: var(--spacing-32);
   border-radius: var(--spacing-20);
   box-shadow: 0 var(--spacing-8) var(--spacing-32) rgba(0, 0, 0, 0.4);

@@ -64,6 +64,7 @@
 }
 
 .logoBtn {
+  overflow: hidden;
   height: 50px;
   position: absolute;
   left: 50%;
