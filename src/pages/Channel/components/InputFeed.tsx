@@ -25,11 +25,7 @@ interface Props {
   }) => void;
 }
 
-function InputFeed({
-  curChannelId,
-  isMember,
-  handleAddSubmitFeed,
-}: Props) {
+function InputFeed({ curChannelId, isMember, handleAddSubmitFeed }: Props) {
   // 데이터 상태관리
   const [recordingData, setRecordingData] = useState<RecordingData>();
   const [image, setImage] = useState<File>();
@@ -83,7 +79,9 @@ function InputFeed({
     }
 
     if (!isMember) {
-      alert("채널에 가입한 후에 글을 올릴 수 있습니다.");
+      alert(
+        "채널에 가입한 후에 글을 올릴 수 있습니다.<br/>채널가입하기 버튼을 클릭하여 채널 가입을<br/>진행해주세요!"
+      );
       return;
     }
 

@@ -1,6 +1,7 @@
 import { useParams } from "@/router/RouterProvider";
 import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
+import D from "./components/ChannelFeed.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -35,7 +36,7 @@ import {
 import { convertNewFeedToFeedData } from "@/utils/convertFeedToFeedData";
 import supabase from "@/utils/supabase";
 import { useChannel } from "@/context/ChannelContext";
-import NoChannel from "../NotFound/NoChannel";
+import NotFound from "../NotFound/NotFound";
 import { profileBucketUrl } from "@/constant/supabase.urls";
 import { useMediaQuery } from "@/hook/useMediaQuery";
 
@@ -72,6 +73,7 @@ function Channel() {
   const [isBottomFetching, setIsBottomFetching] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [noChannel, setNochannel] = useState(false);
+  const [noFeed, setNoFeed] = useState(false);
 
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
@@ -81,6 +83,11 @@ function Channel() {
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
+  const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const isValidChannelUUID = UUID_REGEX.test(id);
+  const isValidFeedUUID = paramsFeedId ? UUID_REGEX.test(paramsFeedId) : true;
+
   // Callback
   const onToggleLike = useCallback(
     async (feedId: string) => {
@@ -89,7 +96,9 @@ function Channel() {
         return;
       }
       if (!isMember) {
-        alert("피드에 좋아요를 누르려면 멤버여야 합니다.");
+        alert(
+          "피드에 좋아요를 누르거나 취소하려면<br/>멤버여야 합니다. 채널가입하기 버튼을<br/>클릭하여 채널가입을 진행해주세요!"
+        );
         return;
       }
       const result = await handleToggleLike(
@@ -120,6 +129,10 @@ function Channel() {
   useEffect(() => {
     setNochannel(false);
   }, [id]);
+
+  useEffect(() => {
+    setNoFeed(false);
+  }, [paramsFeedId]);
 
   const renderFeedComponent = useCallback(
     (feed: FeedWithPreview) => {
@@ -196,8 +209,10 @@ function Channel() {
       if (!isDropdownVisible) {
         const offset = dropdownRect.top - containerRect.top - 12;
         if (containerEl.scrollTop > 0) {
+          dropdownEl.classList.remove(D.top);
           containerEl.scrollBy({ top: offset, behavior: "smooth" });
         } else if (dropdownRect.top < containerRect.top) {
+          dropdownEl.classList.add(D.top);
           dropdownEl.style.top = "40px"; // fallback 위치 조정
         }
       }
@@ -254,6 +269,12 @@ function Channel() {
   };
 
   const handleDelete = (feedId: string) => {
+    if (!isMember) {
+      alert(
+        "피드를 삭제하시려면 멤버여야 합니다.<br/>채널가입하기 버튼을 클릭하여 채널 가입을<br/>진행해주세요!"
+      );
+      return;
+    }
     confirmAlert("피드를 삭제하시겠습니까?").then(async (result) => {
       if (result.isConfirmed) {
         const data = await deleteFeed(feedId);
@@ -269,6 +290,12 @@ function Channel() {
   };
 
   const handleDeleteReply = (feedReplyId: string) => {
+    if (!isMember) {
+      alert(
+        "댓글을 삭제하시려면 멤버여야 합니다.<br/>채널가입버튼을 클릭하여 채널 가입을<br/>진행해주세요!"
+      );
+      return;
+    }
     confirmAlert("댓글을 삭제하시겠습니까?").then(async (result) => {
       if (result.isConfirmed) {
         const data = await deleteReply(feedReplyId);
@@ -508,9 +535,10 @@ function Channel() {
         });
 
         setFeedData(updatedFeeds);
-        setSelectedFeed(
-          updatedFeeds.find((f) => f.feed_id === paramsFeedId) ?? null
-        );
+        const found =
+          updatedFeeds.find((f) => f.feed_id === paramsFeedId) ?? null;
+        setSelectedFeed(found);
+        setNoFeed(!found);
       } else {
         const now = new Date(Date.now()).toISOString();
         const feeds = await getFeedsByChannelAndBefore(id, now);
@@ -528,20 +556,33 @@ function Channel() {
       }
 
       // 유저가 있는 경우에만 userLikes 호출
-      if (user) {
-        const likes = await getLikesByUserId(user.id);
-        setUserLikes(likes?.map((like) => like.feed_id) ?? []);
-      }
+      // if (user) {
+      //   const likes = await getLikesByUserId(user.id);
+      //   setUserLikes(likes?.map((like) => like.feed_id) ?? []);
+      // }
     };
 
     fetchData();
   }, [id, user, lastUpdatedAt, paramsFeedId, scrollToBottom]);
 
+  useEffect(() => {
+    const fetchUserLikes = async () => {
+      if (user) {
+        const likes = await getLikesByUserId(user.id);
+        setUserLikes(likes?.map((like) => like.feed_id) ?? []);
+      } else {
+        setUserLikes([]);
+      }
+    };
+
+    fetchUserLikes();
+  }, [id, user, paramsFeedId]);
+
   const renderTailFeedsRef = useRef(renderTailFeeds);
   useEffect(() => {
     renderTailFeedsRef.current = renderTailFeeds;
   });
-
+  
   // realtime 구독 처리
   useEffect(() => {
     // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
@@ -605,7 +646,7 @@ function Channel() {
     const getChannelInfo = async () => {
       const data = await getChannelInfoById(id);
       if (!data) {
-        setChannelInfo({ name: "삭제된 채널입니다", description: null });
+        setChannelInfo({ name: "채널을 찾을 수 없습니다", description: null });
         return;
       }
       setChannelInfo(data[0]);
@@ -642,8 +683,10 @@ function Channel() {
 
   return (
     <>
-      {noChannel ? (
-        <NoChannel />
+      {noChannel || !isValidChannelUUID ? (
+        <NotFound info="채널이 삭제되었거나 잘못된 경로로 접근하셨습니다" />
+      ) : noFeed || !isValidFeedUUID ? (
+        <NotFound info="피드가 삭제되었거나 잘못된 경로로 접근하셨습니다" />
       ) : (
         <div className={S.contentContainer}>
           <div className={S.contentWrapper}>
@@ -654,7 +697,7 @@ function Channel() {
                   <p>{channelInfo.description}</p>
                 </details>
               ) : (
-                <p>채널 정보 가져오는중 . . .</p>
+                <p style={{ padding: "8px" }}>채널 정보 가져오는중 . . .</p>
               )}
               {user ? (
                 isMember ? (
@@ -663,7 +706,7 @@ function Channel() {
                       type="button"
                       className={S.channelLeaveButton}
                       onClick={handleChannelDelete}
-                      style={{ backgroundColor: `red` }}
+                      style={{ backgroundColor: `#d3353e` }}
                     >
                       채널삭제하기
                     </button>
@@ -696,20 +739,9 @@ function Channel() {
                     className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
                     ref={feedContainerRef}
                   >
-                    {feedData?.map((data, i) => (
-                      <Fragment key={data.feed_id}>
-                        {i === 0 && (
-                          <li ref={setTopLiRef} className={S.observerTopDiv} />
-                        )}
-                        {i === feedData.length - 1 && (
-                          <li
-                            ref={setBottomLiRef}
-                            className={S.observerBottomDiv}
-                          />
-                        )}
-                        {renderFeedComponent(data)}
-                      </Fragment>
-                    ))}
+                    <li className={S.observerDiv} ref={setTopLiRef}></li>
+                    {feedData?.map((data) => renderFeedComponent(data))}
+                    <li className={S.observerDiv} ref={setBottomLiRef}></li>
                   </ul>
                   <div
                     className={
@@ -741,6 +773,7 @@ function Channel() {
                           scrollToBottom={() =>
                             scrollToBottomReply(replyContainerRef)
                           }
+                          isMember={isMember}
                         />
                         <button
                           type="button"
