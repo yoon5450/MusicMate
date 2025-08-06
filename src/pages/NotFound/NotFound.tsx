@@ -15,8 +15,7 @@ function NotFound({ info = "404 NOT FOUND" }: Props) {
       </div>
       <a
         href="#"
-        onClick={(e) => {
-          e.preventDefault();
+        onClick={() => {
           history.pushState(null, "", "/");
           setHistoryRoute("/");
         }}

@@ -10,22 +10,22 @@
 ## 🎯 핵심 기능 
 | 구분 | 기능 설명 | 관련 함수/컴포넌트 |
 |--------|------|--------------------|
-| 🔊 **음성 클립 공유**| 사용자가 오디오 클립을 업로드하고, 공유 및 피드백 | `CustomAudioPlayer`,
-| 💬 **채널 기반 소통** | 공식 채널과 생성 채널을 자유롭게 선택, 소통 가능 | 
-| 🔗 **음악 플랫폼 링크 임베딩** | 음악 플랫폼 링크를 자동으로 iframe 임베딩 |
-| 💡 **실시간 소통** | 클립/댓글/좋아요를 통한 유저 간 즉각적 상호작용 |
-| 🔐 **로그인/회원가입**  | 이메일 기반 인증 및 사용자 세션 관리 | `signIn`, `signUp`
+| 🔊 **음성 클립 공유**| 사용자가 오디오 클립을 업로드하고, 공유 및 피드백 | `SubmitClipForm`, `RecordButton`, `ChannelFeedAudio`, `CustomAudioPlayer`
+| 💬 **채널 기반 소통** | 공식 채널과 생성 채널을 자유롭게 선택, 소통 가능 | `Channel (Page)`, `ChannelContext`, `channels.ts`, `SideNavigation`, `ChannelLink`
+| 🔗 **음악 플랫폼 링크 임베딩** | 음악 플랫폼 링크를 자동으로 iframe 임베딩 | `getYoutube`, `isFeedHaveLink`, `ChannelFeedMessage`
+| 💡 **실시간 소통** | 클립/댓글/좋아요를 통한 유저 간 즉각적 상호작용 | `feeds.ts`, `replies.ts`
+| 🔐 **로그인/회원가입**  | 이메일 기반 인증 및 사용자 세션 관리 | `LoginModal`, `RegisterModal`, `AuthProvider`, `auth.ts`, `LoginModalContext` `signIn`, `signUp`
 | 🛠️ **채널 생성/삭제** | 사용자 채널 생성 및 삭제 (권한 기반) | `ChannelCreateForm`,`deleteChannel`
-| ✏️ **피드 작성/삭제** | 채널 내 텍스트+오디오 피드 작성 및 삭제 기능 |
-| 💬 **댓글 기능** | 피드에 댓글 작성, 삭제 기능 포함 |
-| ❤️ **좋아요 기능** | 피드에 좋아요/좋아요 취소 기능 | `like_count`
-| 🔍 **검색 기능** | 채널, 사용자 검색 및 필터링 | 
+| ✏️ **피드 작성/삭제** | 채널 내 텍스트+오디오 피드 작성 및 삭제 기능 | `InputFeed`, `feeds.ts`, `convertFeedToFeedData`
+| 💬 **댓글 기능** | 피드에 댓글 작성, 삭제 기능 포함 | `FeedReplies`, `FeedReply`, `InputReplies`, `replies.ts`
+| ❤️ **좋아요 기능** | 피드에 좋아요/좋아요 취소 기능 | `like_count` `handleLikeToggle`, 
+| 🔍 **검색 기능** | 채널, 사용자 검색 및 필터링 |  `HeaderSearch`, `SearchResultItem`, `filterChannels`
 | 🧑 **마이페이지 수정** | 사용자 프로필 정보 수정 가능 | `MyPage`, `GenreSelect`, `UserProfile`
 | 👤 **유저 프로필 페이지** | 다른 사용자의 프로필, 장르 확인 가능 | `UserProfilePage`,`UserProfileReadOnly`,`GenreSelectReadOnly` 
-| 🧭 **채널 내 유저 검색** | 채널 가입자 중 유저를 검색/조회 가능 | `handleSearch`
+| 🧭 **채널 내 유저 검색** | 채널 가입자 중 유저를 검색/조회 가능 | `UserList` `handleSearch`
 | 🎵 **추천 플레이리스트** | 사용자의 선호 장르 기반 추천 리스트 제공 | `PlaylistSwiper`
 | 📈 **인기 클립/게시글** | 좋아요 기반으로 인기 콘텐츠 제공 | `FeedList`, `ChannelLink`,`ClipSwiper`,`UserProfileLink`
-| 🔄 **무한 스크롤** | 피드/댓글/채널 목록 무한 스크롤 구현 |
+| 🔄 **무한 스크롤** | 피드/댓글/채널 목록 무한 스크롤 구현 | `FeedList`, `DetailFeeds`
 | 🚫 **404 페이지 처리** | 비회원 접근/존재하지 않는 채널 접근 시 처리 | `NotFound`
 
 ---
