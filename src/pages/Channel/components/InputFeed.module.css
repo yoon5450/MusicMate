@@ -13,7 +13,7 @@
     justify-content: space-between;
     background-color: var(--gray_01);
     border: 1px solid var(--primary_default);
-    border-radius: 30px;
+    border-radius: 28px;
     width: 94%;
     padding: 1rem;
   }
@@ -23,6 +23,7 @@
     border: 0;
     background: transparent;
     cursor: pointer;
+    font-weight: 600;
   }
 
   .textInput {

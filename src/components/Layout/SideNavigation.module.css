@@ -3,7 +3,7 @@
   min-inline-size: 160px;
   max-inline-size: 320px;
   min-block-size: 94vh;
-  padding: 20px;
+  padding: 16px;
   background-color: var(--gray_03);
   border-inline-end: 1px solid var(--gray_06);
   height: 100%;
@@ -43,6 +43,9 @@
   font-weight: 400;
   text-decoration: none;
   border-bottom: 2px solid transparent;
+  white-space: nowrap; /* 줄바꿈 금지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘친 부분 말줄임표로 표시 */
   transition:
     border-color 0.2s ease,
     color 0.1s ease;

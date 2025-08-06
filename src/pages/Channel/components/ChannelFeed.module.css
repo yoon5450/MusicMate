@@ -37,6 +37,7 @@
     iframe {
       aspect-ratio: 16/9;
       padding: var(--spacing-12) 0px;
+      max-width: 900px;
     }
 
     .audioPlayerAndImg {

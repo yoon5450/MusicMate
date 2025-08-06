@@ -4,7 +4,8 @@
   border-radius: 20px;
   position: absolute;
   border: 1px solid var(--primary_default);
-  right: 6%;
+  right: 3.5%;
+  max-width: 90vw;
   top: 0;
   background-color: var(--gray_01);
   display: flex;
@@ -13,7 +14,7 @@
   transform: translateY(calc(-100% - 8px));
   transition: transform 0.3s ease;
 
-  textarea{
+  textarea {
     resize: none;
   }
 
@@ -37,6 +38,7 @@
   }
 
   .playerForm {
+    width: min-content;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -102,5 +104,22 @@
     height: 30px;
     background-color: var(--primary_default);
     border-radius: 10px;
+
+    &:hover {
+      background-color: var(--primary_hover);
+    }
+    &:active {
+      background-color: var(--primary_active);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    right: auto;
+
+    .playerForm {
+      flex-wrap: wrap;
+    }
   }
 }
