@@ -156,6 +156,7 @@ function InputFeed({ curChannelId, isMember, handleAddSubmitFeed }: Props) {
         setRecordingData={setRecordingData}
         curChannelId={curChannelId}
         handleAddSubmitFeed={handleAddSubmitFeed}
+        isMember={isMember}
       />
 
       {/* 이미지 프리뷰 영역 */}

@@ -9,7 +9,8 @@ import { timeFormater } from "@/utils/timeFormatter";
 import { useRouter } from "@/router/RouterProvider";
 import buttonImg from "@/assets/more_button.svg";
 import { useEffect, useRef, useState } from "react";
-import { alert } from "@/components/common/CustomAlert";
+import { alert, showToast } from "@/components/common/CustomAlert";
+import { copyFeedLinkToClipboard } from "@/utils/copyFeedLinkToClipboard";
 
 interface Props {
   feedItem: Tables<"get_feeds_with_all"> & { preview_url?: string };
@@ -36,6 +37,7 @@ function ChannelFeedAudio({
     preview_url,
     like_count,
     author_id,
+    channel_id,
   },
   onReplyClicked,
   isActive,
@@ -79,6 +81,12 @@ function ChannelFeedAudio({
     onReplyClicked();
   };
   const kst = timeFormater(created_at!);
+
+  const handleCopyFeedLink = () => {
+    copyFeedLinkToClipboard(channel_id ?? "", feed_id);
+    showToast("클립보드에 피드 링크를 복사했습니다");
+  };
+
   const createdTime = kst!.slice(0, 10) + " " + kst!.slice(11, 16);
   const handleDeleteFeed = () => {
     setOpen(false);
@@ -163,7 +171,9 @@ function ChannelFeedAudio({
                 </button>
               </li>
               <li>
-                <button type="button">공유</button>
+                <button type="button" onClick={handleCopyFeedLink}>
+                  공유
+                </button>
               </li>
             </ul>
           )}
