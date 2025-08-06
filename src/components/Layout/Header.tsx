@@ -33,8 +33,11 @@ function Header({ setHistoryRoute, setIsSidebarOpen, isMobile }: Props) {
       }
     };
 
+    console.log("이벤트 부여");
     document.addEventListener("keydown", searchPop);
     return () => {
+      console.log("이벤트 사라짐");
+
       document.removeEventListener("keydown", searchPop);
     };
   }, []);
@@ -98,7 +101,6 @@ function Header({ setHistoryRoute, setIsSidebarOpen, isMobile }: Props) {
             <img src={search} width={"34px"} alt="검색" />
           </div>
         </button>
-        
 
         <button type="button" className={S.headerButton} onClick={handleMyPage}>
           <img src={profile} width={"42px"} alt="유저프로필" />

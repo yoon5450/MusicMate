@@ -3,7 +3,7 @@ import InputFeed from "./components/InputFeed";
 import S from "./Channel.module.css";
 import D from "./components/ChannelFeed.module.css";
 import ChannelFeedMessage from "./components/ChannelFeedMessage";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import {
   checkUserInChannels,
   getChannelInfoById,
@@ -18,7 +18,6 @@ import {
   deleteChannel,
 } from "@/api";
 import type { Tables } from "@/@types/database.types";
-import { getAvatarUrlPreview } from "@/api/user_avatar";
 import DetailFeeds from "./components/DetailFeeds";
 import FeedReplies from "./components/FeedReplies";
 import ChannelFeedAudio from "./components/ChannelFeedAudio";
@@ -318,18 +317,18 @@ function Channel() {
     const lastTime = feedData[feedData.length - 1].created_at;
     if (!lastTime) return;
 
+    console.log(hasMoreTailFeeds);
+
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
     if (!afterFeedData || afterFeedData.length === 0) {
       setHasMoreTailFeeds(false);
       return;
     }
 
-    const updatedFeeds = await Promise.all(
-      afterFeedData.map(async (feed) => {
-        const previewUrl = await getPreviewImage(feed);
-        return { ...feed, preview_url: previewUrl };
-      })
-    );
+    const updatedFeeds = afterFeedData.map((feed) => {
+      const previewUrl = getPreviewImage(feed);
+      return { ...feed, preview_url: previewUrl };
+    });
 
     // 중복 제거
     setFeedData((prev) => {
@@ -379,12 +378,10 @@ function Channel() {
       return;
     }
 
-    const updatedFeeds = await Promise.all(
-      beforeFeedData.map(async (feed) => {
-        const previewUrl = await getPreviewImage(feed);
-        return { ...feed, preview_url: previewUrl };
-      })
-    );
+    const updatedFeeds = beforeFeedData.map((feed) => {
+      const previewUrl = getPreviewImage(feed);
+      return { ...feed, preview_url: previewUrl };
+    });
 
     setFeedData((prev) => {
       const prevFeeds = prev ?? [];
@@ -430,16 +427,19 @@ function Channel() {
         topObserverRef.current.disconnect();
       }
 
-      topObserverRef.current = new IntersectionObserver(([entry]) => {
-        if (
-          entry.isIntersecting &&
-          !observerStateRef.current.isTopFetching &&
-          observerStateRef.current.hasMoreHeadFeeds
-        ) {
-          setIsTopFetching(true);
-          renderHeadFeeds().finally(() => setIsTopFetching(false));
-        }
-      });
+      topObserverRef.current = new IntersectionObserver(
+        ([entry]) => {
+          if (
+            entry.isIntersecting &&
+            !observerStateRef.current.isTopFetching &&
+            observerStateRef.current.hasMoreHeadFeeds
+          ) {
+            setIsTopFetching(true);
+            renderHeadFeeds().finally(() => setIsTopFetching(false));
+          }
+        },
+        { threshold: 0.1 }
+      );
 
       if (node) {
         topObserverRef.current.observe(node);
@@ -454,19 +454,23 @@ function Channel() {
         bottomObserverRef.current.disconnect();
       }
 
-      bottomObserverRef.current = new IntersectionObserver(([entry]) => {
-        // 최하단을 보고 있는 상태 (스크롬됨)
-        setIsAtBottom(entry.isIntersecting);
+      bottomObserverRef.current = new IntersectionObserver(
+        ([entry]) => {
+          // 최하단을 보고 있는 상태 (스크롬됨)
+          setIsAtBottom(entry.isIntersecting);
 
-        if (
-          entry.isIntersecting &&
-          !observerStateRef.current.isBottomFetching &&
-          observerStateRef.current.hasMoreTailFeeds
-        ) {
-          setIsBottomFetching(true);
-          renderTailFeeds().finally(() => setIsBottomFetching(false));
-        }
-      });
+          if (
+            entry.isIntersecting &&
+            !observerStateRef.current.isBottomFetching &&
+            observerStateRef.current.hasMoreTailFeeds
+          ) {
+            setIsBottomFetching(true);
+
+            renderTailFeeds().finally(() => setIsBottomFetching(false));
+          }
+        },
+        { threshold: 0.1 }
+      );
 
       if (node) {
         bottomObserverRef.current.observe(node);
@@ -506,9 +510,12 @@ function Channel() {
   }, [repliesData, scrollToBottomReply]);
 
   useEffect(() => {
+    initLoadState();
+
     // 이미 target 데이터가 있다면 로드 중단
     if (feedData) {
       const target = feedData.find((f) => f.feed_id === paramsFeedId);
+
       if (target) {
         setSelectedFeed(target);
         return;
@@ -519,15 +526,13 @@ function Channel() {
 
     const fetchData = async () => {
       if (paramsFeedId) {
-        const centerFeeds = await getFeedByTargetId(paramsFeedId); // 새로운 API
+        const centerFeeds = await getFeedByTargetId(paramsFeedId);
         if (!centerFeeds) return;
 
-        const updatedFeeds = await Promise.all(
-          centerFeeds.map(async (feed) => {
-            const previewUrl = await getPreviewImage(feed);
-            return { ...feed, preview_url: previewUrl };
-          })
-        );
+        const updatedFeeds = centerFeeds.map((feed) => {
+          const previewUrl = getPreviewImage(feed);
+          return { ...feed, preview_url: previewUrl };
+        });
 
         setFeedData(updatedFeeds);
         const found =
@@ -539,12 +544,10 @@ function Channel() {
         const feeds = await getFeedsByChannelAndBefore(id, now);
         if (!feeds) return;
 
-        const updatedFeeds = await Promise.all(
-          feeds.map(async (feed) => {
-            const previewUrl = await getPreviewImage(feed);
-            return { ...feed, preview_url: previewUrl };
-          })
-        );
+        const updatedFeeds = feeds.map((feed) => {
+          const previewUrl = getPreviewImage(feed);
+          return { ...feed, preview_url: previewUrl };
+        });
         setFeedData(updatedFeeds);
 
         requestAnimationFrame(() => {
@@ -575,6 +578,11 @@ function Channel() {
     fetchUserLikes();
   }, [id, user, paramsFeedId]);
 
+  const renderTailFeedsRef = useRef(renderTailFeeds);
+  useEffect(() => {
+    renderTailFeedsRef.current = renderTailFeeds;
+  });
+
   // realtime 구독 처리
   useEffect(() => {
     // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
@@ -591,7 +599,7 @@ function Channel() {
           filter: `channel_id=eq.${id}`,
         },
         () => {
-          renderTailFeeds();
+          renderTailFeedsRef.current();
         }
       )
       .subscribe();
@@ -599,7 +607,7 @@ function Channel() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [hasMoreTailFeeds, id, renderTailFeeds]);
+  }, [hasMoreTailFeeds, id]);
 
   useEffect(() => {
     async function check() {
@@ -633,6 +641,7 @@ function Channel() {
     checkCreateMember();
   }, [id, user]);
 
+  // 채널이 바뀔 때마다 정보 확인
   useEffect(() => {
     const getChannelInfo = async () => {
       const data = await getChannelInfoById(id);
@@ -665,14 +674,11 @@ function Channel() {
   }, [selectedFeed]);
 
   // 유저아바타프리뷰 url 가져오기
-  const getPreviewImage = async (
+  const getPreviewImage = (
     feed: Tables<"get_feeds_with_user_and_likes">
-  ): Promise<string | undefined> => {
+  ): string | undefined => {
     if (!feed.author_profile_url) return;
-
-    const previewUrl = await getAvatarUrlPreview(feed.author_profile_url);
-    if (!previewUrl) return;
-    return previewUrl;
+    return `${profileBucketUrl}/${feed.author_profile_url}`;
   };
 
   return (
@@ -733,9 +739,20 @@ function Channel() {
                     className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
                     ref={feedContainerRef}
                   >
-                    <li className={S.observerDiv} ref={setTopLiRef}></li>
-                    {feedData?.map((data) => renderFeedComponent(data))}
-                    <li className={S.observerDiv} ref={setBottomLiRef}></li>
+                    {feedData?.map((data, i) => (
+                      <Fragment key={data.feed_id}>
+                        {i === 0 && (
+                          <li ref={setTopLiRef} className={S.observerTopDiv} />
+                        )}
+                        {i === feedData.length - 1 && (
+                          <li
+                            ref={setBottomLiRef}
+                            className={S.observerBottomDiv}
+                          />
+                        )}
+                        {renderFeedComponent(data)}
+                      </Fragment>
+                    ))}
                   </ul>
                   <div
                     className={

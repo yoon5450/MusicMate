@@ -44,8 +44,6 @@ function DetailFeeds({
     onToggleLike(feed_id!);
   };
 
-  console.log(type, "type");
-
   return (
     <div className={S.container}>
       <div className={S.feedInfo}>

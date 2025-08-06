@@ -1,6 +1,6 @@
 .contentArea {
   height: 100%;
-  padding: 0 var(--spacing-12);
+  padding: var(--spacing-12);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
 }
 
 .contentArea.mobileHidden {
-  position:absolute;
+  position: absolute;
   transform: translateX(-100%);
   opacity: 0;
   pointer-events: none;
@@ -164,9 +164,16 @@
   }
 }
 
-.observerDiv {
-  height: 10px;
-  min-height: 1px;
+.observerTopDiv {
+  height: 1px;
+  visibility: hidden;
+  margin-block-end: calc(var(--spacing-12) * -1); 
+}
+
+.observerBottomDiv {
+  height: 1px;
+  visibility: hidden;
+  margin-block-start: calc(var(--spacing-12) * -1);
 }
 
 .noFeed {
