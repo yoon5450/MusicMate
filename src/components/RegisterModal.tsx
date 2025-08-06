@@ -114,7 +114,7 @@ export default function SignUp({ onClose }: Props) {
         <button className={S.closeBtn} onClick={handleClose}>
           ✕
         </button>
-        <h2 className={S.title}>회원가입</h2>
+        <h2 className={S.title}>Sign up</h2>
         <form className={S.form} onSubmit={handleSignUp}>
           <input
             type="email"
@@ -147,7 +147,7 @@ export default function SignUp({ onClose }: Props) {
             </div>
           </div>
           <button type="submit" className={S.submitBtn}>
-            Sign up
+            회원가입
           </button>
         </form>
         {errorMessage && <div className={S.errorMsg}>{errorMessage}</div>}

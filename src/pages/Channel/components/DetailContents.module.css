@@ -31,8 +31,9 @@
     .messageFeed {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-12);
+      gap: var(--spacing-8);
       justify-content: center;
+      line-height: normal;
 
       .messageFeedButtons {
         display: flex;
@@ -125,8 +126,9 @@
         .messageFeed {
           display: flex;
           flex-direction: column;
-          gap: var(--spacing-12);
+          gap: var(--spacing-8);
           justify-content: center;
+          line-height: normal;
 
           button {
             padding: 8px;

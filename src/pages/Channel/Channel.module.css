@@ -121,7 +121,8 @@
   align-items: baseline;
   padding: 0.5rem;
   color: white;
-  border-bottom: 1px solid var(--gray_09);
+  border-bottom: 1px solid var(--gray_04);
+  height: 50px;
 
   details {
     summary {
@@ -150,8 +151,8 @@
     cursor: pointer;
   }
   .channelLeaveButton {
-    color: var(--gray_10);
-    background-color: var(--gray_01);
+    color: var(--gray_08);
+    background-color: var(--gray_02);
     font-weight: bold;
     padding: 8px;
     border-radius: 8px;
@@ -161,6 +162,10 @@
     gap: var(--spacing-4);
     height: 32px;
     cursor: pointer;
+
+    &:hover, &:active {
+      background-color: var(--gray_04);
+    }
   }
 }
 

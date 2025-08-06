@@ -41,16 +41,17 @@
   right: var(--spacing-20);
   background: none;
   border: none;
-  color: var(--gray_07);
+  color: var(--primary_default);
+  font-weight: 700;
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0;
 
   &:hover {
-    color: var(--gray_09);
+    color: var(--primary_hover);
   }
   &:active{
-    color: var(--gray_09);
+    color: var(--primary_active);
   }
 }
 
