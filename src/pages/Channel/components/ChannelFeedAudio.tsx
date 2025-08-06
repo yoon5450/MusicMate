@@ -132,11 +132,7 @@ function ChannelFeedAudio({
         <div className={S.messageContents}>{content}</div>
       </div>
       <div className={`${S.messageReactButton} `}>
-        <button
-          type="button"
-          onClick={() => onToggleLike(feed_id!)}
-          className={isUserLike ? S.likedButton : ""}
-        >
+        <button type="button" onClick={() => onToggleLike(feed_id!)}>
           <img
             style={{ width: "16px", height: "16px" }}
             src={isUserLike ? heartFilled : heartEmpty}

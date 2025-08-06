@@ -87,7 +87,7 @@ function ChannelFeedMessage({
 
   const handleCopyFeedLink = () => {
     copyFeedLinkToClipboard(channel_id ?? "", feed_id);
-    showToast("클립보드에 피드 링크를 복사했습니다")
+    showToast("클립보드에 피드 링크를 복사했습니다");
   };
 
   return (
@@ -125,11 +125,7 @@ function ChannelFeedMessage({
         </div>
       </div>
       <div className={S.messageReactButton}>
-        <button
-          type="button"
-          onClick={() => onToggleLike(feed_id!)}
-          className={isUserLike ? S.likedButton : ""}
-        >
+        <button type="button" onClick={() => onToggleLike(feed_id!)}>
           <img
             style={{ width: "16px", height: "16px" }}
             src={isUserLike ? heartFilled : heartEmpty}
