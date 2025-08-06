@@ -91,7 +91,11 @@ function HeaderSearch({ setIsSearch }: Props) {
           <button
             className={`${S.targetChannelBtn} ${chanMode ? S.chanMode : S.allMode}`}
             type="button"
-            onClick={() => id && setChanMode((prev) => !prev)}
+            onClick={() => {
+              if(id) setChanMode((prev) => !prev)
+              const key = inputRef.current?.value
+              if(key) debounceSearch.current(key)
+            }}
           >
             {chanMode ? `채널에서 검색` : `전체에서 검색`}
           </button>

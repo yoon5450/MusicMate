@@ -290,6 +290,8 @@ function Channel() {
     const lastTime = feedData[feedData.length - 1].created_at;
     if (!lastTime) return;
 
+    console.log(hasMoreTailFeeds);
+
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
     if (!afterFeedData || afterFeedData.length === 0) {
       setHasMoreTailFeeds(false);
@@ -398,16 +400,19 @@ function Channel() {
         topObserverRef.current.disconnect();
       }
 
-      topObserverRef.current = new IntersectionObserver(([entry]) => {
-        if (
-          entry.isIntersecting &&
-          !observerStateRef.current.isTopFetching &&
-          observerStateRef.current.hasMoreHeadFeeds
-        ) {
-          setIsTopFetching(true);
-          renderHeadFeeds().finally(() => setIsTopFetching(false));
-        }
-      }, {threshold:0.1});
+      topObserverRef.current = new IntersectionObserver(
+        ([entry]) => {
+          if (
+            entry.isIntersecting &&
+            !observerStateRef.current.isTopFetching &&
+            observerStateRef.current.hasMoreHeadFeeds
+          ) {
+            setIsTopFetching(true);
+            renderHeadFeeds().finally(() => setIsTopFetching(false));
+          }
+        },
+        { threshold: 0.1 }
+      );
 
       if (node) {
         topObserverRef.current.observe(node);
@@ -422,20 +427,23 @@ function Channel() {
         bottomObserverRef.current.disconnect();
       }
 
-      bottomObserverRef.current = new IntersectionObserver(([entry]) => {
-        // 최하단을 보고 있는 상태 (스크롬됨)
-        setIsAtBottom(entry.isIntersecting);
+      bottomObserverRef.current = new IntersectionObserver(
+        ([entry]) => {
+          // 최하단을 보고 있는 상태 (스크롬됨)
+          setIsAtBottom(entry.isIntersecting);
 
-        if (
-          entry.isIntersecting &&
-          !observerStateRef.current.isBottomFetching &&
-          observerStateRef.current.hasMoreTailFeeds
-        ) {
-          setIsBottomFetching(true);
+          if (
+            entry.isIntersecting &&
+            !observerStateRef.current.isBottomFetching &&
+            observerStateRef.current.hasMoreTailFeeds
+          ) {
+            setIsBottomFetching(true);
 
-          renderTailFeeds().finally(() => setIsBottomFetching(false));
-        }
-      }, {threshold: 0.1});
+            renderTailFeeds().finally(() => setIsBottomFetching(false));
+          }
+        },
+        { threshold: 0.1 }
+      );
 
       if (node) {
         bottomObserverRef.current.observe(node);
@@ -475,9 +483,12 @@ function Channel() {
   }, [repliesData, scrollToBottomReply]);
 
   useEffect(() => {
+    initLoadState();
+
     // 이미 target 데이터가 있다면 로드 중단
     if (feedData) {
       const target = feedData.find((f) => f.feed_id === paramsFeedId);
+
       if (target) {
         setSelectedFeed(target);
         return;
@@ -589,6 +600,7 @@ function Channel() {
     checkCreateMember();
   }, [id, user]);
 
+  // 채널이 바뀔 때마다 정보 확인
   useEffect(() => {
     const getChannelInfo = async () => {
       const data = await getChannelInfoById(id);
@@ -690,7 +702,10 @@ function Channel() {
                           <li ref={setTopLiRef} className={S.observerTopDiv} />
                         )}
                         {i === feedData.length - 1 && (
-                          <li ref={setBottomLiRef} className={S.observerBottomDiv}/>
+                          <li
+                            ref={setBottomLiRef}
+                            className={S.observerBottomDiv}
+                          />
                         )}
                         {renderFeedComponent(data)}
                       </Fragment>
