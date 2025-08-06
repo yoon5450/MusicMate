@@ -138,7 +138,7 @@
     background-color: var(--primary_active);
   }
 
-    &:disabled {
+  &:disabled {
     background-color: var(--primary_disabled);
     color: var(--gray_10);
     cursor: not-allowed;
@@ -151,4 +151,10 @@ textarea:-webkit-autofill {
   box-shadow: 0 0 0px 1000px var(--gray_02) inset;
   -webkit-text-fill-color: var(--white);
   transition: background-color 5000s ease-in-out 0s;
+}
+
+@media (max-width: 768px) {
+  .formContainer {
+    min-width: 0;
+  }
 }
