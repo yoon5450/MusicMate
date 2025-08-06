@@ -5,6 +5,8 @@ import CustomAudioPlayer from "../CustomAudioPlayer";
 import imgIcon from "@/assets/add_image_icon.svg";
 import { addFeedsWithFiles } from "@/api";
 import { setFilePreview } from "@/utils/setImagePreview";
+import { useAuth } from "@/auth/AuthProvider";
+import { alert } from "../common/CustomAlert";
 
 interface Props {
   recordingData: RecordingData | undefined;
@@ -12,7 +14,7 @@ interface Props {
   setRecordingData: React.Dispatch<
     React.SetStateAction<RecordingData | undefined>
   >;
-    handleAddSubmitFeed: (data: {
+  handleAddSubmitFeed: (data: {
     audio_url: string | null;
     author_id: string;
     channel_id: string;
@@ -23,6 +25,7 @@ interface Props {
     message_type: "default" | "clip" | "image";
     title: string | null;
   }) => void;
+  isMember: boolean | null;
 }
 
 function SubmitClipForm({
@@ -30,8 +33,13 @@ function SubmitClipForm({
   setRecordingData,
   curChannelId,
   handleAddSubmitFeed,
+  isMember,
 }: Props) {
-  const [imagePreview, setImagePreview] = useState<string | undefined | null>("");
+  const { user } = useAuth(); // 유저정보(id, 이메일)
+
+  const [imagePreview, setImagePreview] = useState<string | undefined | null>(
+    ""
+  );
   const [feedImage, setFeedImage] = useState<File | undefined | null>();
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
@@ -43,15 +51,27 @@ function SubmitClipForm({
     setRecordingData({ url: null, blob: null, file: null });
   }
 
-  function handleImageChange(e:React.ChangeEvent<HTMLInputElement>) {
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setFeedImage(file);
-    if(file) setFilePreview(file, setImagePreview);
+    if (file) setFilePreview(file, setImagePreview);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log("전송");
+
+    if (!user) {
+      alert("로그인 후에 글을 올릴 수 있습니다.");
+      return;
+    }
+
+    if (!isMember) {
+      alert(
+        "채널에 가입한 후에 글을 올릴 수 있습니다.<br/>채널가입하기 버튼을 클릭하여 채널 가입을<br/>진행해주세요!"
+      );
+      return;
+    }
 
     const data = await addFeedsWithFiles({
       title,
@@ -73,7 +93,7 @@ function SubmitClipForm({
       <div className={S.wrapper}>
         <form className={S.playerForm} onSubmit={handleSubmit} action="">
           <label htmlFor={previewId} className={S.addImgBtn}>
-            <img src={imagePreview ? imagePreview : imgIcon} width={'40px'}/>
+            <img src={imagePreview ? imagePreview : imgIcon} width={"40px"} />
           </label>
           <input
             id={previewId}
