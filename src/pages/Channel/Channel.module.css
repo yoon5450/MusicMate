@@ -171,13 +171,13 @@
 }
 
 .observerTopDiv {
-  height: 1px;
+  height: 30px;
   visibility: hidden;
   margin-block-end: calc(var(--spacing-12) * -1);
 }
 
 .observerBottomDiv {
-  height: 1px;
+  height: 30px;
   visibility: hidden;
   margin-block-start: calc(var(--spacing-12) * -1);
 }
