@@ -317,11 +317,13 @@ function Channel() {
     const lastTime = feedData[feedData.length - 1].created_at;
     if (!lastTime) return;
 
-    console.log(hasMoreTailFeeds);
-
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
+    // NOTE: 20개 미만일 때 hasmoreTail 처리를 해버림. ( 스크롤 버그 방지 )
+    if (!afterFeedData || afterFeedData.length < 20) {
+      if (hasMoreTailFeeds) setHasMoreTailFeeds(false);
+    }
+
     if (!afterFeedData || afterFeedData.length === 0) {
-      setHasMoreTailFeeds(false);
       return;
     }
 
@@ -339,7 +341,7 @@ function Channel() {
       );
       return [...prevFeeds, ...uniqueNewFeeds];
     });
-  }, [feedData, id]);
+  }, [feedData, hasMoreTailFeeds, id]);
 
   const handleAddSubmitFeed = useCallback(
     (data: Tables<"feeds">) => {
@@ -549,6 +551,7 @@ function Channel() {
           return { ...feed, preview_url: previewUrl };
         });
         setFeedData(updatedFeeds);
+        setHasMoreTailFeeds(false);
 
         requestAnimationFrame(() => {
           scrollToBottom();
@@ -583,10 +586,16 @@ function Channel() {
     renderTailFeedsRef.current = renderTailFeeds;
   });
 
+  const hasMoreTailFeedsRef = useRef(hasMoreTailFeeds);
+  useEffect(() => {
+    hasMoreTailFeedsRef.current = hasMoreTailFeeds;
+  }, [hasMoreTailFeeds]);
+
   // realtime 구독 처리
   useEffect(() => {
     // 최하단에서 모든 데이터를 알고 있는 것이 아니면 return
-    if (!id || hasMoreTailFeeds) return;
+    if (!id) return;
+    console.log("realtime 구독");
 
     const channel = supabase
       .channel(`channel_${id}`)
@@ -599,7 +608,7 @@ function Channel() {
           filter: `channel_id=eq.${id}`,
         },
         () => {
-          renderTailFeedsRef.current();
+          if (!hasMoreTailFeedsRef.current) renderTailFeedsRef.current();
         }
       )
       .subscribe();
@@ -607,7 +616,7 @@ function Channel() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [hasMoreTailFeeds, id]);
+  }, [id]);
 
   useEffect(() => {
     async function check() {
@@ -620,9 +629,10 @@ function Channel() {
   }, [id, user]);
 
   // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
+  // TODO: 로직이 문제 있긴 함. 제거 고려.
   useEffect(() => {
-    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds)
-      return;
+    if (!isAtBottom || !feedData || feedData.length === 0) return;
+
     scrollToBottom();
   }, [feedData, isAtBottom, scrollToBottom]);
 
@@ -739,20 +749,9 @@ function Channel() {
                     className={`${S.contentArea} ${selectedFeed && isMobile ? S.mobileHidden : ""}`}
                     ref={feedContainerRef}
                   >
-                    {feedData?.map((data, i) => (
-                      <Fragment key={data.feed_id}>
-                        {i === 0 && (
-                          <li ref={setTopLiRef} className={S.observerTopDiv} />
-                        )}
-                        {i === feedData.length - 1 && (
-                          <li
-                            ref={setBottomLiRef}
-                            className={S.observerBottomDiv}
-                          />
-                        )}
-                        {renderFeedComponent(data)}
-                      </Fragment>
-                    ))}
+                    <li ref={setTopLiRef} className={S.observerTopDiv} />
+                    {feedData?.map((data) => renderFeedComponent(data))}
+                    <li ref={setBottomLiRef} className={S.observerBottomDiv} />
                   </ul>
                   <div
                     className={
