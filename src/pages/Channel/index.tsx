@@ -39,6 +39,7 @@ import { useChannel } from "@/context/ChannelContext";
 import NotFound from "../NotFound/NotFound";
 import { profileBucketUrl } from "@/constant/supabase.urls";
 import { useMediaQuery } from "@/hook/useMediaQuery";
+import { useInfiniteScroll } from "@/hook/useInfinityScroll";
 
 type FeedWithPreview = Tables<"get_feeds_with_user_and_likes"> & {
   preview_url?: string;
@@ -78,7 +79,7 @@ function Channel() {
   const feedRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const feedContainerRef = useRef<HTMLUListElement>(null);
   const replyContainerRef = useRef<HTMLDivElement>(null);
-  const topObserverRef = useRef<IntersectionObserver | null>(null);
+
   const bottomObserverRef = useRef<IntersectionObserver | null>(null);
 
   const isMobile = useMediaQuery("(max-width:768px)");
@@ -318,7 +319,6 @@ function Channel() {
     if (!lastTime) return;
 
     const afterFeedData = await getFeedsByChannelAndAfter(id, lastTime!);
-    // NOTE: 20개 미만일 때 hasmoreTail 처리를 해버림. ( 스크롤 버그 방지 )
     if (!afterFeedData || afterFeedData.length < 20) {
       if (hasMoreTailFeeds) setHasMoreTailFeeds(false);
     }
@@ -422,33 +422,24 @@ function Channel() {
     };
   });
 
-  // 옵저버 콜백 Ref
-  const setTopLiRef = useCallback(
-    (node: HTMLLIElement | null) => {
-      if (topObserverRef.current) {
-        topObserverRef.current.disconnect();
-      }
+  // 옵저버 콜백 
+  const topObserverCallback = useCallback(() => {
+    if (
+      !isTopFetching &&
+      hasMoreHeadFeeds
+    ) {
+      console.log("topEvent");
+      setIsTopFetching(true);
+      renderHeadFeeds().finally(() => setIsTopFetching(false));
+    }
+  }, [renderHeadFeeds, isTopFetching, hasMoreHeadFeeds]);
 
-      topObserverRef.current = new IntersectionObserver(
-        ([entry]) => {
-          if (
-            entry.isIntersecting &&
-            !observerStateRef.current.isTopFetching &&
-            observerStateRef.current.hasMoreHeadFeeds
-          ) {
-            setIsTopFetching(true);
-            renderHeadFeeds().finally(() => setIsTopFetching(false));
-          }
-        },
-        { threshold: 0.1 }
-      );
-
-      if (node) {
-        topObserverRef.current.observe(node);
-      }
-    },
-    [renderHeadFeeds]
-  );
+  const {
+    setObserverCallback: setTopLiRef,
+    observerRef,
+    pause,
+    resume,
+  } = useInfiniteScroll({ onIntersect: topObserverCallback });
 
   const setBottomLiRef = useCallback(
     (node: HTMLLIElement | null) => {
@@ -631,7 +622,7 @@ function Channel() {
   // 데이터를 받았을 때 하단을 보고 있다면 하단으로 이어서 이동
   // TODO: 로직이 문제 있긴 함. 제거 고려.
   useEffect(() => {
-    if (!isAtBottom || !feedData || feedData.length === 0) return;
+    if (!isAtBottom || !feedData || feedData.length === 0 || hasMoreTailFeeds) return;
 
     scrollToBottom();
   }, [feedData, isAtBottom, scrollToBottom]);

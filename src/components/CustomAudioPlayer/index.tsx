@@ -5,7 +5,7 @@ import playForwardBtnImg from "@/assets/play_forward_button.svg";
 import pauseBtnImg from "@/assets/pause_button.svg";
 import type { RecordingData } from "../RecordButton";
 import { useEffect, useRef, useState } from "react";
-import { throttle } from "@/utils/Throttle";
+import { throttle } from "@/utils/throttle";
 import { formatTime } from "@/utils/timeUtils";
 import React from "react";
 
